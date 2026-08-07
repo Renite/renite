@@ -29,14 +29,6 @@ Renite combines Hardware Serial & MAC Address Verification, Pre-emptive Device T
 
 ---
 
-## 🏆 Recommended Project Titles
-
-- **Renite** — *Smart Enterprise & Campus Electronics Recovery Platform* (⭐ Recommended)
-- **Renite Core** — *Verification-Driven Hardware Recovery Network*
-- **Renite Hub** — *Unified Institutional Device Asset Recovery*
-- **Renite Shield** — *Trusted Electronics Recovery with AI + Blockchain*
-
----
 
 ## 🔑 Key Features
 
