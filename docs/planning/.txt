@@ -1,0 +1,15 @@
+docs/planning/
+├── 00_planning_index.md
+├── 01_project_charter.md
+├── 02_project_roadmap.md
+├── 03_project_phases.md
+├── 04_milestones.md
+├── 05_team_structure.md
+├── 06_roles_and_responsibilities.md
+├── 07_project_timeline.md
+├── 08_risk_management.md
+├── 09_decision_log.md
+├── 10_meeting_guidelines.md
+├── 11_communication_plan.md
+├── 12_definition_of_success.md
+└── 13_change_management.md
