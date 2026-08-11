@@ -1,296 +1,946 @@
 <div align="center">
-   <img src="renite-logo.png" alt="Renite Logo" width="280" style="border-radius: 8px;" />
+  <img src="renite-logo.png" alt="Renite Logo" width="280" style="border-radius: 8px;" />
 
   <h1>
     <strong>RENITE</strong>
     <br>
-    <sub>🛡️ Enterprise & Campus Electronics Lost and Found</sub>
+    <sub>🛡️ Nationwide Lost & Found, Missing Persons & Civic Safety Platform</sub>
   </h1>
 </div>
 
 <p align="center">
-  <em>Smart, Verification-Driven Electronics Recovery Platform with AI Device Recognition, Blockchain Verification, and Loyalty-Based Logistics.</em>
+  <em>
+    A secure, verification-driven national platform connecting citizens,
+    communities, and authorized organizations to report, discover,
+    verify, and recover lost assets and missing persons.
+  </em>
 </p>
 
 <p align="center">
-  <a href="#-key-features"><img src="https://img.shields.io/badge/Features-1D5061?style=for-the-badge&logo=checkmarx&logoColor=white" /></a>
-  <a href="#-tech-stack"><img src="https://img.shields.io/badge/Tech_Stack-1D5061?style=for-the-badge&logo=codecov&logoColor=white" /></a>
-  <a href="#-setup-guide"><img src="https://img.shields.io/badge/Setup-1D5061?style=for-the-badge&logo=gnu-bash&logoColor=white" /></a>
-  <a href="#-unique-differentiators"><img src="https://img.shields.io/badge/USP-1D5061?style=for-the-badge&logo=star&logoColor=white" /></a>
+  <a href="#-key-features">
+    <img src="https://img.shields.io/badge/Features-1D5061?style=for-the-badge&logo=checkmarx&logoColor=white" />
+  </a>
+  <a href="#-technology-stack">
+    <img src="https://img.shields.io/badge/Tech_Stack-1D5061?style=for-the-badge&logo=codecov&logoColor=white" />
+  </a>
+  <a href="#-development">
+    <img src="https://img.shields.io/badge/Development-1D5061?style=for-the-badge&logo=github&logoColor=white" />
+  </a>
+  <a href="#-security">
+    <img src="https://img.shields.io/badge/Security-1D5061?style=for-the-badge&logo=owasp&logoColor=white" />
+  </a>
 </p>
 
 ---
 
-## 📌 Project Overview
+# 🇪🇹 Project Overview
 
-Losing high-value electronics like PCs, laptops, smartphones, and tablets creates serious privacy, security, and financial risks. Renite solves this with an end-to-end, security-focused Electronics Asset Recovery Platform built specifically for educational institutions (schools, colleges, universities) and corporate organizations.
+Renite is a **nationwide digital recovery and civic safety platform** designed to connect citizens, communities, and authorized organizations through one trusted system.
 
-Renite combines Hardware Serial & MAC Address Verification, Pre-emptive Device Tokenization, AI Computer Vision Tagging, Blockchain Ownership Ledgers, and a Loyalty-Based Shipping Engine to ensure lost devices are returned securely and efficiently.
+Renite addresses two major problems:
 
----
+- Lost and stolen assets that are difficult to recover.
+- Missing-person cases that lack a unified digital coordination layer.
 
-
-## 🔑 Key Features
-
-### 🛡️ 1. Authentication & Security
-- **Institutional Domain Validation**: Restricted registration using verified @school.edu or @company.com emails.
-- **Role-Based Access Control (RBAC)**: Distinct interfaces for Students/Employees, Campus IT/Security Admins, and Logistics Coordinators.
-- **Device Privacy Shield**: Personal device identifiers (Serial/MAC/IMEI) and contact info remain hidden to prevent unauthorized claims.
-- **Zero-Knowledge Proofs**: Verify device ownership without revealing sensitive serial numbers.
-- **End-to-End Encryption**: All communications and device data encrypted at rest and in transit.
-- **Audit Trail & GDPR Compliance**: Complete immutable logs and automated data anonymization.
-
-### 💻 2. Pre-Registration & Hardware Tokens
-- **Pre-emptive Device Logging**: Users pre-register laptops, phones, and tablets before they are ever lost.
-- **Hardware ID & Token Binding**: Binds devices using Serial Numbers, MAC Addresses, IMEI numbers, or unique printable QR tokens.
-- **Blind Ownership Verification**: Claimants must prove ownership via serial matching, cloud device lists, or secret hardware descriptions.
-- **Blockchain Registration**: Each device gets an immutable entry on a private ledger.
-
-### 🤖 3. AI-Powered Device Recognition
-- **Multi-Modal Fingerprinting**: Combines visual signatures (AI embedding from photos), hardware signatures (serial/MAC), and behavioral patterns (usage hours, network history).
-- **Model & Brand Detection**: Finder uploads a photo; Computer Vision (YOLOv8/DETR) identifies category, brand, color, and distinguishing features.
-- **Suspicious Activity Detection**:
-  - **AI Anomaly Detection**: Flags unusual claim patterns.
-  - **Image Forensics**: Detects photoshopped/doctored images using Error Level Analysis (ELA).
-  - **Location Spoofing**: Cross-references GPS with WiFi triangulation.
-
-### ⛓️ 4. Blockchain-Based Ownership Ledger
-- **Immutable Device History**: Store registration, transfer, and recovery events on a private blockchain (Hyperledger Fabric).
-- **Smart Contracts**: Automate reward distribution when devices are returned.
-- **Tamper-Proof Verification**: Prevents false claims by maintaining cryptographic proof of ownership.
-
-### 🗺️ 5. Geofenced Campus Map & Location Intelligence
-- **Interactive Campus/Office Map**: Pinpoint exact computer labs, classrooms, libraries, or cafeteria zones.
-- **Proximity Alert System**: SMS/Email notifications when entering zones where registered electronics were reported missing.
-- **Heat Maps & Analytics**: Identify high-risk zones and track recovery success rates.
-
-### 🚚 6. Logistics, Shipping & Loyalty Rewards
-
-**Tiered Loyalty Program:**
-| Tier | Points | Benefits |
-|------|--------|----------|
-| **Bronze** | 0-100 pts | Basic matching alerts |
-| **Silver** | 101-500 pts | Priority matching + 10% shipping discount |
-| **Gold** | 501-2000 pts | Free shipping + 24hr expedited processing |
-| **Platinum** | 2000+ pts | Insurance coverage + dedicated support |
-
-**Smart Logistics:** Off-campus shipping integration (DHL/UPS/FedEx), Smart Locker pickups, and Drone Delivery options for advanced campuses.
-
-### 💬 7. Secure In-App Communication & Device Handoff
-- **Anonymized In-App Chat**: Encrypted messaging without exposing phone numbers/emails.
-- **Unlock & Proof-of-Access Test**: Requires claimant to unlock the device screen (passcode/biometrics) in front of admins or the finder.
-- **Trust Score & Testimonials**: User reputation system and a "Trust Wall" showcasing successfully recovered devices.
-
-### 📊 8. Predictive Analytics Dashboard (For Admins)
-- **Heat Maps**: Identify high-risk zones.
-- **Recovery Rate Analytics**: Track success rates by category, location, and time.
-- **Predictive Alerts**: AI predicts which devices are likely to be lost based on user behavior patterns.
-- **Anomaly Reports**: Automated flagging of potential theft rings.
-
-### 📱 9. Real-Time Features
-- **BLE Beacons**: Optional Bluetooth tags for real-time device proximity alerts.
-- **Last Seen Notifications**: Push notifications when a device is detected on campus WiFi.
-- **Find My Integration**: Optional integration with Apple/Google Find My network.
-
----
-
-## 🌐 Application Architecture & UI Structure
+Instead of limiting recovery to a single school, company, campus, or institution, Renite is designed as a **national network** where a lost item or missing-person report can be discovered and acted upon regardless of where it was originally reported.
 
 ```text
-├── 🧭 Navigation Bar
-│   ├── Dynamic Global Search (w/ Search History)
-│   ├── QR Scanner & Voice Input
-│   ├── Electronics Categories
-│   └── User Profile Quick-Menu
+Citizen
+   │
+   ├── Report Lost Asset
+   ├── Report Found Asset
+   ├── Report Missing Person
+   ├── Search
+   ├── Verify
+   └── Request Recovery
+          │
+          ▼
+       RENITE
+          │
+    ┌─────┼─────┐
+    ▼     ▼     ▼
+ Citizens Communities
+             Authorized Organizations
+          │
+          ▼
+     National Recovery Network
+```
+Renite combines:
+
+Fayda-assisted identity verification
+Secure user accounts
+Lost & found asset registration
+Missing-person reporting
+AI-assisted matching
+Location intelligence
+Secure communication
+Recovery verification
+Nationwide shipping
+Payments and recovery bounties
+Rewards and referrals
+Multilingual accessibility
+Security based on OWASP principles
+# 🎯 Vision
+
+Build a trusted national digital infrastructure where people can report, discover, verify, and safely recover lost assets or missing persons.
+
+Renite aims to transform fragmented recovery activities into a connected national recovery network.
+
+# 🚨 The Problems Renite Solves
+Lost Assets
+
+People regularly lose:
+
+Smartphones
+Laptops
+Tablets
+Documents
+Electronics
+Personal belongings
+Other valuable assets
+
+Existing recovery methods are often fragmented across social media, messaging groups, local communities, institutions, and informal networks.
+
+Renite provides a centralized recovery workflow.
+
+Missing Persons
+
+Families and communities can struggle to:
+
+Report missing persons quickly
+Share reliable information
+Coordinate searches
+Discover relevant reports
+Track case progress
+Connect with authorized organizations
+
+Renite provides a digital coordination layer for these processes.
+
+Fragmented Recovery Information
+
+Information can become scattered across:
+
+Social Media
+Messaging Apps
+Community Groups
+Institutions
+Local Organizations
+Authorities
+
+Renite brings relevant information into one structured platform.
+
+# 🔑 Key Features
+## 🛡️ 1. Identity & Security
+
+Renite maintains its own application user database while using Fayda as a mandatory secondary identity-verification mechanism.
+
+Renite Registration
+        │
+        ▼
+Renite User Account
+        │
+        ▼
+Fayda Verification
+        │
+        ▼
+Verified Renite Account
+
+Features include:
+
+Secure authentication
+Fayda verification
+Role-based access control
+Session protection
+Data minimization
+Privacy controls
+Audit logging
+Secure API access
+OWASP-aligned security practices
+
+Sensitive identity information SHALL only be collected and stored when required.
+
+## 💻 2. Digital Asset Registration
+
+Users can register their valuable belongings before or after they are lost.
+
+Supported assets may include:
+
+Smartphones
+Laptops
+Tablets
+Electronics
+Documents
+Other registered belongings
+
+Asset information can include:
+
+Brand
+Model
+Category
+Serial Number
+IMEI / MAC
+Photos
+Description
+Distinguishing Features
+QR / Recovery Token
+
+Sensitive identifiers are protected and are not publicly exposed.
+
+## 🔴 3. Report Lost Asset
+
+Users can report an asset as lost.
+
+A report may contain:
+
+Asset information
+Photos
+Description
+Last known location
+Date and time
+Relevant identifying information
+
+The report enters the Renite recovery and matching workflow.
+
+Report Lost
+     ↓
+Verification
+     ↓
+Matching
+     ↓
+Potential Match
+     ↓
+Ownership Verification
+     ↓
+Recovery
+## 🟢 4. Report Found Asset
+
+Anyone who finds an item can submit a found-item report.
+
+A found report can include:
+
+Photos
+Category
+Description
+Found location
+Date and time
+Distinguishing characteristics
+
+The finder does not need access to the owner's private information.
+
+## 🤖 5. AI-Assisted Matching
+
+Renite can use AI to identify potential relationships between lost and found reports.
+
+Potential matching signals include:
+
+Images
+Asset Category
+Brand
+Model
+Description
+Location
+Time
+Identifiers
+Distinguishing Features
+
+AI may assist with:
+
+Image classification
+Object recognition
+Similarity matching
+Report categorization
+Potential duplicate detection
+Fraud/anomaly detection
+Important
+
+AI matching is not automatic proof of ownership.
+
+Final recovery decisions require an appropriate verification process.
+
+## 👤 6. Missing-Person Reporting
+
+Renite provides a dedicated missing-person workflow.
+
+Reports may include:
+
+Name
+Photograph
+Description
+Last-known location
+Last-seen time
+Relevant identifying information
+Case status
+Report
+  ↓
+Verification
+  ↓
+Case Creation
+  ↓
+Authorized Visibility
+  ↓
+Community / Organization Coordination
+  ↓
+Potential Information
+  ↓
+Person Located
+  ↓
+Case Resolution
+
+Sensitive information is restricted according to authorization.
+
+## 🚨 7. Emergency & Safety Coordination
+
+Renite can support emergency-oriented reporting and coordination.
+
+Depending on authorization and future integrations, relevant cases may involve:
+
+Emergency contacts
+Community responders
+Authorized investigators
+Local organizations
+Government or law-enforcement organizations
+
+Renite does not replace official emergency or law-enforcement systems.
+
+It provides a digital coordination and information layer.
+
+## 🗺️ 8. National Map & Location Intelligence
+
+Renite provides location-based discovery.
+
+Depending on authorization, the map can display:
+
+Found assets
+Lost reports
+Missing-person activity
+Community safety information
+Recovery activity
+Relevant nearby reports
+
+Sensitive exact locations SHALL remain protected.
+
+## 📍 9. Location Intelligence
+
+Location information can assist with:
+
+Last-known asset location
+Found-item location
+Missing-person last-seen location
+Recovery coordination
+Nearby discovery
+National activity visualization
+
+Location data is classified as sensitive information.
+
+## 💬 10. Secure Communication
+
+Renite provides controlled communication between authorized participants.
+
+Asset Owner
+     │
+     ▼
+Renite Secure Chat
+     │
+     ▼
+Finder
+
+The platform is designed to avoid unnecessarily exposing:
+
+Phone numbers
+Email addresses
+Private addresses
+Other sensitive contact information
+## 🚚 11. Nationwide Recovery & Shipping
+
+A recovered item does not necessarily need to be returned in person.
+
+Example:
+```
+Asset Found
+    │
+    ▼
+Finder Location
+    │
+    ▼
+Owner Location
+    │
+    ▼
+Shipping Request
+    │
+    ▼
+Payment
+    │
+    ▼
+Delivery
+    │
+    ▼
+Recovery Confirmation
+```
+Future logistics integrations may support:
+
+Local delivery
+Nationwide shipping
+Tracking
+Delivery confirmation
+Pickup points
+Recovery handoff locations
+## 💰 12. Payments & Recovery Bounties
+
+Renite can support financial workflows related to recovery.
+
+Examples:
+
+Recovery rewards
+Shipping fees
+Delivery fees
+Optional bounties
+Supported platform services
+
+Payment status SHALL always be verified by the backend.
+
+The client SHALL never be trusted to declare a payment successful.
+
+## ⭐ 13. Rewards & Community Participation
+
+Renite encourages responsible participation through:
+
+Recovery rewards
+Loyalty points
+Referral programs
+Community contribution
+Verified recovery achievements
+
+Example:
+```
+Find Item
+   ↓
+Report Item
+   ↓
+Successful Recovery
+   ↓
+Verified Contribution
+   ↓
+Reward
+```
+## 🌐 14. Multilingual National Platform
+
+Renite is designed for a multilingual population.
+
+The platform is intended to support:
+
+English
+Amharic
+Oromo
+Tigrinya
+Somali
+Arabic
+Swahili
+
+The UI architecture SHALL support:
+
+LTR
+RTL
+
+The system should also accommodate variable text lengths across languages.
+
+# 🔐 Security
+
+Security is a core requirement of Renite.
+
+Renite follows a security-by-design approach informed by:
+
+OWASP Top 10
+OWASP API Security
+OWASP Mobile Application Security
+Secure authentication
+Authorization
+Input validation
+Rate limiting
+Encryption
+Secure file handling
+Audit logging
+Data minimization
+Least privilege
+
+Sensitive information includes:
+
+Identity Information
+Fayda Verification Information
+Location Data
+Missing-Person Information
+Asset Identifiers
+Payment Information
+Private Messages
+
+Such information SHALL receive appropriate access controls and protection.
+
+# 🧠 Privacy by Design
+
+Renite follows:
+
+Collect Minimum
+       ↓
+Protect Strongly
+       ↓
+Expose Minimum
+       ↓
+Retain Only When Necessary
+       ↓
+Delete When Appropriate
+
+Sensitive information SHALL not be unnecessarily exposed to:
+
+Other users
+Finders
+Public visitors
+Administrators without authorization
+External services
+# 🏗️ Technology Stack
+## 🌐 Web
+React
+TypeScript
+
+The web application will serve:
+
+Citizens
+Communities
+Authorized organizations
+Moderators
+Administrators
+Operational teams
+## 📱 Mobile
+Flutter
+Dart
+
+The mobile application focuses on:
+
+Reporting
+Location
+Notifications
+Map interaction
+Asset management
+Recovery
+Community participation
+## ⚙️ Backend
+
+The backend provides:
+
+Authentication
+Authorization
+Business Logic
+REST API
+Database Access
+Identity Verification
+Matching
+Notifications
+Recovery
+Payments
+Security
+Audit Logging
+## 🗄️ Database
+
+The database architecture supports:
+
+Users
+Identity Verification
+Assets
+Lost Reports
+Found Reports
+Missing-Person Cases
+Recovery Cases
+Locations
+Conversations
+Messages
+Notifications
+Rewards
+Payments
+Audit Logs
+## 🏛️ System Architecture
+```
+                    RENITE
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+      Web Client               Mobile Client
+   React + TypeScript         Flutter + Dart
+          │                         │
+          └────────────┬────────────┘
+                       │
+                       ▼
+                  REST API
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+ Authentication     Core Services    Security
+        │              │              │
+        └──────────────┼──────────────┘
+                       │
+                       ▼
+                    Database
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+      Fayda          AI/ML        External Services
+   Verification     Matching       Maps / Payment /
+                                  Notifications
+```
+# 📱 Application Experience
+
+The primary navigation is designed around:
+
+Home
+Map
+Messages
+Profile
+
+The main dashboard can provide access to:
+
+Report Lost
+Report Found
+Report Missing Person
+Nearby Activity
+National Alerts
+Recovery Cases
+Notifications
+Rewards
+Community Activity
+# 🔄 Core Recovery Flow
+```
+Lost Asset
+Register Asset
+      ↓
+Report Lost
+      ↓
+Matching
+      ↓
+Potential Match
+      ↓
+Verification
+      ↓
+Recovery
+      ↓
+Shipping / Handoff
+      ↓
+Recovered
+Found Asset
+Find Item
+    ↓
+Report Found
+    ↓
+Upload Information
+    ↓
+Matching
+    ↓
+Owner Verification
+    ↓
+Recovery Coordination
+    ↓
+Handoff / Shipping
+    ↓
+Recovered
+Missing Person
+Report Missing
+      ↓
+Required Verification
+      ↓
+Case Created
+      ↓
+Authorized Visibility
+      ↓
+Community / Organization Coordination
+      ↓
+Potential Information
+      ↓
+Person Located
+      ↓
+Case Resolution
+```
+# 🧭 Product Areas
+```
+Renite
 │
-├── 🏠 Showcase Homepage
-│   ├── Real-Time Electronics Recovery Counter
-│   ├── Personalized Feed & Trending Lost Items
-│   ├── Quick "Report Lost/Found" Action Modals
-│   └── Trust & Testimonials Carousel
+├── Authentication
+│   ├── Registration
+│   ├── Login
+│   └── Fayda Verification
 │
-├── 🗺️ Interactive Map View
-│   ├── Zone-based Incident Mapping
-│   └── Location Pinning (Labs, Libraries, Cafeteria)
+├── Home
+│   ├── National Safety Hub
+│   ├── Alerts
+│   └── Community Activity
 │
-├── 🔐 Device Vault
-│   ├── Pre-registered Devices with Status
-│   └── Auto-sync from Cloud Accounts
+├── Lost & Found
+│   ├── My Assets
+│   ├── Report Lost
+│   ├── Report Found
+│   └── Matching
 │
-├── 📊 Analytics Hub
-│   ├── Personal Stats: Recovery Rate, Points Earned
-│   └── Recovery Timeline Visualization
+├── Missing Persons
+│   ├── Report
+│   ├── Cases
+│   └── Case Coordination
 │
-├── 💬 In-App Chat Center
-│   └── Secure messaging threads for item claims
+├── Map
+│   ├── Lost Assets
+│   ├── Found Assets
+│   └── Safety Activity
 │
-├── 📦 Order & Delivery History
-│   ├── Tracking off-campus shipping status
-│   └── Point redemption logs
+├── Recovery
+│   ├── Verification
+│   ├── Handoff
+│   └── Shipping
 │
-├── ℹ️ About & Information Hub
-│   ├── Institutional Bio & Device Inventory Metrics
-│   ├── Comprehensive FAQ & Hardware Verification Protocols
-│   └── Trust Score Display
+├── Communication
+│   ├── Secure Chat
+│   └── Notifications
 │
-└── 👤 User Profile & Settings
-    ├── Edit Profile & Contact Info
-    ├── My Registered Electronics & Hardware Tokens
-    ├── Loyalty Points Wallet & Reward History
-    └── Privacy & Security Preferences
-🗄️ Database Schema (Core Tables)
-sql
--- Core Users & Organizations
-User: id, name, email, phone, role, organization_id, loyalty_points, trust_score, created_at
-Organization: id, name, domain, type (campus/enterprise), address, created_at
-
--- Device Management
-ElectronicDevice: id, user_id, serial_number, mac_address, category, brand, model, 
-  token_hash, description, distinguishing_features, images[], blockchain_hash, 
-  status (registered, lost, found, claimed, returned), created_at
-DeviceFingerprint: id, device_id, visual_embedding, hardware_signature, behavioral_pattern, created_at
-
--- Reporting & Matching
-LostReport: id, device_id, user_id, location_lat, location_lng, zone, description, reported_at, status
-FoundReport: id, device_id, user_id, location_lat, location_lng, zone, description, image, reported_at, status
-Match: id, lost_report_id, found_report_id, verification_score, match_type (ai_visual, serial, manual), status, created_at
-Claim: id, match_id, claimant_id, proof_type, verification_status, handoff_status, created_at
-
--- Blockchain & Logistics
-BlockchainRecord: id, device_id, transaction_hash, event_type, timestamp, block_number
-ShippingOrder: id, claim_id, origin_address, destination_address, loyalty_points_redeemed, carrier, tracking_number, delivery_status
-LoyaltyTransaction: id, user_id, points_amount, type (earn/redeem), reference_id, description, created_at
-
--- Communication & Compliance
-ChatMessage: id, match_id, sender_id, receiver_id, message, encrypted, created_at
-Testimonial: id, user_id, device_id, content, rating, created_at
-AuditLog: id, user_id, action, resource_type, resource_id, details, ip_address, created_at
+├── Community
+│   ├── Rewards
+│   └── Referrals
+│
+└── Profile
+    ├── Personal Information
+    ├── Verification
+    ├── Security
+    └── Privacy
 ```
-🛠️ Tech Stack
-Layer	Technology
-Frontend (Mobile)	React Native (iOS & Android)
-Frontend (Web)	Next.js (Dashboard) + PWA Support
-Backend (API)	Node.js + Express / NestJS (GraphQL Federation)
-AI/ML Microservices	Python Flask (YOLOv8 / DETR, FaceNet, CLIP, LLaMA-3 / GPT-4)
-High-Performance Engine	Go (Matching engine)
-Blockchain	Hyperledger Fabric, Solidity, Web3.js
-Database & Cache	MongoDB, PostgreSQL, Redis, Elasticsearch
-Messaging Queue	RabbitMQ / Kafka (Event-driven architecture)
-Infrastructure	Kubernetes, Docker
-Security	HashiCorp Vault, OAuth 2.0 + OIDC, WebAuthn, AWS KMS
-🚀 Setup Guide
-Prerequisites
-Node.js (v18.x or higher)
-
-Python (v3.9+)
-
-MongoDB Atlas or PostgreSQL
-
-Docker & Kubernetes (optional)
-
-Installation Steps
+# 🗃️ Core Data Model
 ```
-bash
-# 1. Clone the repository
-git clone https://github.com/ReniteHQ/renite-backend.git
-cd renite-backend
+User
+ ├── IdentityVerification
+ ├── Assets
+ ├── Lost/Found Reports
+ ├── Missing Person Cases
+ ├── Recovery Cases
+ ├── Conversations
+ ├── Notifications
+ ├── Reward Wallet
+ └── Payments
+
+Asset
+ └── Recovery Reports
+
+Recovery Report
+ └── Recovery Case
+
+Recovery Case
+ └── Conversation
+
+Conversation
+ └── Messages
 ```
-# 2. Install dependencies (API Gateway)
+Sensitive information such as identity references, exact locations, private contact information, asset identifiers, and payment information SHALL receive additional protection.
+
+# 🔄 Enhanced Reporting Flow
 ```
-npm install
+Report Lost / Found
+        ↓
+Input Validation
+        ↓
+AI Categorization
+        ↓
+Asset / Person Classification
+        ↓
+Potential Matching
+        ↓
+Notification
+        ↓
+Verification
+        ↓
+Recovery Coordination
+        ↓
+Handoff / Shipping
+        ↓
+Recovery Complete
 ```
-# 3. Install Python dependencies (for AI microservices)
+# 🧠 Future AI Capabilities
+
+Renite's architecture can later support:
+
+Computer vision
+Image similarity
+Object recognition
+Facial recognition where legally and ethically permitted
+Semantic search
+Fraud detection
+Anomaly detection
+Duplicate case detection
+Intelligent matching
+Location-based prediction
+
+AI SHALL remain an assistive system and SHALL NOT independently make high-impact identity or ownership decisions.
+
+# 🔌 Future Integrations
+
+Renite can progressively integrate with:
+
+Fayda
+Maps & Location Services
+Payment Providers
+SMS Providers
+Email Providers
+Push Notification Services
+Logistics Providers
+Government / Authorized Organizations
+IoT Devices
+Hardware Recovery Tags
+
+Integrations SHALL follow appropriate authorization, privacy, security, and legal requirements.
+
+# 📂 Repository Structure
 ```
-pip install -r requirements.txt
-```
-# 4. Configure Environment Variables
-# Create a .env file in the root directory:
-```
-PORT=5000
-DATABASE_URL=your_database_connection_string
-JWT_SECRET=your_jwt_secret_key
-BLOCKCHAIN_NODE_URL=your_blockchain_node_url
-AI_VISION_API_KEY=your_vision_api_key
-SMS_API_KEY=your_sms_gateway_key
-EMAIL_SMTP_HOST=smtp.mailtrap.io
-```
-# 5. Run Development Server
-```
-npm run dev
-```
-🔄 Enhanced Reporting Flow
-```
-graph TD
-    A[Report Lost/Found] --> B[AI Auto-Categorization]
-    B --> C{Device Type?}
-    C -->|Electronics| D[Serial/MAC/IMEI Extraction]
-    C -->|Other| E[Standard Category]
-    D --> F[AI Visual Fingerprinting]
-    F --> G[Blockchain Registration]
-    G --> H[Automated Matching Engine]
-    H --> I[Instant Notifications]
-    I --> J[Smart Escalation]
-    J --> K[Verification Process]
-    K --> L[Handoff & Testimonial]
-```
-💡 Unique Differentiators
-"Device DNA": Combination of hardware + software + behavioral signatures for unique identification.
-
-"Campus Mesh": Peer-to-peer device detection using Bluetooth/WiFi mesh networks.
-
-"Reward Auto-Execution": Smart contracts automatically release rewards when verification conditions are met.
-
-"Privacy-Preserving Matching": Match devices without exposing sensitive data to finders.
-
-"Cross-Institution Network": Connect multiple campuses/organizations for lost devices found off-campus.
-
-"Zero-Knowledge Proofs": Verify ownership without revealing sensitive data.
-
-📊 Success Metrics
-Metric	Target
-Recovery Rate	> 85% within 72 hours
-False Claim Rate	< 1% through verification
-User Trust Score	Average > 4.5/5 star reviews
-Time to Recover	Reduce from days to hours
-User Adoption	60%+ device pre-registration rate
-📜 Terms & Conditions
-Ownership Verification Mandate: High-value electronics require hardware serial verification, cloud device list proof, or physical screen unlock upon handover.
-
-Data Privacy & Zero-Access: Finders and admins must not attempt to access or extract personal data from found devices.
-
-Fraudulent Claims: Intentional false claims on electronic assets will result in immediate account suspension.
-
-Campus Drop-Off Policy: Recovered electronics must be delivered to designated secure IT or Security drop-off stations.
-
-Blockchain Immutable Record: All transactions are permanently recorded on the blockchain for auditability.
-
-🤝 Contributing
-We welcome contributions from the community!
-
-Fork the repository.
-
-Create a feature branch (git checkout -b feature/AmazingFeature).
-
-Commit your changes (git commit -m 'Add some AmazingFeature').
-
-Push to the branch (git push origin feature/AmazingFeature).
-
-Open a Pull Request.
-
-📄 License
-Distributed under the MIT License. See LICENSE for more information.
-
-🌐 GitHub Organization Structure
-We recommend organizing your repositories under Renite:
-```
-text
 Renite/
-├── renite-backend/          # Node.js + Express API
-├── renite-frontend/         # React Native + Next.js
-├── renite-ai-services/      # Python AI/ML microservices
-├── renite-blockchain/       # Smart contracts & blockchain integration
-├── renite-mobile/           # React Native mobile app
-├── renite-docs/             # Documentation
-└── renite-devops/           # Kubernetes & infrastructure configs
+│
+├── apps/
+│   ├── web/                  # React + TypeScript
+│   └── mobile/               # Flutter + Dart
+│
+├── backend/                  # Backend API
+│
+├── docs/
+│   ├── planning/
+│   ├── product/
+│   ├── architecture/
+│   ├── engineering/
+│   └── security/
+│
+├── .github/
+│   ├── workflows/
+│   ├── ISSUE_TEMPLATE/
+│   └── CODEOWNERS
+│
+├── README.md
+└── LICENSE
 ```
-<p align="center"> <strong>Reclaim What's Yours, Securely.</strong><br> <img src="https://img.shields.io/badge/Status-Development-blue?style=flat-square" /> <img src="https://img.shields.io/badge/Version-v1.0.0--alpha-blue?style=flat-square" /> </p> 
+# 🛠️ Development Principles
+
+Renite follows:
+
+Security by Design
+Privacy by Design
+API-First Development
+Feature-Based Architecture
+Strong Typing
+Automated Testing
+Code Review
+Continuous Integration
+Least Privilege
+Data Minimization
+
+All production code SHALL pass the project's required CI and review checks.
+
+# 🚀 Development Status
+
+Renite is currently under active development.
+
+Current implementation priorities:
+
+Authentication
+      ↓
+Fayda Verification
+      ↓
+Database
+      ↓
+Backend API
+      ↓
+React Web
+      ↓
+Flutter Mobile
+      ↓
+Lost & Found
+      ↓
+Matching
+      ↓
+Recovery
+      ↓
+Missing Persons
+      ↓
+Security & Testing
+      ↓
+National MVP
+🤝 Contribution
+
+Renite is developed through structured team collaboration.
+
+Contributors are expected to follow:
+
+Branching strategy
+Repository rulesets
+Pull request requirements
+Code review requirements
+CI requirements
+Security requirements
+Commit conventions
+Architecture guidelines
+
+Security-sensitive changes require appropriate review.
+
+🛡️ Security Reporting
+
+Security vulnerabilities SHALL NOT be disclosed through ordinary public GitHub issues.
+
+Security reports should use the organization's private security-reporting process.
+
+⚠️ Important Scope
+
+Renite is a civic technology, safety, and recovery platform.
+
+It does not replace:
+
+Police systems
+Emergency services
+Government identity systems
+Courts
+Official investigations
+Existing financial institutions
+
+Renite provides a digital coordination, reporting, discovery, verification, and recovery layer that can work alongside authorized services.
+
+📊 Initial Success Metrics
+
+The MVP will measure:
+
+Metric	Goal
+Successful recovery	Increase over time
+Time to recovery	Reduce
+False claims	Minimize
+Successful identity verification	High reliability
+Matching accuracy	Continuously improve
+Report processing time	Reduce
+Platform availability	High
+Security incidents	Minimize
+
+Exact numerical targets SHALL be established after the MVP baseline is available.
+
+🇪🇹 National Impact
+
+Renite is designed to grow from an initial MVP into a nationwide recovery network.
+
+Citizen
+   ↓
+Community
+   ↓
+City
+   ↓
+Region
+   ↓
+Nationwide Network
+
+The long-term goal is to make recovery information more accessible while maintaining strong privacy, security, and verification controls.
+
+❤️ Our Mission
+
+A lost item should not have to remain lost, and a missing person should not become a forgotten case.
+
+Renite connects people, information, technology, and services to move from:
+
+REPORT
+   ↓
+DISCOVER
+   ↓
+VERIFY
+   ↓
+RECOVER
+🇪🇹 One platform. One recovery network. A safer connected nation.
+<p align="center"> <strong>RENITE</strong> <br> Reclaim What's Yours. Help Bring Them Home. <br><br> <img src="https://img.shields.io/badge/Status-Development-blue?style=flat-square" /> <img src="https://img.shields.io/badge/Version-v1.0.0--alpha-blue?style=flat-square" /> </p> ```
