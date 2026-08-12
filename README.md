@@ -57,16 +57,15 @@ Citizen
           ▼
        RENITE
           │
-    ┌─────┼─────┐
-    ▼     ▼     ▼
- Citizens Communities
-             Authorized Organizations
-          │
-          ▼
+    ┌─────────┐─────────────────┐
+    ▼         ▼                 ▼
+ Citizens Communities Authorized Organizations
+              │
+              ▼  
      National Recovery Network
 ```
 Renite combines:
-
+```
 Fayda-assisted identity verification
 Secure user accounts
 Lost & found asset registration
@@ -80,6 +79,7 @@ Payments and recovery bounties
 Rewards and referrals
 Multilingual accessibility
 Security based on OWASP principles
+```
 # 🎯 Vision
 
 Build a trusted national digital infrastructure where people can report, discover, verify, and safely recover lost assets or missing persons.
@@ -89,8 +89,8 @@ Renite aims to transform fragmented recovery activities into a connected nationa
 # 🚨 The Problems Renite Solves
 Lost Assets
 
-People regularly lose:
-
+## People regularly lose:
+```
 Smartphones
 Laptops
 Tablets
@@ -98,42 +98,42 @@ Documents
 Electronics
 Personal belongings
 Other valuable assets
-
+```
 Existing recovery methods are often fragmented across social media, messaging groups, local communities, institutions, and informal networks.
 
 Renite provides a centralized recovery workflow.
 
-Missing Persons
+## Missing Persons
 
 Families and communities can struggle to:
-
+```
 Report missing persons quickly
 Share reliable information
 Coordinate searches
 Discover relevant reports
 Track case progress
 Connect with authorized organizations
-
+```
 Renite provides a digital coordination layer for these processes.
 
-Fragmented Recovery Information
+## Fragmented Recovery Information
 
 Information can become scattered across:
-
+```
 Social Media
 Messaging Apps
 Community Groups
 Institutions
 Local Organizations
 Authorities
-
+```
 Renite brings relevant information into one structured platform.
 
 # 🔑 Key Features
 ## 🛡️ 1. Identity & Security
 
 Renite maintains its own application user database while using Fayda as a mandatory secondary identity-verification mechanism.
-
+```
 Renite Registration
         │
         ▼
@@ -144,9 +144,9 @@ Fayda Verification
         │
         ▼
 Verified Renite Account
-
+```
 Features include:
-
+```
 Secure authentication
 Fayda verification
 Role-based access control
@@ -156,7 +156,7 @@ Privacy controls
 Audit logging
 Secure API access
 OWASP-aligned security practices
-
+```
 Sensitive identity information SHALL only be collected and stored when required.
 
 ## 💻 2. Digital Asset Registration
