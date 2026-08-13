@@ -33,7 +33,7 @@
 
 ---
 
-# 🇪🇹 Project Overview
+#  Project Overview
 
 Renite is a **nationwide digital recovery and civic safety platform** designed to connect citizens, communities, and authorized organizations through one trusted system.
 
@@ -47,6 +47,7 @@ Instead of limiting recovery to a single school, company, campus, or institution
 ```text
 Citizen
    │
+   ├── Register Material/device
    ├── Report Lost Asset
    ├── Report Found Asset
    ├── Report Missing Person
@@ -57,29 +58,30 @@ Citizen
           ▼
        RENITE
           │
-    ┌─────────┐─────────────────┐
+    ┌─────────┬─────────────────┐
     ▼         ▼                 ▼
  Citizens Communities Authorized Organizations
               │
-              ▼  
+              ▼
      National Recovery Network
 ```
+
 Renite combines:
-```
-Fayda-assisted identity verification
-Secure user accounts
-Lost & found asset registration
-Missing-person reporting
-AI-assisted matching
-Location intelligence
-Secure communication
-Recovery verification
-Nationwide shipping
-Payments and recovery bounties
-Rewards and referrals
-Multilingual accessibility
-Security based on OWASP principles
-```
+
+- Fayda-assisted identity verification
+- Secure user accounts
+- Lost & found asset registration
+- Missing-person reporting
+- AI-assisted matching
+- Location intelligence
+- Secure communication
+- Recovery verification
+- Nationwide shipping
+- Payments and recovery bounties
+- Rewards and referrals
+- Multilingual accessibility
+- Security based on OWASP principles
+
 # 🎯 Vision
 
 Build a trusted national digital infrastructure where people can report, discover, verify, and safely recover lost assets or missing persons.
@@ -87,18 +89,19 @@ Build a trusted national digital infrastructure where people can report, discove
 Renite aims to transform fragmented recovery activities into a connected national recovery network.
 
 # 🚨 The Problems Renite Solves
-Lost Assets
 
-## People regularly lose:
-```
-Smartphones
-Laptops
-Tablets
-Documents
-Electronics
-Personal belongings
-Other valuable assets
-```
+## Lost Assets
+
+People regularly lose:
+
+- Smartphones
+- Laptops
+- Tablets
+- Documents
+- Electronics
+- Personal belongings
+- Other valuable assets
+
 Existing recovery methods are often fragmented across social media, messaging groups, local communities, institutions, and informal networks.
 
 Renite provides a centralized recovery workflow.
@@ -106,34 +109,36 @@ Renite provides a centralized recovery workflow.
 ## Missing Persons
 
 Families and communities can struggle to:
-```
-Report missing persons quickly
-Share reliable information
-Coordinate searches
-Discover relevant reports
-Track case progress
-Connect with authorized organizations
-```
+
+- Report missing persons quickly
+- Share reliable information
+- Coordinate searches
+- Discover relevant reports
+- Track case progress
+- Connect with authorized organizations
+
 Renite provides a digital coordination layer for these processes.
 
 ## Fragmented Recovery Information
 
 Information can become scattered across:
-```
-Social Media
-Messaging Apps
-Community Groups
-Institutions
-Local Organizations
-Authorities
-```
+
+- Social media
+- Messaging apps
+- Community groups
+- Institutions
+- Local organizations
+- Authorities
+
 Renite brings relevant information into one structured platform.
 
 # 🔑 Key Features
+
 ## 🛡️ 1. Identity & Security
 
 Renite maintains its own application user database while using Fayda as a mandatory secondary identity-verification mechanism.
-```
+
+```text
 Renite Registration
         │
         ▼
@@ -145,18 +150,19 @@ Fayda Verification
         ▼
 Verified Renite Account
 ```
+
 Features include:
-```
-Secure authentication
-Fayda verification
-Role-based access control
-Session protection
-Data minimization
-Privacy controls
-Audit logging
-Secure API access
-OWASP-aligned security practices
-```
+
+- Secure authentication
+- Fayda verification
+- Role-based access control
+- Session protection
+- Data minimization
+- Privacy controls
+- Audit logging
+- Secure API access
+- OWASP-aligned security practices
+
 Sensitive identity information SHALL only be collected and stored when required.
 
 ## 💻 2. Digital Asset Registration
@@ -164,26 +170,26 @@ Sensitive identity information SHALL only be collected and stored when required.
 Users can register their valuable belongings before or after they are lost.
 
 Supported assets may include:
-```
-Smartphones
-Laptops
-Tablets
-Electronics
-Documents
-Other registered belongings
-```
+
+- Smartphones
+- Laptops
+- Tablets
+- Electronics
+- Documents
+- Other registered belongings
+
 Asset information can include:
-```
-Brand
-Model
-Category
-Serial Number
-IMEI / MAC
-Photos
-Description
-Distinguishing Features
-QR / Recovery Token
-```
+
+- Brand
+- Model
+- Category
+- Serial number
+- IMEI / MAC
+- Photos
+- Description
+- Distinguishing features
+- QR / recovery token
+
 Sensitive identifiers are protected and are not publicly exposed.
 
 ## 🔴 3. Report Lost Asset
@@ -191,16 +197,17 @@ Sensitive identifiers are protected and are not publicly exposed.
 Users can report an asset as lost.
 
 A report may contain:
-```
-Asset information
-Photos
-Description
-Last known location
-Date and time
-Relevant identifying information
-```
+
+- Asset information
+- Photos
+- Description
+- Last known location
+- Date and time
+- Relevant identifying information
+
 The report enters the Renite recovery and matching workflow.
-```
+
+```text
 Report Lost
      ↓
 Verification
@@ -213,19 +220,20 @@ Ownership Verification
      ↓
 Recovery
 ```
+
 ## 🟢 4. Report Found Asset
 
 Anyone who finds an item can submit a found-item report.
 
 A found report can include:
-```
-Photos
-Category
-Description
-Found location
-Date and time
-Distinguishing characteristics
-```
+
+- Photos
+- Category
+- Description
+- Found location
+- Date and time
+- Distinguishing characteristics
+
 The finder does not need access to the owner's private information.
 
 ## 🤖 5. AI-Assisted Matching
@@ -233,44 +241,45 @@ The finder does not need access to the owner's private information.
 Renite can use AI to identify potential relationships between lost and found reports.
 
 Potential matching signals include:
-```
-Images
-Asset Category
-Brand
-Model
-Description
-Location
-Time
-Identifiers
-Distinguishing Features
-```
-AI may assist with:
-```
-Image classification
-Object recognition
-Similarity matching
-Report categorization
-Potential duplicate detection
-Fraud/anomaly detection
-Important
-```
-AI matching is not automatic proof of ownership.
 
-Final recovery decisions require an appropriate verification process.
+- Images
+- Asset category
+- Brand
+- Model
+- Description
+- Location
+- Time
+- Identifiers
+- Distinguishing features
+
+AI may assist with:
+
+- Image classification
+- Object recognition
+- Similarity matching
+- Report categorization
+- Potential duplicate detection
+- Fraud/anomaly detection
+
+> **Important**
+> AI matching is not automatic proof of ownership.
+> Final recovery decisions require an appropriate verification process.
 
 ## 👤 6. Missing-Person Reporting
 
 Renite provides a dedicated missing-person workflow.
 
 Reports may include:
-```
-Name
-Photograph
-Description
-Last-known location
-Last-seen time
-Relevant identifying information
-Case status
+
+- Name
+- Photograph
+- Description
+- Last-known location
+- Last-seen time
+- Relevant identifying information
+- Case status
+
+```text
 Report
   ↓
 Verification
@@ -287,6 +296,7 @@ Person Located
   ↓
 Case Resolution
 ```
+
 Sensitive information is restricted according to authorization.
 
 ## 🚨 7. Emergency & Safety Coordination
@@ -294,13 +304,13 @@ Sensitive information is restricted according to authorization.
 Renite can support emergency-oriented reporting and coordination.
 
 Depending on authorization and future integrations, relevant cases may involve:
-```
-Emergency contacts
-Community responders
-Authorized investigators
-Local organizations
-Government or law-enforcement organizations
-```
+
+- Emergency contacts
+- Community responders
+- Authorized investigators
+- Local organizations
+- Government or law-enforcement organizations
+
 Renite does not replace official emergency or law-enforcement systems.
 
 It provides a digital coordination and information layer.
@@ -310,33 +320,34 @@ It provides a digital coordination and information layer.
 Renite provides location-based discovery.
 
 Depending on authorization, the map can display:
-```
-Found assets
-Lost reports
-Missing-person activity
-Community safety information
-Recovery activity
-Relevant nearby reports
-```
+
+- Found assets
+- Lost reports
+- Missing-person activity
+- Community safety information
+- Recovery activity
+- Relevant nearby reports
+
 Sensitive exact locations SHALL remain protected.
 
 ## 📍 9. Location Intelligence
 
 Location information can assist with:
-```
-Last-known asset location
-Found-item location
-Missing-person last-seen location
-Recovery coordination
-Nearby discovery
-National activity visualization
-```
+
+- Last-known asset location
+- Found-item location
+- Missing-person last-seen location
+- Recovery coordination
+- Nearby discovery
+- National activity visualization
+
 Location data is classified as sensitive information.
 
 ## 💬 10. Secure Communication
 
 Renite provides controlled communication between authorized participants.
-```
+
+```text
 Asset Owner
      │
      ▼
@@ -345,19 +356,21 @@ Renite Secure Chat
      ▼
 Finder
 ```
+
 The platform is designed to avoid unnecessarily exposing:
-```
-Phone numbers
-Email addresses
-Private addresses
-Other sensitive contact information
-```
+
+- Phone numbers
+- Email addresses
+- Private addresses
+- Other sensitive contact information
+
 ## 🚚 11. Nationwide Recovery & Shipping
 
 A recovered item does not necessarily need to be returned in person.
 
 Example:
-```
+
+```text
 Asset Found
     │
     ▼
@@ -378,27 +391,28 @@ Delivery
     ▼
 Recovery Confirmation
 ```
+
 Future logistics integrations may support:
-```
-Local delivery
-Nationwide shipping
-Tracking
-Delivery confirmation
-Pickup points
-Recovery handoff locations
-```
+
+- Local delivery
+- Nationwide shipping
+- Tracking
+- Delivery confirmation
+- Pickup points
+- Recovery handoff locations
+
 ## 💰 12. Payments & Recovery Bounties
 
 Renite can support financial workflows related to recovery.
 
 Examples:
-```
-Recovery rewards
-Shipping fees
-Delivery fees
-Optional bounties
-Supported platform services
-```
+
+- Recovery rewards
+- Shipping fees
+- Delivery fees
+- Optional bounties
+- Supported platform services
+
 Payment status SHALL always be verified by the backend.
 
 The client SHALL never be trusted to declare a payment successful.
@@ -406,15 +420,16 @@ The client SHALL never be trusted to declare a payment successful.
 ## ⭐ 13. Rewards & Community Participation
 
 Renite encourages responsible participation through:
-```
-Recovery rewards
-Loyalty points
-Referral programs
-Community contribution
-Verified recovery achievements
-```
+
+- Recovery rewards
+- Loyalty points
+- Referral programs
+- Community contribution
+- Verified recovery achievements
+
 Example:
-```
+
+```text
 Find Item
    ↓
 Report Item
@@ -425,25 +440,26 @@ Verified Contribution
    ↓
 Reward
 ```
+
 ## 🌐 14. Multilingual National Platform
 
 Renite is designed for a multilingual population.
 
 The platform is intended to support:
-```
-English
-Amharic
-Oromo
-Tigrinya
-Somali
-Arabic
-Swahili
-```
+
+- English
+- Amharic
+- Oromo
+- Tigrinya
+- Somali
+- Arabic
+- Swahili
+
 The UI architecture SHALL support:
-```
-LTR
-RTL
-```
+
+- LTR
+- RTL
+
 The system should also accommodate variable text lengths across languages.
 
 # 🔐 Security
@@ -451,36 +467,37 @@ The system should also accommodate variable text lengths across languages.
 Security is a core requirement of Renite.
 
 Renite follows a security-by-design approach informed by:
-```
-OWASP Top 10
-OWASP API Security
-OWASP Mobile Application Security
-Secure authentication
-Authorization
-Input validation
-Rate limiting
-Encryption
-Secure file handling
-Audit logging
-Data minimization
-Least privilege
-```
+
+- OWASP Top 10
+- OWASP API Security
+- OWASP Mobile Application Security
+- Secure authentication
+- Authorization
+- Input validation
+- Rate limiting
+- Encryption
+- Secure file handling
+- Audit logging
+- Data minimization
+- Least privilege
+
 Sensitive information includes:
-```
-Identity Information
-Fayda Verification Information
-Location Data
-Missing-Person Information
-Asset Identifiers
-Payment Information
-Private Messages
-```
+
+- Identity information
+- Fayda verification information
+- Location data
+- Missing-person information
+- Asset identifiers
+- Payment information
+- Private messages
+
 Such information SHALL receive appropriate access controls and protection.
 
 # 🧠 Privacy by Design
 
 Renite follows:
-```
+
+```text
 Collect Minimum
        ↓
 Protect Strongly
@@ -491,80 +508,85 @@ Retain Only When Necessary
        ↓
 Delete When Appropriate
 ```
+
 Sensitive information SHALL not be unnecessarily exposed to:
-```
-Other users
-Finders
-Public visitors
-Administrators without authorization
-External services
-```
+
+- Other users
+- Finders
+- Public visitors
+- Administrators without authorization
+- External services
+
 # 🏗️ Technology Stack
+
 ## 🌐 Web
-React
-TypeScript
+
+- React
+- TypeScript
 
 The web application will serve:
-```
-Citizens
-Communities
-Authorized organizations
-Moderators
-Administrators
-Operational teams
-```
+
+- Citizens
+- Communities
+- Authorized organizations
+- Moderators
+- Administrators
+- Operational teams
+
 ## 📱 Mobile
-Flutter
-Dart
+
+- Flutter
+- Dart
 
 The mobile application focuses on:
-```
-Reporting
-Location
-Notifications
-Map interaction
-Asset management
-Recovery
-Community participation
-```
+
+- Reporting
+- Location
+- Notifications
+- Map interaction
+- Asset management
+- Recovery
+- Community participation
+
 ## ⚙️ Backend
 
 The backend provides:
-```
-Authentication
-Authorization
-Business Logic
-REST API
-Database Access
-Identity Verification
-Matching
-Notifications
-Recovery
-Payments
-Security
-Audit Logging
-```
+
+- Authentication
+- Authorization
+- Business logic
+- REST API
+- Database access
+- Identity verification
+- Matching
+- Notifications
+- Recovery
+- Payments
+- Security
+- Audit logging
+
 ## 🗄️ Database
 
 The database architecture supports:
-```
-Users
-Identity Verification
-Assets
-Lost Reports
-Found Reports
-Missing-Person Cases
-Recovery Cases
-Locations
-Conversations
-Messages
-Notifications
-Rewards
-Payments
-Audit Logs
-```
+
+- Users
+- Identity verification
+- Assets
+- Lost reports
+- Found reports
+- Missing-person cases
+- Recovery cases
+- Locations
+- Conversations
+- Messages
+- Notifications
+- Rewards
+- Payments
+- Audit logs
+
 ## 🏛️ System Architecture
-```
+
+```text
                     RENITE
                        │
           ┌────────────┴────────────┐
@@ -593,31 +615,33 @@ Audit Logs
    Verification     Matching       Maps / Payment /
                                   Notifications
 ```
+
 # 📱 Application Experience
 
 The primary navigation is designed around:
-```
-Home
-Map
-Messages
-Profile
-```
+
+- Home
+- Map
+- Messages
+- Profile
+
 The main dashboard can provide access to:
-```
-Report Lost
-Report Found
-Report Missing Person
-Nearby Activity
-National Alerts
-Recovery Cases
-Notifications
-Rewards
-Community Activity
-```
+
+- Report lost
+- Report found
+- Report missing person
+- Nearby activity
+- National alerts
+- Recovery cases
+- Notifications
+- Rewards
+- Community activity
+
 # 🔄 Core Recovery Flow
 
-Lost Asset
-```
+## Lost Asset
+
+```text
 Register Asset
       ↓
 Report Lost
@@ -634,8 +658,10 @@ Shipping / Handoff
       ↓
 Recovered
 ```
-Found Asset
-```
+
+## Found Asset
+
+```text
 Find Item
     ↓
 Report Found
@@ -652,8 +678,10 @@ Handoff / Shipping
     ↓
 Recovered
 ```
-Missing Person
-```
+
+## Missing Person
+
+```text
 Report Missing
       ↓
 Required Verification
@@ -670,8 +698,10 @@ Person Located
       ↓
 Case Resolution
 ```
+
 # 🧭 Product Areas
-```
+
+```text
 Renite
 │
 ├── Authentication
@@ -719,8 +749,10 @@ Renite
     ├── Security
     └── Privacy
 ```
+
 # 🗃️ Core Data Model
-```
+
+```text
 User
  ├── IdentityVerification
  ├── Assets
@@ -744,10 +776,12 @@ Recovery Case
 Conversation
  └── Messages
 ```
+
 Sensitive information such as identity references, exact locations, private contact information, asset identifiers, and payment information SHALL receive additional protection.
 
 # 🔄 Enhanced Reporting Flow
-```
+
+```text
 Report Lost / Found
         ↓
 Input Validation
@@ -768,42 +802,44 @@ Handoff / Shipping
         ↓
 Recovery Complete
 ```
+
 # 🧠 Future AI Capabilities
 
 Renite's architecture can later support:
-```
-Computer vision
-Image similarity
-Object recognition
-Facial recognition where legally and ethically permitted
-Semantic search
-Fraud detection
-Anomaly detection
-Duplicate case detection
-Intelligent matching
-Location-based prediction
-```
+
+- Computer vision
+- Image similarity
+- Object recognition
+- Facial recognition where legally and ethically permitted
+- Semantic search
+- Fraud detection
+- Anomaly detection
+- Duplicate case detection
+- Intelligent matching
+- Location-based prediction
+
 AI SHALL remain an assistive system and SHALL NOT independently make high-impact identity or ownership decisions.
 
 # 🔌 Future Integrations
 
 Renite can progressively integrate with:
-```
-Fayda
-Maps & Location Services
-Payment Providers
-SMS Providers
-Email Providers
-Push Notification Services
-Logistics Providers
-Government / Authorized Organizations
-IoT Devices
-Hardware Recovery Tags
-```
+
+- Fayda
+- Maps & location services
+- Payment providers
+- SMS providers
+- Email providers
+- Push notification services
+- Logistics providers
+- Government / authorized organizations
+- IoT devices
+- Hardware recovery tags
+
 Integrations SHALL follow appropriate authorization, privacy, security, and legal requirements.
 
 # 📂 Repository Structure
-```
+
+```text
 Renite/
 │
 ├── apps/
@@ -827,21 +863,22 @@ Renite/
 ├── README.md
 └── LICENSE
 ```
+
 # 🛠️ Development Principles
 
 Renite follows:
-```
-Security by Design
-Privacy by Design
-API-First Development
-Feature-Based Architecture
-Strong Typing
-Automated Testing
-Code Review
-Continuous Integration
-Least Privilege
-Data Minimization
-```
+
+- Security by design
+- Privacy by design
+- API-first development
+- Feature-based architecture
+- Strong typing
+- Automated testing
+- Code review
+- Continuous integration
+- Least privilege
+- Data minimization
+
 All production code SHALL pass the project's required CI and review checks.
 
 # 🚀 Development Status
@@ -849,7 +886,8 @@ All production code SHALL pass the project's required CI and review checks.
 Renite is currently under active development.
 
 Current implementation priorities:
-```
+
+```text
 Authentication
       ↓
 Fayda Verification
@@ -874,21 +912,22 @@ Security & Testing
       ↓
 National MVP
 ```
+
 # 🤝 Contribution
 
 Renite is developed through structured team collaboration.
 
 Contributors are expected to follow:
-```
-Branching strategy
-Repository rulesets
-Pull request requirements
-Code review requirements
-CI requirements
-Security requirements
-Commit conventions
-Architecture guidelines
-```
+
+- Branching strategy
+- Repository rulesets
+- Pull request requirements
+- Code review requirements
+- CI requirements
+- Security requirements
+- Commit conventions
+- Architecture guidelines
+
 Security-sensitive changes require appropriate review.
 
 # 🛡️ Security Reporting
@@ -902,37 +941,38 @@ Security reports should use the organization's private security-reporting proces
 Renite is a civic technology, safety, and recovery platform.
 
 It does not replace:
-```
-Police systems
-Emergency services
-Government identity systems
-Courts
-Official investigations
-Existing financial institutions
-```
+
+- Police systems
+- Emergency services
+- Government identity systems
+- Courts
+- Official investigations
+- Existing financial institutions
+
 Renite provides a digital coordination, reporting, discovery, verification, and recovery layer that can work alongside authorized services.
 
 # 📊 Initial Success Metrics
 
 The MVP will measure:
-```
-|Metric|	Goal |
-|=======|========|
-|Successful recovery |	Increase over time |
-|Time to recovery |	Reduce |
-|False claims |	Minimize |
-|Successful identity verification | 	High reliability |
-|Matching accuracy |	Continuously improve |
-|Report processing time | 	Reduce |
-|Platform availability |	High |
-|Security incidents |	Minimize |
-```
+
+| Metric | Goal |
+|---|---|
+| Successful recovery | Increase over time |
+| Time to recovery | Reduce |
+| False claims | Minimize |
+| Successful identity verification | High reliability |
+| Matching accuracy | Continuously improve |
+| Report processing time | Reduce |
+| Platform availability | High |
+| Security incidents | Minimize |
+
 Exact numerical targets SHALL be established after the MVP baseline is available.
-```
-🇪🇹 National Impact
-```
+
+# 🇪🇹 National Impact
+
 Renite is designed to grow from an initial MVP into a nationwide recovery network.
 
+```text
 Citizen
    ↓
 Community
@@ -942,6 +982,7 @@ City
 Region
    ↓
 Nationwide Network
+```
 
 The long-term goal is to make recovery information more accessible while maintaining strong privacy, security, and verification controls.
 
@@ -950,7 +991,8 @@ The long-term goal is to make recovery information more accessible while maintai
 A lost item should not have to remain lost, and a missing person should not become a forgotten case.
 
 Renite connects people, information, technology, and services to move from:
-```
+
+```text
 REPORT
    ↓
 DISCOVER
@@ -959,5 +1001,14 @@ VERIFY
    ↓
 RECOVER
 ```
-                              🇪🇹 One platform. One recovery network. A safer connected nation.
-<p align="center"> <strong>RENITE</strong> <br> Reclaim What's Yours. Help Bring Them Home. <br><br> <img src="https://img.shields.io/badge/Status-Development-blue?style=flat-square" /> <img src="https://img.shields.io/badge/Version-v1.0.0--alpha-blue?style=flat-square" /> </p> ```
+
+🇪🇹 One platform. One recovery network. A safer connected nation.
+
+<p align="center">
+  <strong>RENITE</strong>
+  <br>
+  Reclaim What's Yours. Help Bring Them Home.
+  <br><br>
+  <img src="https://img.shields.io/badge/Status-Development-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Version-v1.0.0--alpha-blue?style=flat-square" />
+</p>

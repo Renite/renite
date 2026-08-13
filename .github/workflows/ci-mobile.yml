@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Format Check
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze (Lint)
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: Build (Android APK)
+        run: flutter build apk --debug
