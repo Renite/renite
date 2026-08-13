@@ -33,7 +33,7 @@
 
 ---
 
-#  Project Overview
+# 🇪🇹 Project Overview
 
 Renite is a **nationwide digital recovery and civic safety platform** designed to connect citizens, communities, and authorized organizations through one trusted system.
 

@@ -24,10 +24,10 @@ Renite/
 ```
 Developers SHALL work only in the area assigned to them unless coordinated with the responsible team.
 
-3. Main Branches
+# 3. Main Branches
 
 Renite SHALL use:
-
+```
 main
 develop
 feature/*
@@ -35,40 +35,42 @@ fix/*
 hotfix/*
 docs/*
 main
-
+```
 Production-ready code only.
 
 Direct pushes SHALL NOT be allowed.
 
-develop
+## develop
 
 Integration branch for completed and reviewed development work.
 
-Feature branches
+## Feature branches
 
-Used for new functionality.
+- Used for new functionality.
 
 Example:
-
+```
 feature/authentication
 feature/asset-reporting
 feature/missing-person
 feature/map
 feature/chat
-Fix branches
+```
+## Fix branches
 
-Used for bug fixes.
-
+- Used for bug fixes.
+```
 fix/login-validation
 fix/map-loading
 fix/report-upload
 Documentation branches
 docs/api-documentation
 docs/security-guidelines
-4. Branch Flow
+```
+# 4. Branch Flow
 
 Standard workflow:
-
+```
 main
   │
   └── develop
@@ -92,105 +94,111 @@ main
                 │
                 ↓
                main
-5. Creating a Branch
+```
+# 5. Creating a Branch
 
-Always update your local develop first.
-
+- Always update your local develop first.
+```
 git checkout develop
 git pull origin develop
-
+```
 Create your feature branch:
-
+```
 git checkout -b feature/your-feature
-
+```
 Example:
-
+```
 git checkout -b feature/asset-registration
-6. Branch Naming
+```
+# 6. Branch Naming
 
 Use:
-
+```
 feature/<name>
 fix/<name>
 hotfix/<name>
 docs/<name>
 refactor/<name>
 test/<name>
-
+```
 Use lowercase and hyphens.
 
-Good:
-
+- Good:
+```
 feature/missing-person-report
 fix/auth-token-refresh
 docs/api-design
-
-Avoid:
-
+```
+- Avoid:
+```
 MyBranch
 new-feature-final
 test123
 john-work
-7. Commits
+```
+# 7. Commits
 
-Commits SHALL describe one logical change.
+- Commits SHALL describe one logical change.
 
 Recommended format:
 
 type: description
 
 Examples:
-
+```
 feat: add asset registration
 fix: resolve login validation error
 docs: update API documentation
 refactor: simplify authentication service
 test: add asset service tests
 chore: update dependencies
-
+```
 Avoid vague commits:
-
+```
 update
 changes
 final
 done
 stuff
-8. Small Commits
+```
+# 8. Small Commits
 
 Prefer several meaningful commits over one enormous commit.
 
-Good:
-
+- Good:
+```
 feat: create asset model
 feat: add asset registration API
 test: add asset registration tests
-
-Avoid:
-
+```
+- Avoid:
+```
 feat: complete everything
-9. Pull Before Push
+```
+# 9. Pull Before Push
 
 Before pushing:
-
-git pull --rebase origin develop
-
+```
+git pull --merge origin develop
+```
 Resolve conflicts locally before creating a pull request.
 
-10. Push
+# 10. Push
 
 Push the branch:
-
+```
 git push -u origin feature/your-feature
-
+```
 After the first push:
-
+```
 git push
-11. Pull Requests
+```
+# 11. Pull Requests
 
 All significant changes SHALL use Pull Requests.
 
 A PR SHALL include:
-
+```
 Title
 Description
 Changes
@@ -198,10 +206,12 @@ Testing
 Screenshots if UI changed
 Security considerations where applicable
 Known limitations
-12. Pull Request Example
+```
+# 12. Pull Request Example
 Title:
+```
 feat: add missing person reporting
-
+```
 Description:
 
 ### Changes
@@ -218,32 +228,32 @@ Description:
 ### Security
 - Added authorization checks
 - Added upload validation
-13. Code Review
+# 13. Code Review
 
 At least one appropriate team member SHOULD review normal changes.
 
 Critical areas SHOULD receive additional review:
 
-Authentication
-Authorization
-Fayda
-Payments
-Location
-Missing-person data
-Security
-Database migrations
-Infrastructure
+- Authentication
+- Authorization
+- Fayda
+- Payments
+- Location
+- Missing-person data
+- Security
+- Database migrations
+- Infrastructure
 
 Reviewers SHALL check:
 
-Correctness
-Security
-Architecture
-Readability
-Testing
-Performance
-Requirements
-14. Never Merge Broken Code
+- Correctness
+- Security
+- Architecture
+- Readability
+- Testing
+- Performance
+- Requirements
+# 14. Never Merge Broken Code
 
 A PR SHALL NOT be merged when:
 
