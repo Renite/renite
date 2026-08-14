@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build & Test
+    name: Web CI
     runs-on: ubuntu-latest
 
     steps:
