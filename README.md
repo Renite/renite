@@ -843,7 +843,7 @@ Integrations SHALL follow appropriate authorization, privacy, security, and lega
 Renite/
 │
 ├── apps/
-│   ├── web/                  # React + TypeScript
+│   ├── web/                  # React + JavaScript
 │   └── mobile/               # Flutter + Dart
 │
 ├── backend/                  # Backend API
