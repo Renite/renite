@@ -5,8 +5,8 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
-    name: Build & Test
+  web-ci:
+    name: Web CI
     runs-on: ubuntu-latest
 
     steps:

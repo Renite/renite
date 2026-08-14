@@ -5,8 +5,8 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
-    name: Build & Test
+  mobile-ci:
+    name: Mobile CI
     runs-on: ubuntu-latest
 
     steps:

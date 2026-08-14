@@ -1,457 +1,1014 @@
-# Renite Product Documentation
+<div align="center">
+  <img src="renite-logo.png" alt="Renite Logo" width="280" style="border-radius: 8px;" />
 
-| Property | Value |
-|----------|-------|
-| Project | Renite |
-| Section | Product |
-| Version | 1.0.0 |
-| Status | Active |
-| Owner | Renite Product Team |
-| Last Updated | August 2026 |
+  <h1>
+    <strong>RENITE</strong>
+    <br>
+    <sub>🛡️ Nationwide Lost & Found, Missing Persons & Civic Safety Platform</sub>
+  </h1>
+</div>
 
----
+<p align="center">
+  <em>
+    A secure, verification-driven national platform connecting citizens,
+    communities, and authorized organizations to report, discover,
+    verify, and recover lost assets and missing persons.
+  </em>
+</p>
 
-# 1. Purpose
-
-The `product/` documentation defines **what Renite is supposed to build**.
-
-It converts the project's vision and planning decisions into clear, structured, and testable product requirements.
-
-This section SHALL serve as the primary product reference for:
-
-- Product Team
-- UI/UX Team
-- Frontend Team
-- Backend Team
-- Mobile Team
-- AI Team
-- Database Team
-- QA Team
-- Security Team
-
----
-
-# 2. Product Documentation Rule
-
-The documents in this directory define product requirements.
-
-They SHALL NOT be treated as optional suggestions.
-
-If an implementation conflicts with an approved product requirement, the conflict SHALL be identified and resolved through the project's change-management process.
+<p align="center">
+  <a href="#-key-features">
+    <img src="https://img.shields.io/badge/Features-1D5061?style=for-the-badge&logo=checkmarx&logoColor=white" />
+  </a>
+  <a href="#-technology-stack">
+    <img src="https://img.shields.io/badge/Tech_Stack-1D5061?style=for-the-badge&logo=codecov&logoColor=white" />
+  </a>
+  <a href="#-development">
+    <img src="https://img.shields.io/badge/Development-1D5061?style=for-the-badge&logo=github&logoColor=white" />
+  </a>
+  <a href="#-security">
+    <img src="https://img.shields.io/badge/Security-1D5061?style=for-the-badge&logo=owasp&logoColor=white" />
+  </a>
+</p>
 
 ---
 
-# 3. Product Documentation Structure
+# 🇪🇹 Project Overview
+
+Renite is a **nationwide digital recovery and civic safety platform** designed to connect citizens, communities, and authorized organizations through one trusted system.
+
+Renite addresses two major problems:
+
+- Lost and stolen assets that are difficult to recover.
+- Missing-person cases that lack a unified digital coordination layer.
+
+Instead of limiting recovery to a single school, company, campus, or institution, Renite is designed as a **national network** where a lost item or missing-person report can be discovered and acted upon regardless of where it was originally reported.
 
 ```text
-product/
+Citizen
+   │
+   ├── Register Material/device
+   ├── Report Lost Asset
+   ├── Report Found Asset
+   ├── Report Missing Person
+   ├── Search
+   ├── Verify
+   └── Request Recovery
+          │
+          ▼
+       RENITE
+          │
+    ┌─────────┬─────────────────┐
+    ▼         ▼                 ▼
+ Citizens Communities Authorized Organizations
+              │
+              ▼
+     National Recovery Network
+```
+
+Renite combines:
+
+- Fayda-assisted identity verification
+- Secure user accounts
+- Lost & found asset registration
+- Missing-person reporting
+- AI-assisted matching
+- Location intelligence
+- Secure communication
+- Recovery verification
+- Nationwide shipping
+- Payments and recovery bounties
+- Rewards and referrals
+- Multilingual accessibility
+- Security based on OWASP principles
+
+# 🎯 Vision
+
+Build a trusted national digital infrastructure where people can report, discover, verify, and safely recover lost assets or missing persons.
+
+Renite aims to transform fragmented recovery activities into a connected national recovery network.
+
+# 🚨 The Problems Renite Solves
+
+## Lost Assets
+
+People regularly lose:
+
+- Smartphones
+- Laptops
+- Tablets
+- Documents
+- Electronics
+- Personal belongings
+- Other valuable assets
+
+Existing recovery methods are often fragmented across social media, messaging groups, local communities, institutions, and informal networks.
+
+Renite provides a centralized recovery workflow.
+
+## Missing Persons
+
+Families and communities can struggle to:
+
+- Report missing persons quickly
+- Share reliable information
+- Coordinate searches
+- Discover relevant reports
+- Track case progress
+- Connect with authorized organizations
+
+Renite provides a digital coordination layer for these processes.
+
+## Fragmented Recovery Information
+
+Information can become scattered across:
+
+- Social media
+- Messaging apps
+- Community groups
+- Institutions
+- Local organizations
+- Authorities
+
+Renite brings relevant information into one structured platform.
+
+# 🔑 Key Features
+
+## 🛡️ 1. Identity & Security
+
+Renite maintains its own application user database while using Fayda as a mandatory secondary identity-verification mechanism.
+
+```text
+Renite Registration
+        │
+        ▼
+Renite User Account
+        │
+        ▼
+Fayda Verification
+        │
+        ▼
+Verified Renite Account
+```
+
+Features include:
+
+- Secure authentication
+- Fayda verification
+- Role-based access control
+- Session protection
+- Data minimization
+- Privacy controls
+- Audit logging
+- Secure API access
+- OWASP-aligned security practices
+
+Sensitive identity information SHALL only be collected and stored when required.
+
+## 💻 2. Digital Asset Registration
+
+Users can register their valuable belongings before or after they are lost.
+
+Supported assets may include:
+
+- Smartphones
+- Laptops
+- Tablets
+- Electronics
+- Documents
+- Other registered belongings
+
+Asset information can include:
+
+- Brand
+- Model
+- Category
+- Serial number
+- IMEI / MAC
+- Photos
+- Description
+- Distinguishing features
+- QR / recovery token
+
+Sensitive identifiers are protected and are not publicly exposed.
+
+## 🔴 3. Report Lost Asset
+
+Users can report an asset as lost.
+
+A report may contain:
+
+- Asset information
+- Photos
+- Description
+- Last known location
+- Date and time
+- Relevant identifying information
+
+The report enters the Renite recovery and matching workflow.
+
+```text
+Report Lost
+     ↓
+Verification
+     ↓
+Matching
+     ↓
+Potential Match
+     ↓
+Ownership Verification
+     ↓
+Recovery
+```
+
+## 🟢 4. Report Found Asset
+
+Anyone who finds an item can submit a found-item report.
+
+A found report can include:
+
+- Photos
+- Category
+- Description
+- Found location
+- Date and time
+- Distinguishing characteristics
+
+The finder does not need access to the owner's private information.
+
+## 🤖 5. AI-Assisted Matching
+
+Renite can use AI to identify potential relationships between lost and found reports.
+
+Potential matching signals include:
+
+- Images
+- Asset category
+- Brand
+- Model
+- Description
+- Location
+- Time
+- Identifiers
+- Distinguishing features
+
+AI may assist with:
+
+- Image classification
+- Object recognition
+- Similarity matching
+- Report categorization
+- Potential duplicate detection
+- Fraud/anomaly detection
+
+> **Important**
+> AI matching is not automatic proof of ownership.
+> Final recovery decisions require an appropriate verification process.
+
+## 👤 6. Missing-Person Reporting
+
+Renite provides a dedicated missing-person workflow.
+
+Reports may include:
+
+- Name
+- Photograph
+- Description
+- Last-known location
+- Last-seen time
+- Relevant identifying information
+- Case status
+
+```text
+Report
+  ↓
+Verification
+  ↓
+Case Creation
+  ↓
+Authorized Visibility
+  ↓
+Community / Organization Coordination
+  ↓
+Potential Information
+  ↓
+Person Located
+  ↓
+Case Resolution
+```
+
+Sensitive information is restricted according to authorization.
+
+## 🚨 7. Emergency & Safety Coordination
+
+Renite can support emergency-oriented reporting and coordination.
+
+Depending on authorization and future integrations, relevant cases may involve:
+
+- Emergency contacts
+- Community responders
+- Authorized investigators
+- Local organizations
+- Government or law-enforcement organizations
+
+Renite does not replace official emergency or law-enforcement systems.
+
+It provides a digital coordination and information layer.
+
+## 🗺️ 8. National Map & Location Intelligence
+
+Renite provides location-based discovery.
+
+Depending on authorization, the map can display:
+
+- Found assets
+- Lost reports
+- Missing-person activity
+- Community safety information
+- Recovery activity
+- Relevant nearby reports
+
+Sensitive exact locations SHALL remain protected.
+
+## 📍 9. Location Intelligence
+
+Location information can assist with:
+
+- Last-known asset location
+- Found-item location
+- Missing-person last-seen location
+- Recovery coordination
+- Nearby discovery
+- National activity visualization
+
+Location data is classified as sensitive information.
+
+## 💬 10. Secure Communication
+
+Renite provides controlled communication between authorized participants.
+
+```text
+Asset Owner
+     │
+     ▼
+Renite Secure Chat
+     │
+     ▼
+Finder
+```
+
+The platform is designed to avoid unnecessarily exposing:
+
+- Phone numbers
+- Email addresses
+- Private addresses
+- Other sensitive contact information
+
+## 🚚 11. Nationwide Recovery & Shipping
+
+A recovered item does not necessarily need to be returned in person.
+
+Example:
+
+```text
+Asset Found
+    │
+    ▼
+Finder Location
+    │
+    ▼
+Owner Location
+    │
+    ▼
+Shipping Request
+    │
+    ▼
+Payment
+    │
+    ▼
+Delivery
+    │
+    ▼
+Recovery Confirmation
+```
+
+Future logistics integrations may support:
+
+- Local delivery
+- Nationwide shipping
+- Tracking
+- Delivery confirmation
+- Pickup points
+- Recovery handoff locations
+
+## 💰 12. Payments & Recovery Bounties
+
+Renite can support financial workflows related to recovery.
+
+Examples:
+
+- Recovery rewards
+- Shipping fees
+- Delivery fees
+- Optional bounties
+- Supported platform services
+
+Payment status SHALL always be verified by the backend.
+
+The client SHALL never be trusted to declare a payment successful.
+
+## ⭐ 13. Rewards & Community Participation
+
+Renite encourages responsible participation through:
+
+- Recovery rewards
+- Loyalty points
+- Referral programs
+- Community contribution
+- Verified recovery achievements
+
+Example:
+
+```text
+Find Item
+   ↓
+Report Item
+   ↓
+Successful Recovery
+   ↓
+Verified Contribution
+   ↓
+Reward
+```
+
+## 🌐 14. Multilingual National Platform
+
+Renite is designed for a multilingual population.
+
+The platform is intended to support:
+
+- English
+- Amharic
+- Oromo
+- Tigrinya
+- Somali
+- Arabic
+- Swahili
+
+The UI architecture SHALL support:
+
+- LTR
+- RTL
+
+The system should also accommodate variable text lengths across languages.
+
+# 🔐 Security
+
+Security is a core requirement of Renite.
+
+Renite follows a security-by-design approach informed by:
+
+- OWASP Top 10
+- OWASP API Security
+- OWASP Mobile Application Security
+- Secure authentication
+- Authorization
+- Input validation
+- Rate limiting
+- Encryption
+- Secure file handling
+- Audit logging
+- Data minimization
+- Least privilege
+
+Sensitive information includes:
+
+- Identity information
+- Fayda verification information
+- Location data
+- Missing-person information
+- Asset identifiers
+- Payment information
+- Private messages
+
+Such information SHALL receive appropriate access controls and protection.
+
+# 🧠 Privacy by Design
+
+Renite follows:
+
+```text
+Collect Minimum
+       ↓
+Protect Strongly
+       ↓
+Expose Minimum
+       ↓
+Retain Only When Necessary
+       ↓
+Delete When Appropriate
+```
+
+Sensitive information SHALL not be unnecessarily exposed to:
+
+- Other users
+- Finders
+- Public visitors
+- Administrators without authorization
+- External services
+
+# 🏗️ Technology Stack
+
+## 🌐 Web
+
+- React
+- TypeScript
+
+The web application will serve:
+
+- Citizens
+- Communities
+- Authorized organizations
+- Moderators
+- Administrators
+- Operational teams
+
+## 📱 Mobile
+
+- Flutter
+- Dart
+
+The mobile application focuses on:
+
+- Reporting
+- Location
+- Notifications
+- Map interaction
+- Asset management
+- Recovery
+- Community participation
+
+## ⚙️ Backend
+
+The backend provides:
+
+- Authentication
+- Authorization
+- Business logic
+- REST API
+- Database access
+- Identity verification
+- Matching
+- Notifications
+- Recovery
+- Payments
+- Security
+- Audit logging
+
+## 🗄️ Database
+
+The database architecture supports:
+
+- Users
+- Identity verification
+- Assets
+- Lost reports
+- Found reports
+- Missing-person cases
+- Recovery cases
+- Locations
+- Conversations
+- Messages
+- Notifications
+- Rewards
+- Payments
+- Audit logs
+
+## 🏛️ System Architecture
+
+```text
+                    RENITE
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+      Web Client               Mobile Client
+   React + TypeScript         Flutter + Dart
+          │                         │
+          └────────────┬────────────┘
+                       │
+                       ▼
+                  REST API
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+ Authentication     Core Services    Security
+        │              │              │
+        └──────────────┼──────────────┘
+                       │
+                       ▼
+                    Database
+                       │
+        ┌──────────────┼──────────────┐
+        ▼              ▼              ▼
+      Fayda          AI/ML        External Services
+   Verification     Matching       Maps / Payment /
+                                  Notifications
+```
+
+# 📱 Application Experience
+
+The primary navigation is designed around:
+
+- Home
+- Map
+- Messages
+- Profile
+
+The main dashboard can provide access to:
+
+- Report lost
+- Report found
+- Report missing person
+- Nearby activity
+- National alerts
+- Recovery cases
+- Notifications
+- Rewards
+- Community activity
+
+# 🔄 Core Recovery Flow
+
+## Lost Asset
+
+```text
+Register Asset
+      ↓
+Report Lost
+      ↓
+Matching
+      ↓
+Potential Match
+      ↓
+Verification
+      ↓
+Recovery
+      ↓
+Shipping / Handoff
+      ↓
+Recovered
+```
+
+## Found Asset
+
+```text
+Find Item
+    ↓
+Report Found
+    ↓
+Upload Information
+    ↓
+Matching
+    ↓
+Owner Verification
+    ↓
+Recovery Coordination
+    ↓
+Handoff / Shipping
+    ↓
+Recovered
+```
+
+## Missing Person
+
+```text
+Report Missing
+      ↓
+Required Verification
+      ↓
+Case Created
+      ↓
+Authorized Visibility
+      ↓
+Community / Organization Coordination
+      ↓
+Potential Information
+      ↓
+Person Located
+      ↓
+Case Resolution
+```
+
+# 🧭 Product Areas
+
+```text
+Renite
+│
+├── Authentication
+│   ├── Registration
+│   ├── Login
+│   └── Fayda Verification
+│
+├── Home
+│   ├── National Safety Hub
+│   ├── Alerts
+│   └── Community Activity
+│
+├── Lost & Found
+│   ├── My Assets
+│   ├── Report Lost
+│   ├── Report Found
+│   └── Matching
+│
+├── Missing Persons
+│   ├── Report
+│   ├── Cases
+│   └── Case Coordination
+│
+├── Map
+│   ├── Lost Assets
+│   ├── Found Assets
+│   └── Safety Activity
+│
+├── Recovery
+│   ├── Verification
+│   ├── Handoff
+│   └── Shipping
+│
+├── Communication
+│   ├── Secure Chat
+│   └── Notifications
+│
+├── Community
+│   ├── Rewards
+│   └── Referrals
+│
+└── Profile
+    ├── Personal Information
+    ├── Verification
+    ├── Security
+    └── Privacy
+```
+
+# 🗃️ Core Data Model
+
+```text
+User
+ ├── IdentityVerification
+ ├── Assets
+ ├── Lost/Found Reports
+ ├── Missing Person Cases
+ ├── Recovery Cases
+ ├── Conversations
+ ├── Notifications
+ ├── Reward Wallet
+ └── Payments
+
+Asset
+ └── Recovery Reports
+
+Recovery Report
+ └── Recovery Case
+
+Recovery Case
+ └── Conversation
+
+Conversation
+ └── Messages
+```
+
+Sensitive information such as identity references, exact locations, private contact information, asset identifiers, and payment information SHALL receive additional protection.
+
+# 🔄 Enhanced Reporting Flow
+
+```text
+Report Lost / Found
+        ↓
+Input Validation
+        ↓
+AI Categorization
+        ↓
+Asset / Person Classification
+        ↓
+Potential Matching
+        ↓
+Notification
+        ↓
+Verification
+        ↓
+Recovery Coordination
+        ↓
+Handoff / Shipping
+        ↓
+Recovery Complete
+```
+
+# 🧠 Future AI Capabilities
+
+Renite's architecture can later support:
+
+- Computer vision
+- Image similarity
+- Object recognition
+- Facial recognition where legally and ethically permitted
+- Semantic search
+- Fraud detection
+- Anomaly detection
+- Duplicate case detection
+- Intelligent matching
+- Location-based prediction
+
+AI SHALL remain an assistive system and SHALL NOT independently make high-impact identity or ownership decisions.
+
+# 🔌 Future Integrations
+
+Renite can progressively integrate with:
+
+- Fayda
+- Maps & location services
+- Payment providers
+- SMS providers
+- Email providers
+- Push notification services
+- Logistics providers
+- Government / authorized organizations
+- IoT devices
+- Hardware recovery tags
+
+Integrations SHALL follow appropriate authorization, privacy, security, and legal requirements.
+
+# 📂 Repository Structure
+
+```text
+Renite/
+│
+├── apps/
+│   ├── web/                  # React + TypeScript
+│   └── mobile/               # Flutter + Dart
+│
+├── backend/                  # Backend API
+│
+├── docs/
+│   ├── planning/
+│   ├── product/
+│   ├── architecture/
+│   ├── engineering/
+│   └── security/
+│
+├── .github/
+│   ├── workflows/
+│   ├── ISSUE_TEMPLATE/
+│   └── CODEOWNERS
 │
 ├── README.md
-│
-├── 01_problem_statement.md
-├── 02_product_goals.md
-├── 03_product_scope.md
-├── 04_mvp_definition.md
-├── 05_user_personas.md
-├── 06_user_roles.md
-├── 07_functional_requirements.md
-├── 08_non_functional_requirements.md
-├── 09_feature_specifications.md
-├── 10_user_stories.md
-├── 11_acceptance_criteria.md
-└── 12_requirements_traceability.md
+└── LICENSE
 ```
-# 4. Document Responsibilities
-01_problem_statement.md
 
-Defines:
+# 🛠️ Development Principles
 
-The problem Renite solves
-Who experiences the problem
-Current limitations
-Why existing approaches are insufficient
-The opportunity for Renite
-02_product_goals.md
+Renite follows:
 
-Defines:
+- Security by design
+- Privacy by design
+- API-first development
+- Feature-based architecture
+- Strong typing
+- Automated testing
+- Code review
+- Continuous integration
+- Least privilege
+- Data minimization
 
-Product objectives
-User outcomes
-Business/product outcomes
-Success direction
-Long-term product objectives
-03_product_scope.md
+All production code SHALL pass the project's required CI and review checks.
 
-Defines:
+# 🚀 Development Status
 
-What Renite includes
-What Renite does not include
-MVP boundaries
-Future capabilities
-Explicit exclusions
-04_mvp_definition.md
+Renite is currently under active development.
 
-Defines the minimum version of Renite that must be completed.
+Current implementation priorities:
 
-It SHALL identify:
-
-P0 features
-P1 features
-Deferred features
-MVP user journeys
-MVP limitations
-MVP acceptance boundary
-
-This document has the highest importance during the current two-week development period.
-
-05_user_personas.md
-
-Defines the major user groups and their needs.
-
-Potential personas include:
-
-Person who lost an item
-Person who found an item
-Missing-person reporter
-Registered user
-Administrator
-Moderator
-Institutional user
-Future law-enforcement user
-06_user_roles.md
-
-Defines what each system role is allowed to do.
-
-Examples:
-
-Guest
-User
-Reporter
-Finder
-Moderator
-Administrator
-Institution
-Law Enforcement
-System Administrator
-
-Not every future role is required in the MVP.
-
-07_functional_requirements.md
-
-Defines what Renite SHALL do.
-
-Examples:
-
-Registration
+```text
 Authentication
-Lost reports
-Found reports
-Search
-Image upload
-Location
-Notifications
-Messaging
-Profile management
-Administration
-
-Each requirement SHALL be uniquely identifiable.
-
-08_non_functional_requirements.md
-
-Defines how Renite SHALL behave.
-
-Examples:
-
-Security
-Privacy
-Performance
-Reliability
-Availability
-Accessibility
-Scalability
-Maintainability
-Internationalization
-09_feature_specifications.md
-
-Defines the behavior of individual features.
-
-Each feature SHOULD describe:
-
-Purpose
-Actors
-Inputs
-Process
-Outputs
-States
-Errors
-Permissions
-Dependencies
-Security considerations
-Acceptance criteria
-10_user_stories.md
-
-Converts product requirements into user-centered statements.
-
-Format:
-
-As a [user],
-I want to [action],
-so that [benefit].
-
-Example:
-
-As a user who lost an item,
-I want to create a lost-item report,
-so that other users can identify and return it.
-11_acceptance_criteria.md
-
-Defines the conditions that must be satisfied before a feature is considered complete.
-
-Acceptance criteria SHALL be:
-
-Specific
-Testable
-Observable
-Unambiguous
-12_requirements_traceability.md
-
-Connects requirements throughout the development lifecycle.
-
-Example:
-
-Requirement
-    ↓
-Feature
-    ↓
-User Story
-    ↓
-Implementation
-    ↓
-Test
-    ↓
-Release
-
-This ensures that important requirements are not forgotten.
-
-# 5. Product Requirement Hierarchy
-
-Renite SHALL use the following hierarchy:
-
-Project Vision
       ↓
-Product Problem
+Fayda Verification
       ↓
-Product Goals
+Database
       ↓
-Product Scope
+Backend API
       ↓
-MVP
+React Web
       ↓
-Requirements
+Flutter Mobile
       ↓
-Features
+Lost & Found
       ↓
-User Stories
+Matching
       ↓
-Acceptance Criteria
+Recovery
       ↓
-Implementation
+Missing Persons
       ↓
-Testing
-# 6. Requirement Priority
+Security & Testing
+      ↓
+National MVP
+```
 
-Product requirements SHALL use:
+# 🤝 Contribution
 
-Priority	Meaning
-P0	Mandatory for core MVP
-P1	Important for MVP
-P2	Valuable but deferrable
-P3	Future / optional
-# 7. Requirement IDs
+Renite is developed through structured team collaboration.
 
-Requirements SHALL use unique identifiers.
+Contributors are expected to follow:
 
-Example:
+- Branching strategy
+- Repository rulesets
+- Pull request requirements
+- Code review requirements
+- CI requirements
+- Security requirements
+- Commit conventions
+- Architecture guidelines
 
-AUTH-001
-AUTH-002
+Security-sensitive changes require appropriate review.
 
-REPORT-001
-REPORT-002
+# 🛡️ Security Reporting
 
-SEARCH-001
+Security vulnerabilities SHALL NOT be disclosed through ordinary public GitHub issues.
 
-NOTIFY-001
+Security reports should use the organization's private security-reporting process.
 
-PROFILE-001
+# ⚠️ Important Scope
 
-Feature identifiers SHOULD remain stable even if implementation details change.
+Renite is a civic technology, safety, and recovery platform.
 
-# 8. Product vs Technical Decisions
+It does not replace:
 
-Product documentation SHALL describe:
+- Police systems
+- Emergency services
+- Government identity systems
+- Courts
+- Official investigations
+- Existing financial institutions
 
-What the system needs to accomplish.
+Renite provides a digital coordination, reporting, discovery, verification, and recovery layer that can work alongside authorized services.
 
-Architecture documentation SHALL describe:
+# 📊 Initial Success Metrics
 
-How the system will accomplish it.
+The MVP will measure:
 
-Example:
+| Metric | Goal |
+|---|---|
+| Successful recovery | Increase over time |
+| Time to recovery | Reduce |
+| False claims | Minimize |
+| Successful identity verification | High reliability |
+| Matching accuracy | Continuously improve |
+| Report processing time | Reduce |
+| Platform availability | High |
+| Security incidents | Minimize |
 
-Product
-The user SHALL be able to search active lost-item reports.
-Architecture
-The search service SHALL use indexed database queries.
+Exact numerical targets SHALL be established after the MVP baseline is available.
 
-The product requirement SHALL NOT unnecessarily dictate the technical implementation.
+# 🇪🇹 National Impact
 
-# 9. Product vs UI/UX
+Renite is designed to grow from an initial MVP into a nationwide recovery network.
 
-Product documentation defines:
-
-What the user needs to accomplish.
-
-Design documentation defines:
-
-How the experience is presented.
-
-Example:
-
-Product
-Users SHALL be able to create a lost-item report.
-Design
-The report flow SHALL use a multi-step responsive form.
-# 10. Product vs Engineering
-
-Product documentation defines required behavior.
-
-Engineering documentation defines development rules.
-
-Example:
-
-Product:
-Users can upload an item image.
-
-Engineering:
-Images must be validated, compressed, and stored using the approved storage mechanism.
-# 11. MVP Rule
-
-The product documentation SHALL distinguish clearly between:
-
-MVP
-
-and:
-
-Future Vision
-
-Renite's long-term vision SHALL NOT automatically become an MVP requirement.
-
-The following are examples of future capabilities that SHALL NOT block the initial MVP:
-
-Embedded tracking hardware
-Off-grid hardware tracking
-Mesh tracking
-Bank transaction integration
-Advanced blockchain infrastructure
-Full law-enforcement integration
-Advanced biometric infrastructure
-# 12. Product Change Rule
-
-Changes to approved product requirements SHALL follow:
-
-../planning/13_change_management.md
-
-No contributor SHALL silently change an approved requirement.
-
-# 13. Product Documentation Workflow
-
-Product development SHALL follow:
-
-Research
+```text
+Citizen
    ↓
-Problem Definition
+Community
    ↓
-Goals
+City
    ↓
-Scope
+Region
    ↓
-MVP
+Nationwide Network
+```
+
+The long-term goal is to make recovery information more accessible while maintaining strong privacy, security, and verification controls.
+
+# ❤️ Our Mission
+
+A lost item should not have to remain lost, and a missing person should not become a forgotten case.
+
+Renite connects people, information, technology, and services to move from:
+
+```text
+REPORT
    ↓
-Requirements
+DISCOVER
    ↓
-Features
+VERIFY
    ↓
-User Stories
-   ↓
-Acceptance Criteria
-   ↓
-Design
-   ↓
-Architecture
-   ↓
-Implementation
-# 14. Product Review
+RECOVER
+```
 
-Before development begins on a major feature, the Product Team SHOULD verify:
+🇪🇹 One platform. One recovery network. A safer connected nation.
 
-The problem is defined.
-The intended user is known.
-The feature is within scope.
-Priority is assigned.
-Dependencies are known.
-Acceptance criteria exist.
-Security/privacy implications are considered.
-# 15. Product Documentation Ownership
-Area	Owner
-Problem definition	Product Lead
-Goals	Product Lead
-Scope	Product Lead + Core Team
-MVP	Product Lead + Core Team
-Personas	Product / UX
-Roles	Product + Security
-Requirements	Product Team
-Feature specifications	Product Team
-User stories	Product + QA
-Acceptance criteria	Product + QA
-Traceability	Product + QA
-# 16. Source of Truth
-
-For product requirements:
-
-The latest approved document in docs/product/ SHALL be considered the product source of truth.
-
-Temporary discussions in chat or meetings SHALL NOT override the documented requirement unless the change is formally accepted.
-
-# 17. Definition of Product Documentation Complete
-
-The Product documentation phase SHALL be considered complete when:
-
-Problem is defined.
-Goals are defined.
-Scope is defined.
-MVP is explicitly defined.
-Personas are defined.
-Roles are defined.
-Functional requirements are documented.
-Non-functional requirements are documented.
-Major features are specified.
-User stories are documented.
-Acceptance criteria are defined.
-Requirements are traceable.
-# 18. Related Documentation
-../planning/
-../design/
-../architecture/
-../engineering/
-../governance/
-# 19. Change History
-Version	Date	Description
-1.0.0	August 2026	Initial Product Documentation structure.
-Approval
-
-Status: APPROVED
-
-Approved By: Renite Core Team
-
-End of Document
+<p align="center">
+  <strong>RENITE</strong>
+  <br>
+  Reclaim What's Yours. Help Bring Them Home.
+  <br><br>
+  <img src="https://img.shields.io/badge/Status-Development-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Version-v1.0.0--alpha-blue?style=flat-square" />
+</p>
