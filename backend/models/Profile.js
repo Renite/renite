@@ -17,6 +17,4 @@ const ProfileSchema = new mongoose.Schema({
   deleted_at: { type: Date, default: null } 
 }, { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } });
 
-ProfileSchema.index({ user_id: 1 });
-
 export default mongoose.model('Profile', ProfileSchema);
