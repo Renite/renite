@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RENITE — Citizen Recovery Platform</title>
+<style>
+:root{
+    --primary:#0b7a5b;
+    --primary-dark:#075b45;
+    --primary-soft:#e7f6f0;
+    --accent:#e9b949;
+    --bg:#f4f7f6;
+    --surface:#ffffff;
+    --surface-2:#f8faf9;
+    --text:#14221e;
+    --muted:#71807a;
+    --border:#dce6e1;
+    --danger:#d94b4b;
+    --warning:#c88716;
+    --shadow:0 8px 28px rgba(20,34,30,.08);
+    --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+
+.app{display:flex;min-height:100vh}
+.sidebar{
+    width:260px;background:#103b31;color:#fff;position:fixed;inset:0 auto 0 0;
+    padding:22px 16px;display:flex;flex-direction:column;z-index:20
+}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 10px 28px}
+.brand-mark{width:42px;height:42px;border-radius:13px;background:#fff;color:var(--primary);
+    display:grid;place-items:center;font-weight:900;font-size:20px}
+.brand h2{margin:0;font-size:22px;letter-spacing:.5px}
+.brand small{display:block;color:#b9d5cc;margin-top:2px}
+.nav{display:flex;flex-direction:column;gap:6px}
+.nav button{
+    border:0;background:transparent;color:#d9ebe5;padding:12px 13px;border-radius:11px;
+    text-align:left;display:flex;align-items:center;gap:12px;transition:.2s
+}
+.nav button:hover,.nav button.active{background:#1b594b;color:#fff}
+.nav-icon{width:24px;text-align:center}
+.sidebar-bottom{margin-top:auto;border-top:1px solid rgba(255,255,255,.13);padding-top:15px}
+.user-mini{display:flex;align-items:center;gap:10px;padding:10px}
+.avatar{width:38px;height:38px;border-radius:50%;background:#dff4ec;color:#11604c;display:grid;place-items:center;font-weight:800}
+.user-mini strong{font-size:13px}.user-mini small{display:block;color:#a9c8bf;margin-top:2px}
+
+.main{margin-left:260px;width:calc(100% - 260px);min-width:0}
+.topbar{
+    height:72px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:16px;padding:0 28px;position:sticky;top:0;z-index:10
+}
+.menu-mobile{display:none;border:0;background:var(--surface-2);padding:9px;border-radius:10px}
+.search{flex:1;max-width:600px;position:relative}
+.search input{width:100%;border:1px solid var(--border);background:var(--surface-2);padding:12px 15px 12px 42px;border-radius:12px;outline:none}
+.search span{position:absolute;left:14px;top:10px;font-size:19px}
+.top-actions{margin-left:auto;display:flex;gap:9px}
+.icon-btn{position:relative;border:1px solid var(--border);background:#fff;border-radius:11px;padding:10px 12px}
+.dot{position:absolute;width:8px;height:8px;background:#e04d4d;border-radius:50%;right:7px;top:6px;border:2px solid #fff}
+
+.content{padding:28px;max-width:1500px;margin:auto}
+.page{display:none}.page.active{display:block}
+.heading{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:24px}
+.heading h1{font-size:29px;margin:0 0 7px}.heading p{margin:0;color:var(--muted)}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+
+.btn{border:0;border-radius:11px;padding:11px 16px;font-weight:700;transition:.18s}
+.btn:hover{transform:translateY(-1px)}
+.primary{background:var(--primary);color:#fff}.primary:hover{background:var(--primary-dark)}
+.secondary{background:#fff;color:var(--text);border:1px solid var(--border)}
+.danger{background:#fff0f0;color:var(--danger);border:1px solid #ffd2d2}
+.warning{background:#fff8e7;color:var(--warning);border:1px solid #f4dfab}
+
+.grid{display:grid;gap:16px}
+.stats{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.stat{display:flex;justify-content:space-between;align-items:center}
+.stat-icon{width:45px;height:45px;border-radius:13px;background:var(--primary-soft);display:grid;place-items:center;font-size:21px}
+.stat strong{font-size:27px;display:block;margin-top:7px}.stat span{font-size:13px;color:var(--muted)}
+
+.dashboard-grid{grid-template-columns:1.35fr .65fr;margin-top:16px}
+.card-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}
+.card-title h3{margin:0}.muted{color:var(--muted);font-size:13px}
+
+.activity{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.activity:last-child{border-bottom:0}
+.activity-icon{width:39px;height:39px;border-radius:11px;background:var(--primary-soft);display:grid;place-items:center;flex:none}
+.activity p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quick{
+    border:1px solid var(--border);background:#fff;padding:16px;border-radius:13px;text-align:left;
+    display:flex;gap:12px;align-items:center
+}
+.quick:hover{border-color:#9ccfc0;background:#f8fffc}
+.quick b{display:block}.quick span{font-size:12px;color:var(--muted)}
+
+.status-line{height:8px;background:#e6eeeb;border-radius:99px;overflow:hidden;margin:14px 0}
+.status-line i{display:block;height:100%;width:62%;background:var(--primary);border-radius:99px}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.step{text-align:center;font-size:11px;color:var(--muted)}
+.step-circle{width:30px;height:30px;border-radius:50%;background:#e6eeeb;margin:0 auto 7px;display:grid;place-items:center;font-weight:800}
+.step.done .step-circle,.step.current .step-circle{background:var(--primary);color:#fff}
+.step.current{color:var(--primary);font-weight:700}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:7px}.form-group.full{grid-column:1/-1}
+label{font-weight:700;font-size:13px}
+input,select,textarea{
+    border:1px solid var(--border);background:#fff;color:var(--text);border-radius:10px;
+    padding:12px;outline:none
+}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#65ad98;box-shadow:0 0 0 3px #e4f5ef}
+.form-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px}
+
+.upload{
+    border:2px dashed #b8cbc4;border-radius:13px;padding:28px;text-align:center;color:var(--muted);
+    background:#fbfdfc
+}
+.upload strong{display:block;color:var(--text);margin-bottom:5px}
+
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800}
+.lost{background:#fff0ef;color:#bf3e3e}.found{background:#e8f8f1;color:#147152}
+.pending{background:#fff5da;color:#9b6a0d}.verified{background:#e7f6f0;color:#0c7154}
+
+.discovery-tools{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.discovery-tools input{flex:1;min-width:220px}
+.discovery-grid{grid-template-columns:repeat(3,1fr)}
+.report-card{overflow:hidden;padding:0}.report-image{height:145px;background:linear-gradient(135deg,#eaf4f0,#d7e8e2);display:grid;place-items:center;font-size:55px}
+.report-body{padding:16px}.report-body h3{margin:10px 0 5px}.report-body p{margin:4px 0;color:var(--muted);font-size:13px}
+.report-footer{display:flex;justify-content:space-between;align-items:center;margin-top:13px}
+
+.map{
+    min-height:480px;border-radius:16px;border:1px solid var(--border);
+    background:
+      linear-gradient(35deg,transparent 48%,rgba(90,150,130,.12) 49%,rgba(90,150,130,.12) 51%,transparent 52%),
+      linear-gradient(-30deg,transparent 48%,rgba(90,150,130,.10) 49%,rgba(90,150,130,.10) 51%,transparent 52%),
+      #eaf2ef;
+    background-size:150px 150px;position:relative;overflow:hidden
+}
+.map::before,.map::after{content:"";position:absolute;background:#fff;opacity:.8}
+.map::before{width:120%;height:65px;left:-10%;top:47%;transform:rotate(-10deg)}
+.map::after{width:70px;height:120%;left:54%;top:-10%;transform:rotate(20deg)}
+.pin{position:absolute;width:40px;height:40px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--primary);display:grid;place-items:center;color:#fff;border:4px solid #fff;box-shadow:0 5px 15px #31584d55}
+.pin span{transform:rotate(45deg)}.p1{left:23%;top:28%}.p2{left:62%;top:55%;background:#c58a19}.p3{left:78%;top:24%;background:#d94b4b}.p4{left:43%;top:72%}
+
+.match{display:flex;gap:16px;align-items:center}.match-score{font-size:25px;font-weight:900;color:var(--primary)}
+.match-img{width:100px;height:90px;border-radius:12px;background:#e8f2ee;display:grid;place-items:center;font-size:38px}
+
+.messages{display:grid;grid-template-columns:290px 1fr;min-height:520px;padding:0;overflow:hidden}
+.conversations{border-right:1px solid var(--border)}
+.conversation{padding:15px;border-bottom:1px solid var(--border);display:flex;gap:10px;cursor:pointer}
+.conversation.active{background:var(--primary-soft)}
+.chat{display:flex;flex-direction:column}.chat-header{padding:17px;border-bottom:1px solid var(--border);font-weight:800}
+.chat-body{padding:20px;flex:1;background:#f7faf9}
+.message{max-width:70%;padding:11px 13px;border-radius:13px;margin-bottom:10px;font-size:13px}
+.received{background:#fff;border:1px solid var(--border)}.sent{background:var(--primary);color:#fff;margin-left:auto}
+.chat-input{display:flex;gap:8px;padding:13px;border-top:1px solid var(--border)}.chat-input input{flex:1}
+
+.notification{display:flex;gap:13px;padding:16px 0;border-bottom:1px solid var(--border)}
+.notification.unread{background:#f3fbf8;margin:0 -10px;padding-left:10px;padding-right:10px}
+.notification h4{margin:0 0 4px}.notification p{margin:0;color:var(--muted);font-size:13px}
+
+.profile-top{display:flex;align-items:center;gap:17px}.large-avatar{width:78px;height:78px;border-radius:22px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-size:25px;font-weight:900}
+.verification{color:var(--primary);font-weight:800;font-size:13px;margin-top:6px}
+.info-list{margin-top:18px}.info-row{display:flex;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--border)}.info-row:last-child{border-bottom:0}
+
+.switch{width:50px;height:27px;border:0;border-radius:99px;background:#cbd6d1;padding:3px}
+.switch::after{content:"";display:block;width:21px;height:21px;background:#fff;border-radius:50%;transition:.2s}
+.switch.on{background:var(--primary)}.switch.on::after{transform:translateX(23px)}
+
+.modal{position:fixed;inset:0;background:#082c25aa;display:none;place-items:center;z-index:100;padding:20px}
+.modal.show{display:grid}.modal-card{background:#fff;border-radius:18px;padding:25px;width:min(450px,100%);box-shadow:0 20px 70px #0004}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.close{border:0;background:#f2f5f4;border-radius:9px;padding:8px}
+
+.toast{position:fixed;right:24px;bottom:24px;background:#103b31;color:#fff;padding:13px 17px;border-radius:11px;box-shadow:var(--shadow);transform:translateY(30px);opacity:0;pointer-events:none;transition:.25s;z-index:200}
+.toast.show{transform:none;opacity:1}
+
+.rtl{direction:rtl}.rtl .sidebar{inset:0 0 0 auto}.rtl .main{margin-left:0;margin-right:260px}.rtl .nav button{text-align:right}.rtl .search span{left:auto;right:14px}.rtl .search input{padding-left:15px;padding-right:42px}.rtl .sent{margin-left:0;margin-right:auto}
+
+@media(max-width:1000px){
+    .stats{grid-template-columns:1fr 1fr}.dashboard-grid{grid-template-columns:1fr}.discovery-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+    .sidebar{transform:translateX(-105%);transition:.25s}.sidebar.open{transform:none}
+    .main{margin-left:0;width:100%}.menu-mobile{display:block}.content{padding:18px}
+    .topbar{padding:0 15px}.heading{flex-direction:column}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}
+    .discovery-grid{grid-template-columns:1fr}.messages{grid-template-columns:1fr}.conversations{display:none}
+    .rtl .sidebar{transform:translateX(105%)}.rtl .sidebar.open{transform:none}.rtl .main{margin-right:0}
+}
+@media(max-width:500px){
+    .stats{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}.top-actions .icon-btn:first-child{display:none}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <div class="brand-mark">R</div>
+        <div><h2>RENITE</h2><small>Reclaim. Recover. Reconnect.</small></div>
+    </div>
+
+    <nav class="nav" id="nav">
+        <button class="active" data-page="home"><span class="nav-icon">🏠</span> Home</button>
+        <button data-page="report-lost"><span class="nav-icon">📱</span> Report Lost</button>
+        <button data-page="report-found"><span class="nav-icon">🔎</span> Report Found</button>
+        <button data-page="missing"><span class="nav-icon">👤</span> Missing Person</button>
+        <button data-page="discover"><span class="nav-icon">🗺️</span> Map & Discovery</button>
+        <button data-page="matches"><span class="nav-icon">🤖</span> AI Matches</button>
+        <button data-page="messages"><span class="nav-icon">💬</span> Messages</button>
+        <button data-page="notifications"><span class="nav-icon">🔔</span> Notifications</button>
+        <button data-page="recovery"><span class="nav-icon">📦</span> Recovery</button>
+        <button data-page="profile"><span class="nav-icon">👤</span> Profile</button>
+        <button data-page="settings"><span class="nav-icon">⚙️</span> Settings</button>
+    </nav>
+
+    <div class="sidebar-bottom">
+        <div class="user-mini">
+            <div class="avatar">DS</div>
+            <div><strong>Dagmawi Solomon</strong><small>Verified citizen</small></div>
+        </div>
+    </div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+    <button class="menu-mobile" id="menuBtn">☰</button>
+    <div class="search"><span>⌕</span><input id="globalSearch" placeholder="Search lost, found, cases..."></div>
+    <div class="top-actions">
+        <button class="icon-btn" id="langQuick" title="Language">🌍</button>
+        <button class="icon-btn" data-page="notifications" title="Notifications">🔔<i class="dot"></i></button>
+        <button class="icon-btn" id="loginBtn">🔐</button>
+    </div>
+</header>
+
+<div class="content">
+
+<!-- HOME -->
+<section class="page active" id="home">
+    <div class="heading">
+        <div><h1>Good afternoon, Dagmawi 👋</h1><p>Welcome back to your Renite recovery dashboard.</p></div>
+        <div class="actions"><button class="btn secondary" data-page="discover">Explore reports</button><button class="btn primary" data-page="report-lost">+ Report something lost</button></div>
+    </div>
+
+    <div class="grid stats">
+        <div class="card stat"><div><span>Active reports</span><strong>3</strong></div><div class="stat-icon">📋</div></div>
+        <div class="card stat"><div><span>Potential matches</span><strong>2</strong></div><div class="stat-icon">🤖</div></div>
+        <div class="card stat"><div><span>Recovered items</span><strong>1</strong></div><div class="stat-icon">✅</div></div>
+        <div class="card stat"><div><span>Community rewards</span><strong>450</strong><span>Renite points</span></div><div class="stat-icon">🏆</div></div>
+    </div>
+
+    <div class="grid dashboard-grid">
+        <div class="card">
+            <div class="card-title"><h3>Recovery in progress</h3><button class="btn secondary" data-page="recovery">View case</button></div>
+            <strong>Samsung Galaxy S24</strong><span class="badge lost">LOST</span>
+            <p class="muted">Case #RN-20481 · Reported near Dire Dawa</p>
+            <div class="status-line"><i></i></div>
+            <div class="steps">
+                <div class="step done"><div class="step-circle">✓</div>Reported</div>
+                <div class="step done"><div class="step-circle">✓</div>Matched</div>
+                <div class="step current"><div class="step-circle">3</div>Verified</div>
+                <div class="step"><div class="step-circle">4</div>Shipping</div>
+                <div class="step"><div class="step-circle">5</div>Recovered</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><h3>Quick actions</h3></div>
+            <div class="quick-grid">
+                <button class="quick" data-page="report-lost"><b>📱<span>Report lost</span></b></button>
+                <button class="quick" data-page="report-found"><b>🔎<span>Report found</span></b></button>
+                <button class="quick" data-page="missing"><b>👤<span>Missing person</span></b></button>
+                <button class="quick" data-page="discover"><b>🗺️<span>Discover</span></b></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid dashboard-grid">
+        <div class="card">
+            <div class="card-title"><h3>Recent activity</h3><span class="muted">Latest updates</span></div>
+            <div class="activity"><div class="activity-icon">🤖</div><div><strong>New AI match found</strong><p>A possible match was detected for your Samsung Galaxy S24 · 3 minutes ago</p></div></div>
+            <div class="activity"><div class="activity-icon">📦</div><div><strong>Recovery case updated</strong><p>Your verification step is now in progress · Yesterday</p></div></div>
+            <div class="activity"><div class="activity-icon">🏆</div><div><strong>Community reward received</strong><p>You earned 150 Renite points · 2 days ago</p></div></div>
+        </div>
+        <div class="card">
+            <div class="card-title"><h3>Safety reminder</h3></div>
+            <p class="muted">Keep private contact details inside Renite. Use secure messaging and verified handoffs rather than publishing personal information publicly.</p>
+            <button class="btn secondary" data-page="settings">Review security settings</button>
+        </div>
+    </div>
+</section>
+
+<!-- REPORT LOST -->
+<section class="page" id="report-lost">
+    <div class="heading"><div><h1>📱 Report Lost Asset</h1><p>Create a detailed report so Renite can help discover and match your item.</p></div></div>
+    <div class="card">
+        <div class="form-grid">
+            <div class="form-group"><label>Asset category</label><select><option>Smartphone</option><option>Laptop</option><option>Tablet</option><option>Document</option><option>Bag</option><option>Other</option></select></div>
+            <div class="form-group"><label>Brand / model</label><input placeholder="e.g. Samsung Galaxy S24"></div>
+            <div class="form-group"><label>Unique identifier / serial number</label><input placeholder="IMEI or serial number"></div>
+            <div class="form-group"><label>Date lost</label><input type="date"></div>
+            <div class="form-group"><label>Last known location</label><input placeholder="Area, landmark or city"></div>
+            <div class="form-group"><label>Approximate time</label><input type="time"></div>
+            <div class="form-group full"><label>Description</label><textarea placeholder="Describe color, case, stickers, damage, identifying marks, etc."></textarea></div>
+            <div class="form-group full"><label>Asset photos</label><div class="upload">📷<strong>Add photos</strong>Photos help matching systems identify your asset.</div></div>
+        </div>
+        <div class="form-actions"><button class="btn secondary">Save draft</button><button class="btn primary" data-submit="Lost asset report submitted">Submit lost report</button></div>
+    </div>
+</section>
+
+<!-- REPORT FOUND -->
+<section class="page" id="report-found">
+    <div class="heading"><div><h1>🔎 Report Found Asset</h1><p>Help return an item to its verified owner without exposing private information.</p></div></div>
+    <div class="card">
+        <div class="form-grid">
+            <div class="form-group"><label>Found item category</label><select><option>Smartphone</option><option>Laptop</option><option>Wallet</option><option>Documents</option><option>Bag</option><option>Other</option></select></div>
+            <div class="form-group"><label>Brand / description</label><input placeholder="What did you find?"></div>
+            <div class="form-group"><label>Found location</label><input placeholder="Area, landmark or city"></div>
+            <div class="form-group"><label>Date found</label><input type="date"></div>
+            <div class="form-group full"><label>Additional details</label><textarea placeholder="Describe the item without publishing sensitive identifiers."></textarea></div>
+            <div class="form-group full"><label>Photos</label><div class="upload">📷<strong>Add item photos</strong>Renite can use images to assist potential matching.</div></div>
+        </div>
+        <div class="form-actions"><button class="btn secondary">Save draft</button><button class="btn primary" data-submit="Found asset report submitted">Submit found report</button></div>
+    </div>
+</section>
+
+<!-- MISSING PERSON -->
+<section class="page" id="missing">
+    <div class="heading"><div><h1>👤 Missing Person Report</h1><p>Submit a controlled-access report for authorized recovery coordination.</p></div></div>
+    <div class="card">
+        <div class="form-grid">
+            <div class="form-group"><label>Full name</label><input placeholder="Missing person's full name"></div>
+            <div class="form-group"><label>Age</label><input type="number" placeholder="Age"></div>
+            <div class="form-group"><label>Last known location</label><input placeholder="Area, landmark or city"></div>
+            <div class="form-group"><label>Date last seen</label><input type="date"></div>
+            <div class="form-group"><label>Clothing / appearance</label><input placeholder="Clothing, distinguishing features"></div>
+            <div class="form-group"><label>Contact relationship</label><select><option>Family member</option><option>Friend</option><option>Authorized organization</option></select></div>
+            <div class="form-group full"><label>Case details</label><textarea placeholder="Provide relevant information for authorized responders."></textarea></div>
+            <div class="form-group full"><label>Photo</label><div class="upload">🧑<strong>Add a recent photo</strong>Access to sensitive case information should be controlled.</div></div>
+        </div>
+        <div class="form-actions"><button class="btn secondary">Save draft</button><button class="btn primary" data-submit="Missing-person report submitted for review">Submit case</button></div>
+    </div>
+</section>
+
+<!-- DISCOVERY -->
+<section class="page" id="discover">
+    <div class="heading"><div><h1>🗺️ Map & Discovery</h1><p>Explore reported items and safety cases around your selected area.</p></div></div>
+    <div class="discovery-tools"><input id="discoverySearch" placeholder="Search reports..."><select id="categoryFilter"><option value="all">All reports</option><option value="lost">Lost</option><option value="found">Found</option></select><button class="btn primary">Use my area</button></div>
+    <div class="card" style="padding:10px;margin-bottom:16px"><div class="map"><div class="pin p1"><span>📱</span></div><div class="pin p2"><span>🎒</span></div><div class="pin p3"><span>👤</span></div><div class="pin p4"><span>💻</span></div></div></div>
+    <div class="grid discovery-grid" id="discoveryResults"></div>
+</section>
+
+<!-- MATCHES -->
+<section class="page" id="matches">
+    <div class="heading"><div><h1>🤖 AI Match Results</h1><p>Mockup results showing how intelligent matching could prioritize potential recoveries.</p></div></div>
+    <div class="card">
+        <div class="match" style="padding-bottom:18px;border-bottom:1px solid var(--border)">
+            <div class="match-img">📱</div><div style="flex:1"><span class="badge lost">YOUR LOST ITEM</span><h3>Samsung Galaxy S24</h3><p class="muted">Case #RN-20481 · Black · Reported near Dire Dawa</p></div>
+        </div>
+        <div class="match" style="padding:18px 0;border-bottom:1px solid var(--border)">
+            <div class="match-img">📱</div><div style="flex:1"><span class="badge found">POTENTIAL MATCH</span><h3>Black Samsung smartphone</h3><p class="muted">Found near a transport area · image and description similarities detected</p></div><div class="match-score">94%</div>
+        </div>
+        <div class="match" style="padding-top:18px">
+            <div class="match-img">📱</div><div style="flex:1"><span class="badge found">POTENTIAL MATCH</span><h3>Samsung Galaxy device</h3><p class="muted">Similar model and color · location confidence is lower</p></div><div class="match-score">76%</div>
+        </div>
+        <div class="form-actions"><button class="btn secondary">Dismiss</button><button class="btn primary" data-submit="Match opened for verification">Review top match</button></div>
+    </div>
+</section>
+
+<!-- MESSAGES -->
+<section class="page" id="messages">
+    <div class="heading"><div><h1>💬 Secure Messages</h1><p>Communicate through Renite without unnecessarily exposing private contact details.</p></div></div>
+    <div class="card messages">
+        <div class="conversations">
+            <div class="conversation active"><div class="avatar">RA</div><div><strong>Renite Recovery Team</strong><p class="muted">Your recovery has been updated.</p></div></div>
+            <div class="conversation"><div class="avatar">MK</div><div><strong>Potential Finder</strong><p class="muted">I found an item matching...</p></div></div>
+        </div>
+        <div class="chat">
+            <div class="chat-header">Renite Recovery Team</div>
+            <div class="chat-body" id="chatBody">
+                <div class="message received">Hello Dagmawi. Your recovery case has received a new update.</div>
+                <div class="message received">Please review the potential match in your AI Matches section.</div>
+                <div class="message sent">Thank you. I will review it now.</div>
+            </div>
+            <div class="chat-input"><input id="messageInput" placeholder="Write a secure message..."><button class="btn primary" id="sendMessage">Send</button></div>
+        </div>
+    </div>
+</section>
+
+<!-- NOTIFICATIONS -->
+<section class="page" id="notifications">
+    <div class="heading"><div><h1>🔔 Notifications</h1><p>Stay updated about reports, matches, messages and recoveries.</p></div><button class="btn secondary" id="markRead">Mark all as read</button></div>
+    <div class="card" id="notificationList">
+        <div class="notification unread"><div class="activity-icon">🤖</div><div><h4>New AI match found</h4><p>A potential match was found for your Samsung Galaxy S24.</p><small class="muted">3 minutes ago</small></div></div>
+        <div class="notification unread"><div class="activity-icon">📦</div><div><h4>Recovery status updated</h4><p>Your recovery package has reached the verification stage.</p><small class="muted">Yesterday</small></div></div>
+        <div class="notification"><div class="activity-icon">🏆</div><div><h4>Reward received</h4><p>You earned 150 Renite points for community participation.</p><small class="muted">2 days ago</small></div></div>
+    </div>
+</section>
+
+<!-- RECOVERY -->
+<section class="page" id="recovery">
+    <div class="heading"><div><h1>📦 Recovery Status</h1><p>Track the verified recovery process from match to handoff.</p></div></div>
+    <div class="card">
+        <div class="card-title"><div><h3>Samsung Galaxy S24</h3><p class="muted">Case #RN-20481</p></div><span class="badge pending">VERIFICATION IN PROGRESS</span></div>
+        <div class="status-line"><i style="width:62%"></i></div>
+        <div class="steps">
+            <div class="step done"><div class="step-circle">✓</div>Reported</div>
+            <div class="step done"><div class="step-circle">✓</div>AI Match</div>
+            <div class="step current"><div class="step-circle">3</div>Verification</div>
+            <div class="step"><div class="step-circle">4</div>Shipping</div>
+            <div class="step"><div class="step-circle">5</div>Recovered</div>
+        </div>
+        <hr style="border:0;border-top:1px solid var(--border);margin:24px 0">
+        <div class="info-row"><strong>Current location</strong><span>Dire Dawa recovery center</span></div>
+        <div class="info-row"><strong>Next action</strong><span>Review verified handoff</span></div>
+        <div class="info-row"><strong>Shipping</strong><span>Pending confirmation</span></div>
+        <div class="form-actions"><button class="btn secondary" data-page="messages">Contact recovery team</button><button class="btn primary" data-submit="Recovery confirmation opened">Confirm recovery</button></div>
+    </div>
+</section>
+
+<!-- PROFILE -->
+<section class="page" id="profile">
+    <div class="heading"><div><h1>👤 My Profile</h1><p>Manage your Renite citizen account and verification status.</p></div><button class="btn primary" id="editProfile">Edit profile</button></div>
+    <div class="card">
+        <div class="profile-top"><div class="large-avatar">DS</div><div><h2 style="margin:0">Dagmawi Solomon</h2><p class="muted">Citizen account · CTC-6567-26</p><div class="verification">✓ Identity verified</div></div></div>
+        <div class="info-list">
+            <div class="info-row"><strong>Full name</strong><span>Dagmawi Solomon</span></div>
+            <div class="info-row"><strong>Email</strong><span>dagmawi@example.com</span></div>
+            <div class="info-row"><strong>Phone</strong><span>+251 9XX XXX XXX</span></div>
+            <div class="info-row"><strong>Fayda verification</strong><span class="badge verified">VERIFIED</span></div>
+            <div class="info-row"><strong>Account role</strong><span>Citizen</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="page" id="settings">
+    <div class="heading"><div><h1>⚙️ Settings</h1><p>Customize your Renite experience.</p></div></div>
+    <div class="card">
+        <div class="info-row"><div><strong>Dark mode</strong><p class="muted">Use a darker interface.</p></div><button class="switch" id="darkMode"></button></div>
+        <div class="info-row"><div><strong>Push notifications</strong><p class="muted">Receive updates about your reports.</p></div><button class="switch on setting-switch"></button></div>
+        <div class="info-row"><div><strong>Location services</strong><p class="muted">Allow Renite to use your location.</p></div><button class="switch on setting-switch"></button></div>
+        <div class="info-row"><div><strong>Language</strong><p class="muted" id="currentLanguage">English</p></div>
+            <select id="languageSelect" style="width:180px"><option value="en">English</option><option value="am">አማርኛ</option><option value="om">Afaan Oromoo</option><option value="ti">ትግርኛ</option><option value="so">Soomaali</option><option value="ar">العربية</option><option value="sw">Kiswahili</option></select>
+        </div>
+        <div class="info-row"><div><strong>Privacy</strong><p class="muted">Control how your information is shared.</p></div><button class="btn secondary" data-submit="Privacy controls opened">Manage</button></div>
+        <div class="info-row"><div><strong>Security</strong><p class="muted">Authentication, sessions and account security.</p></div><button class="btn secondary" data-submit="Security controls opened">Manage</button></div>
+    </div>
+</section>
+
+</div>
+</main>
+</div>
+
+<!-- LOGIN / REGISTER MODAL -->
+<div class="modal" id="authModal">
+<div class="modal-card">
+    <div class="modal-head"><div><h2 id="authTitle" style="margin:0">Welcome to Renite</h2><p class="muted" id="authSubtitle">Secure citizen access</p></div><button class="close" id="closeAuth">✕</button></div>
+    <div class="form-group"><label>Email or phone</label><input id="authContact" placeholder="Enter your email or phone"></div>
+    <div class="form-group" style="margin-top:13px"><label>Password</label><input type="password" id="authPassword" placeholder="Enter your password"></div>
+    <div class="form-group" id="registerExtra" style="margin-top:13px;display:none"><label>Full name</label><input placeholder="Your full name"></div>
+    <button class="btn primary" id="authSubmit" style="width:100%;margin-top:17px">Login</button>
+    <p style="text-align:center;font-size:13px;color:var(--muted)">New to Renite? <button id="toggleAuth" style="border:0;background:none;color:var(--primary);font-weight:800">Create an account</button></p>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* RENITE CITIZEN FRONTEND
+   Plain HTML + CSS + JavaScript.
+   No frameworks, no libraries, no generated UI dependency.
+*/
+
+const pages = document.querySelectorAll(".page");
+const navButtons = document.querySelectorAll("[data-page]");
+const sidebar = document.getElementById("sidebar");
+const toast = document.getElementById("toast");
+
+function showToast(message){
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+function openPage(name){
+    pages.forEach(page => page.classList.toggle("active", page.id === name));
+    document.querySelectorAll(".nav button").forEach(button => {
+        button.classList.toggle("active", button.dataset.page === name);
+    });
+    sidebar.classList.remove("open");
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+navButtons.forEach(button => {
+    button.addEventListener("click", () => openPage(button.dataset.page));
+});
+
+document.getElementById("menuBtn").addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+});
+
+document.querySelectorAll("[data-submit]").forEach(button => {
+    button.addEventListener("click", () => {
+        showToast(button.dataset.submit);
+    });
+});
+
+/* Discovery search */
+const discoveryData = [
+    {type:"lost", icon:"📱", title:"Samsung Galaxy S24", location:"Near Dire Dawa transport area", time:"Today"},
+    {type:"found", icon:"🎒", title:"Blue Backpack", location:"Near a school", time:"3 days ago"},
+    {type:"lost", icon:"💻", title:"Lenovo Laptop", location:"City center", time:"Yesterday"},
+    {type:"found", icon:"📄", title:"Identity Documents", location:"Main road area", time:"5 hours ago"},
+    {type:"lost", icon:"🎧", title:"Wireless Headphones", location:"University area", time:"2 days ago"},
+    {type:"found", icon:"📱", title:"Black Smartphone", location:"Transport station", time:"Today"}
+];
+
+const discoverySearch = document.getElementById("discoverySearch");
+const categoryFilter = document.getElementById("categoryFilter");
+const discoveryResults = document.getElementById("discoveryResults");
+
+function renderDiscovery(){
+    const search = discoverySearch.value.toLowerCase().trim();
+    const category = categoryFilter.value;
+
+    const results = discoveryData.filter(item => {
+        const matchesText =
+            item.title.toLowerCase().includes(search) ||
+            item.location.toLowerCase().includes(search);
+        const matchesCategory = category === "all" || item.type === category;
+        return matchesText && matchesCategory;
+    });
+
+    discoveryResults.innerHTML = "";
+
+    if(!results.length){
+        discoveryResults.innerHTML = '<div class="card"><strong>No matching reports</strong><p class="muted">Try another search term or category.</p></div>';
+        return;
+    }
+
+    results.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "card report-card";
+        card.innerHTML = `
+            <div class="report-image">${item.icon}</div>
+            <div class="report-body">
+                <span class="badge ${item.type === "lost" ? "lost" : "found"}">${item.type.toUpperCase()}</span>
+                <h3>${item.title}</h3>
+                <p>📍 ${item.location}</p>
+                <p>🕒 ${item.time}</p>
+                <div class="report-footer">
+                    <span class="muted">Verification required</span>
+                    <button class="btn secondary view-report">View</button>
+                </div>
+            </div>
+        `;
+        card.querySelector(".view-report").addEventListener("click", () => {
+            showToast("Report details opened in this demo.");
+        });
+        discoveryResults.appendChild(card);
+    });
+}
+discoverySearch.addEventListener("input", renderDiscovery);
+categoryFilter.addEventListener("change", renderDiscovery);
+renderDiscovery();
+
+/* Global search */
+document.getElementById("globalSearch").addEventListener("keydown", event => {
+    if(event.key !== "Enter") return;
+    const query = event.target.value.trim();
+    if(!query) return;
+    openPage("discover");
+    discoverySearch.value = query;
+    categoryFilter.value = "all";
+    renderDiscovery();
+});
+
+/* Notifications */
+document.getElementById("markRead").addEventListener("click", () => {
+    document.querySelectorAll(".notification.unread").forEach(item => item.classList.remove("unread"));
+    document.querySelector(".dot").style.display = "none";
+    showToast("All notifications marked as read.");
+});
+
+/* Messages */
+const messageInput = document.getElementById("messageInput");
+const chatBody = document.getElementById("chatBody");
+
+function sendMessage(){
+    const text = messageInput.value.trim();
+    if(!text) return;
+    const message = document.createElement("div");
+    message.className = "message sent";
+    message.textContent = text;
+    chatBody.appendChild(message);
+    messageInput.value = "";
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    setTimeout(() => {
+        const reply = document.createElement("div");
+        reply.className = "message received";
+        reply.textContent = "Your message has been received by the Renite recovery team.";
+        chatBody.appendChild(reply);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }, 700);
+}
+document.getElementById("sendMessage").addEventListener("click", sendMessage);
+messageInput.addEventListener("keydown", event => {
+    if(event.key === "Enter") sendMessage();
+});
+
+/* Settings */
+const darkMode = document.getElementById("darkMode");
+darkMode.addEventListener("click", () => {
+    darkMode.classList.toggle("on");
+    document.body.classList.toggle("dark");
+    if(document.body.classList.contains("dark")){
+        document.documentElement.style.setProperty("--bg","#101815");
+        document.documentElement.style.setProperty("--surface","#18231f");
+        document.documentElement.style.setProperty("--surface-2","#14201c");
+        document.documentElement.style.setProperty("--text","#edf6f2");
+        document.documentElement.style.setProperty("--muted","#a9bbb5");
+        document.documentElement.style.setProperty("--border","#2a3b35");
+        showToast("Dark mode enabled.");
+    }else{
+        document.documentElement.style.setProperty("--bg","#f4f7f6");
+        document.documentElement.style.setProperty("--surface","#ffffff");
+        document.documentElement.style.setProperty("--surface-2","#f8faf9");
+        document.documentElement.style.setProperty("--text","#14221e");
+        document.documentElement.style.setProperty("--muted","#71807a");
+        document.documentElement.style.setProperty("--border","#dce6e1");
+        showToast("Dark mode disabled.");
+    }
+});
+
+document.querySelectorAll(".setting-switch").forEach(toggle => {
+    toggle.addEventListener("click", () => {
+        toggle.classList.toggle("on");
+        showToast(toggle.classList.contains("on") ? "Setting enabled." : "Setting disabled.");
+    });
+});
+
+/* Language + RTL-ready layout */
+const languageSelect = document.getElementById("languageSelect");
+const currentLanguage = document.getElementById("currentLanguage");
+
+languageSelect.addEventListener("change", () => {
+    const names = {
+        en:"English", am:"አማርኛ", om:"Afaan Oromoo",
+        ti:"ትግርኛ", so:"Soomaali", ar:"العربية", sw:"Kiswahili"
+    };
+    currentLanguage.textContent = names[languageSelect.value];
+    document.documentElement.lang = languageSelect.value;
+    document.body.classList.toggle("rtl", languageSelect.value === "ar");
+    showToast("Language set to " + names[languageSelect.value] + ".");
+});
+
+document.getElementById("langQuick").addEventListener("click", () => {
+    openPage("settings");
+    languageSelect.focus();
+});
+
+/* Authentication */
+const authModal = document.getElementById("authModal");
+const authTitle = document.getElementById("authTitle");
+const authSubtitle = document.getElementById("authSubtitle");
+const authSubmit = document.getElementById("authSubmit");
+const registerExtra = document.getElementById("registerExtra");
+const toggleAuth = document.getElementById("toggleAuth");
+let registerMode = false;
+
+function openAuth(){
+    authModal.classList.add("show");
+}
+function updateAuthMode(){
+    authTitle.textContent = registerMode ? "Create your Renite account" : "Welcome to Renite";
+    authSubtitle.textContent = registerMode ? "Start your secure citizen recovery account" : "Secure citizen access";
+    authSubmit.textContent = registerMode ? "Create account" : "Login";
+    registerExtra.style.display = registerMode ? "flex" : "none";
+    toggleAuth.textContent = registerMode ? "Already have an account? Login" : "Create an account";
+}
+document.getElementById("loginBtn").addEventListener("click", openAuth);
+document.getElementById("closeAuth").addEventListener("click", () => authModal.classList.remove("show"));
+authModal.addEventListener("click", event => {
+    if(event.target === authModal) authModal.classList.remove("show");
+});
+toggleAuth.addEventListener("click", () => {
+    registerMode = !registerMode;
+    updateAuthMode();
+});
+authSubmit.addEventListener("click", () => {
+    authModal.classList.remove("show");
+    showToast(registerMode ? "Demo account created successfully." : "Demo login successful.");
+});
+
+/* Profile demo */
+document.getElementById("editProfile").addEventListener("click", () => {
+    showToast("Profile editor opened in demo mode.");
+});
+
+/* Escape closes modal */
+document.addEventListener("keydown", event => {
+    if(event.key === "Escape") authModal.classList.remove("show");
+});
+
+/* Start on Home */
+openPage("home");
+</script>
+</body>
+</html>
