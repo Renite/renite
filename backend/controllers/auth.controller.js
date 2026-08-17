@@ -1,4 +1,5 @@
 import { authService } from '../services/auth.service.js';
+import { logAudit } from '../utils/audit.js';
 
 export async function register(req, res, next) {
   try {
@@ -10,6 +11,12 @@ export async function register(req, res, next) {
       });
     }
     const result = await authService.register({ full_name, email, phone, password });
+    logAudit(req, {
+      action: 'REGISTER',
+      entityType: 'User',
+      entityId: result.user.id,
+      userId: result.user.id
+    });
     res.status(201).json({ success: true, data: result });
   } catch (err) { next(err); }
 }
@@ -24,6 +31,12 @@ export async function login(req, res, next) {
       });
     }
     const result = await authService.login({ identifier, password });
+    logAudit(req, {
+      action: 'LOGIN',
+      entityType: 'User',
+      entityId: result.user.id,
+      userId: result.user.id
+    });
     res.status(200).json({ success: true, data: result });
   } catch (err) { next(err); }
 }
@@ -38,6 +51,7 @@ export async function refresh(req, res, next) {
 export async function logout(req, res, next) {
   try {
     await authService.logout(req.user.sub);
+    logAudit(req, { action: 'LOGOUT', entityType: 'User', entityId: req.user.sub });
     res.status(200).json({ success: true, data: { loggedOut: true } });
   } catch (err) { next(err); }
 }
