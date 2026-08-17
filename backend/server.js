@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config'; 
 import connectDB from './config/db.js'; 
+import authRoutes from './routes/auth.routes.js';
+import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 import './models/User.js';
 import './models/Profile.js';
@@ -32,6 +34,11 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date()
   });
 });
+
+app.use('/api/v1/auth', authRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
