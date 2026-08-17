@@ -1,4 +1,5 @@
 import { verifyAccessToken } from '../utils/jwt.js';
+import { hasPermission } from '../config/permissions.js';
 
 export function authenticate(req, res, next) {
   const header = req.headers.authorization;
@@ -25,6 +26,19 @@ export function authorize(...roles) {
       return res.status(403).json({
         success: false,
         error: { code: 'FORBIDDEN', message: 'Insufficient permissions' }
+      });
+    }
+    next();
+  };
+}
+
+// Fine-grained permission check, e.g. can('verification:review')
+export function can(permission) {
+  return (req, res, next) => {
+    if (!hasPermission(req.user?.role, permission)) {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: `Missing permission: ${permission}` }
       });
     }
     next();

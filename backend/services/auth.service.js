@@ -25,8 +25,16 @@ export const authService = {
     if (existing) throw new AppError(409, 'ALREADY_REGISTERED', 'Email or phone already in use');
 
     const password_hash = await hashPassword(password);
-    const user = await User.create({ full_name, email, phone, password_hash });
-    return issueTokens(user);
+    try {
+      const user = await User.create({ full_name, email, phone, password_hash });
+      return issueTokens(user);
+    } catch (err) {
+      if (err.code === 11000) {
+        const field = Object.keys(err.keyPattern || {})[0] || 'field';
+        throw new AppError(409, 'ALREADY_REGISTERED', `This ${field} is already in use`);
+      }
+      throw err;
+    }
   },
 
   async login({ identifier, password }) {

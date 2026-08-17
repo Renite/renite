@@ -3,6 +3,11 @@ import cors from 'cors';
 import 'dotenv/config'; 
 import connectDB from './config/db.js'; 
 import authRoutes from './routes/auth.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import verificationRoutes from './routes/verification.routes.js';
+import caseRoutes from './routes/case.routes.js';
+import announcementRoutes from './routes/announcement.routes.js';
+import alertRoutes from './routes/alert.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 import './models/User.js';
@@ -36,6 +41,11 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/verification', verificationRoutes);
+app.use('/api/v1/cases', caseRoutes);
+app.use('/api/v1/announcements', announcementRoutes);
+app.use('/api/v1/alerts', alertRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
