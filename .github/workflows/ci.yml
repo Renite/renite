@@ -69,7 +69,7 @@ jobs:
       - name: Build
         run: npm run build
 
-    blockchain-ci:
+  blockchain-ci:
     name: Blockchain CI
     runs-on: ubuntu-latest
     defaults:
