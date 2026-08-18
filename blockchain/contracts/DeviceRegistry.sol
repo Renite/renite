@@ -2,29 +2,33 @@
 pragma solidity ^0.8.28;
 
 /// @title DeviceRegistry
-/// @notice Stores a verifiable, privacy-preserving record of registered devices.
-/// @dev BC-001: initial scaffold only. Ownership transfer and recovery events
-///      are intentionally NOT implemented here - see future issues.
+/// @notice Stores a verifiable, privacy-preserving record of registered devices,
+///         their ownership, and their recovery-case lifecycle status.
+/// @dev BC-002: adds ownership transfer and recovery status anchoring on top
+///      of the BC-001 registration scaffold.
 contract DeviceRegistry {
-    /// @notice Core record for a registered device.
-    /// @dev Do NOT store raw serial numbers, MAC addresses, or IMEI here.
-    ///      `deviceHash` should be a hash (e.g. keccak256) computed off-chain
-    ///      from the device's real identifiers, so the chain only ever holds
-    ///      a verifiable fingerprint, never the sensitive data itself.
-    struct Device {
-        bytes32 deviceHash;   // hash of serial/MAC/IMEI, computed off-chain
-        address owner;        // wallet address of the registering owner
-        uint256 registeredAt; // block timestamp of registration
-        bool exists;          // guards against unregistered lookups
+    /// @dev Transitions must move strictly forward. CaseClosed is terminal.
+    enum RecoveryStatus {
+        Registered,
+        Verified,
+        ReportedLost,
+        RecoveryStarted,
+        Found,
+        OwnershipConfirmed,
+        CaseClosed
     }
 
-    /// @dev deviceId => Device record. deviceId is assigned sequentially.
-    mapping(uint256 => Device) private devices;
+    struct Device {
+        bytes32 deviceHash;
+        address owner;
+        uint256 registeredAt;
+        RecoveryStatus status;
+        bool exists;
+    }
 
-    /// @dev Tracks the next deviceId to assign.
+    mapping(uint256 => Device) private devices;
     uint256 private nextDeviceId;
 
-    /// @notice Emitted when a new device is registered.
     event DeviceRegistered(
         uint256 indexed deviceId,
         address indexed owner,
@@ -32,11 +36,26 @@ contract DeviceRegistry {
         uint256 registeredAt
     );
 
-    /// @notice Registers a new device on-chain.
-    /// @param deviceHash A hash representing the device's real-world identifiers.
-    ///        Must be computed off-chain (e.g. keccak256(serial + mac + salt))
-    ///        so no sensitive raw data ever touches the chain.
-    /// @return deviceId The ID assigned to this newly registered device.
+    event OwnershipTransferred(
+        uint256 indexed deviceId,
+        address indexed previousOwner,
+        address indexed newOwner,
+        uint256 transferredAt
+    );
+
+    event RecoveryStatusUpdated(
+        uint256 indexed deviceId,
+        RecoveryStatus previousStatus,
+        RecoveryStatus newStatus,
+        uint256 updatedAt
+    );
+
+    modifier onlyDeviceOwner(uint256 deviceId) {
+        require(devices[deviceId].exists, "DeviceRegistry: device does not exist");
+        require(devices[deviceId].owner == msg.sender, "DeviceRegistry: caller is not the device owner");
+        _;
+    }
+
     function registerDevice(bytes32 deviceHash) external returns (uint256 deviceId) {
         require(deviceHash != bytes32(0), "DeviceRegistry: deviceHash cannot be empty");
 
@@ -45,6 +64,7 @@ contract DeviceRegistry {
             deviceHash: deviceHash,
             owner: msg.sender,
             registeredAt: block.timestamp,
+            status: RecoveryStatus.Registered,
             exists: true
         });
 
@@ -53,19 +73,43 @@ contract DeviceRegistry {
         emit DeviceRegistered(deviceId, msg.sender, deviceHash, block.timestamp);
     }
 
-    /// @notice Reads back a registered device's record.
-    /// @param deviceId The ID of the device to look up.
+    function transferOwnership(uint256 deviceId, address newOwner)
+        external
+        onlyDeviceOwner(deviceId)
+    {
+        require(newOwner != address(0), "DeviceRegistry: newOwner cannot be the zero address");
+        require(newOwner != msg.sender, "DeviceRegistry: newOwner must differ from current owner");
+
+        address previousOwner = devices[deviceId].owner;
+        devices[deviceId].owner = newOwner;
+
+        emit OwnershipTransferred(deviceId, previousOwner, newOwner, block.timestamp);
+    }
+
+    function updateRecoveryStatus(uint256 deviceId, RecoveryStatus newStatus)
+        external
+        onlyDeviceOwner(deviceId)
+    {
+        RecoveryStatus currentStatus = devices[deviceId].status;
+
+        require(currentStatus != RecoveryStatus.CaseClosed, "DeviceRegistry: case is already closed");
+        require(newStatus > currentStatus, "DeviceRegistry: status must move forward");
+
+        devices[deviceId].status = newStatus;
+
+        emit RecoveryStatusUpdated(deviceId, currentStatus, newStatus, block.timestamp);
+    }
+
     function getDevice(uint256 deviceId)
         external
         view
-        returns (bytes32 deviceHash, address owner, uint256 registeredAt)
+        returns (bytes32 deviceHash, address owner, uint256 registeredAt, RecoveryStatus status)
     {
         require(devices[deviceId].exists, "DeviceRegistry: device does not exist");
         Device storage d = devices[deviceId];
-        return (d.deviceHash, d.owner, d.registeredAt);
+        return (d.deviceHash, d.owner, d.registeredAt, d.status);
     }
 
-    /// @notice Total number of devices registered so far.
     function totalDevices() external view returns (uint256) {
         return nextDeviceId;
     }

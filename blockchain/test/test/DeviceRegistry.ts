@@ -57,4 +57,93 @@ describe("DeviceRegistry", function () {
       "DeviceRegistry: device does not exist"
     );
   });
+
+  describe("Ownership transfer", function () {
+    it("Should transfer ownership to a new address", async function () {
+      const { registry } = await deployDeviceRegistryFixture();
+      const [, newOwner] = await ethers.getSigners();
+      const deviceHash = ethers.keccak256(ethers.toUtf8Bytes("device-transfer-1"));
+
+      await registry.registerDevice(deviceHash);
+      await expect(registry.transferOwnership(0, newOwner.address))
+        .to.emit(registry, "OwnershipTransferred");
+
+      const [, storedOwner] = await registry.getDevice(0);
+      expect(storedOwner).to.equal(newOwner.address);
+    });
+
+    it("Should revert when a non-owner attempts to transfer ownership", async function () {
+      const { registry } = await deployDeviceRegistryFixture();
+      const [, attacker] = await ethers.getSigners();
+      const deviceHash = ethers.keccak256(ethers.toUtf8Bytes("device-transfer-2"));
+
+      await registry.registerDevice(deviceHash);
+
+      await expect(
+        registry.connect(attacker).transferOwnership(0, attacker.address)
+      ).to.be.revertedWith("DeviceRegistry: caller is not the device owner");
+    });
+
+    it("Should revert when transferring to the zero address", async function () {
+      const { registry } = await deployDeviceRegistryFixture();
+      const deviceHash = ethers.keccak256(ethers.toUtf8Bytes("device-transfer-3"));
+
+      await registry.registerDevice(deviceHash);
+
+      await expect(
+        registry.transferOwnership(0, ethers.ZeroAddress)
+      ).to.be.revertedWith("DeviceRegistry: newOwner cannot be the zero address");
+    });
+  });
+
+  describe("Recovery status transitions", function () {
+    it("Should advance status forward and emit RecoveryStatusUpdated", async function () {
+      const { registry } = await deployDeviceRegistryFixture();
+      const deviceHash = ethers.keccak256(ethers.toUtf8Bytes("device-status-1"));
+
+      await registry.registerDevice(deviceHash);
+
+      await expect(registry.updateRecoveryStatus(0, 1))
+        .to.emit(registry, "RecoveryStatusUpdated");
+
+      const [, , , status] = await registry.getDevice(0);
+      expect(status).to.equal(1n);
+    });
+
+    it("Should revert when moving status backward", async function () {
+      const { registry } = await deployDeviceRegistryFixture();
+      const deviceHash = ethers.keccak256(ethers.toUtf8Bytes("device-status-2"));
+
+      await registry.registerDevice(deviceHash);
+      await registry.updateRecoveryStatus(0, 2);
+
+      await expect(
+        registry.updateRecoveryStatus(0, 1)
+      ).to.be.revertedWith("DeviceRegistry: status must move forward");
+    });
+
+    it("Should revert when updating status after case is closed", async function () {
+      const { registry } = await deployDeviceRegistryFixture();
+      const deviceHash = ethers.keccak256(ethers.toUtf8Bytes("device-status-3"));
+
+      await registry.registerDevice(deviceHash);
+      await registry.updateRecoveryStatus(0, 6);
+
+      await expect(
+        registry.updateRecoveryStatus(0, 6)
+      ).to.be.revertedWith("DeviceRegistry: case is already closed");
+    });
+
+    it("Should revert when a non-owner attempts to update status", async function () {
+      const { registry } = await deployDeviceRegistryFixture();
+      const [, attacker] = await ethers.getSigners();
+      const deviceHash = ethers.keccak256(ethers.toUtf8Bytes("device-status-4"));
+
+      await registry.registerDevice(deviceHash);
+
+      await expect(
+        registry.connect(attacker).updateRecoveryStatus(0, 1)
+      ).to.be.revertedWith("DeviceRegistry: caller is not the device owner");
+    });
+  });
 });
