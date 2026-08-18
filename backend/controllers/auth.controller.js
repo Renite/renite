@@ -11,12 +11,7 @@ export async function register(req, res, next) {
       });
     }
     const result = await authService.register({ full_name, email, phone, password });
-    logAudit(req, {
-      action: 'REGISTER',
-      entityType: 'User',
-      entityId: result.user.id,
-      userId: result.user.id
-    });
+    logAudit(req, { action: 'REGISTER', entityType: 'User', entityId: result.user.id, userId: result.user.id });
     res.status(201).json({ success: true, data: result });
   } catch (err) { next(err); }
 }
@@ -31,14 +26,14 @@ export async function login(req, res, next) {
       });
     }
     const result = await authService.login({ identifier, password });
-    logAudit(req, {
-      action: 'LOGIN',
-      entityType: 'User',
-      entityId: result.user.id,
-      userId: result.user.id
-    });
+    logAudit(req, { action: 'LOGIN', entityType: 'User', entityId: result.user.id, userId: result.user.id });
     res.status(200).json({ success: true, data: result });
-  } catch (err) { next(err); }
+  } catch (err) {
+    // Best-effort: log failed attempts without leaking whether the
+    // identifier itself exists (message stays generic either way).
+    logAudit(req, { action: 'LOGIN_FAILED', entityType: 'User', metadata: { identifier: req.body?.identifier } });
+    next(err);
+  }
 }
 
 export async function refresh(req, res, next) {

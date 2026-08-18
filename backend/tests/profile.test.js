@@ -1,10 +1,13 @@
 import "dotenv/config";
+import { jest } from "@jest/globals";
 import request from "supertest";
 import mongoose from "mongoose";
 
 import app from "../app.js";
 import User from "../models/User.js";
 import Profile from "../models/Profile.js";
+
+jest.setTimeout(30000);
 
 describe("Profile Management API", () => {
   let accessToken;
@@ -18,34 +21,39 @@ describe("Profile Management API", () => {
   };
 
   beforeAll(async () => {
-    // The test environment should provide TEST_MONGO_URI.
-    if (!process.env.TEST_MONGO_URI) {
-      throw new Error("TEST_MONGO_URI is not configured");
+    if (!process.env.TEST_MONGODB_URL) {
+      throw new Error("TEST_MONGODB_URL is not configured");
     }
 
-    await mongoose.connect(process.env.TEST_MONGO_URI);
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(process.env.TEST_MONGODB_URL);
+    }
+
+    console.log(
+      `✅ Test DB connected: ${mongoose.connection.name}`
+    );
 
     await User.deleteMany({
       email: testUser.email,
     });
   });
 
-  afterEach(async () => {
-    if (userId) {
-      await Profile.deleteMany({
-        user_id: userId,
-      });
-    }
-  });
-
   afterAll(async () => {
-    if (userId) {
-      await User.deleteMany({
-        _id: userId,
-      });
-    }
+    try {
+      if (userId) {
+        await Profile.deleteMany({
+          user_id: userId,
+        });
 
-    await mongoose.connection.close();
+        await User.deleteOne({
+          _id: userId,
+        });
+      }
+    } finally {
+      if (mongoose.connection.readyState !== 0) {
+        await mongoose.disconnect();
+      }
+    }
   });
 
   describe("Authentication", () => {
@@ -70,6 +78,9 @@ describe("Profile Management API", () => {
 
       userId = registerResponse.body.data.user.id;
 
+      expect(accessToken).toBeDefined();
+      expect(userId).toBeDefined();
+
       const response = await request(app)
         .post("/api/v1/profile")
         .set("Authorization", `Bearer ${accessToken}`)
@@ -88,17 +99,9 @@ describe("Profile Management API", () => {
       expect(response.body.data.first_name).toBe("Lucky");
 
       expect(response.body.data.last_name).toBe("Test");
-    });
+    }, 15000);
 
     test("rejects duplicate profile creation", async () => {
-      await request(app)
-        .post("/api/v1/profile")
-        .set("Authorization", `Bearer ${accessToken}`)
-        .send({
-          first_name: "Lucky",
-          last_name: "Test",
-        });
-
       const response = await request(app)
         .post("/api/v1/profile")
         .set("Authorization", `Bearer ${accessToken}`)

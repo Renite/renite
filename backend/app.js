@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+
 import { apiLimiter } from "./middleware/rateLimit.middleware.js";
+import { requestId } from "./middleware/request-id.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
@@ -36,14 +38,19 @@ app.use(helmet());
 app.use(express.json());
 app.use(cors());
 app.use(apiLimiter);
+app.use(requestId);
 
 // Health check
 app.get("/api/health", (req, res) => {
-  res.json({
+  const response = {
     status: "ok",
     message: "Renite API & Database Models are operational",
     timestamp: new Date(),
-  });
+  };
+
+  console.log("HEALTH RESPONSE:", response);
+
+  res.status(200).json(response);
 });
 
 // Routes
