@@ -92,7 +92,7 @@ These approaches can make information difficult to verify, expose sensitive pers
 | Platform     | Technology                             |
 | ------------ | -------------------------------------- |
 | 🌐 Web       | React + JavaScript                     |
-| 📱 Mobile    | Flutter + Dart                         |
+| 📱 Mobile    | React + JavaScript                       |
 | ⚙️ Backend   | REST API + Business Logic              |
 | 🗄️ Database | Secure Persistent Data Layer           |
 | 🤖 AI        | Computer Vision / Intelligent Matching |
@@ -102,13 +102,13 @@ These approaches can make information difficult to verify, expose sensitive pers
 
 ## 👥 Team Members
 
-| 👤 Full Name     | 🆔 CTC Number | 🏫 Classroom |
-| ---------------- | ------------- | -----------: |
-| Chera Tolosa     | CTC-716-26    |            2 |
-| Dagimawi Solomon | CTC-6567-26   |            2 |
-| Dibora Sisay     | CTC-1457-26   |            2 |
-| Eden Alemayehu   | CTC-1941-26   |            2 |
-| Edom Anteneh     | CTC-1717-26   |            2 |
+| 👤 Full Name     | 🆔 CTC Number | 🏫 Classroom | Role |
+| ---------------- | ------------- | ----------- | ---------------: |
+| Chera Tolosa     | CTC-716-26    |            2 | `Backend` |
+| Dagimawi Solomon | CTC-6567-26   |            2 | `AI-Services` |
+| Dibora Sisay     | CTC-1457-26   |            2 | `Frontend` |
+| Eden Alemayehu   | CTC-1941-26   |            2 | `Blockchain` |
+| Edom Anteneh     | CTC-1717-26   |            2 | `Database & Frontend` |
 
 ---
 
