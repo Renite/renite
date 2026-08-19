@@ -3,6 +3,7 @@ import Report from '../models/Report.js';
 import Category from '../models/Category.js';
 import Material from '../models/Material.js';
 import { AppError } from './auth.service.js';
+import { matchService } from './match.service.js';
 
 const OWNER_ONLY_STATES = ['ACTIVE', 'MATCHED', 'IN_VERIFICATION'];
 
@@ -23,10 +24,17 @@ export const reportService = {
     if (!category) throw new AppError(404, 'CATEGORY_NOT_FOUND', 'Category not found');
     if (!material) throw new AppError(404, 'MATERIAL_NOT_FOUND', 'Material not found');
 
-    return Report.create({
+    const report = await Report.create({
       user_id: userId, category_id, material_id, type, title, description,
       location, incident_date, token: randomUUID()
     });
+
+    // Best-effort: matching failures should never break report creation
+    matchService.generateForReport(report).catch((err) => {
+      console.error('Match generation failed:', err.message);
+    });
+
+    return report;
   },
 
   async list({ type, status, category_id, page = 1, limit = 20 }) {
