@@ -14,6 +14,8 @@ import verificationRoutes from "./routes/verification.routes.js";
 import caseRoutes from "./routes/case.routes.js";
 import announcementRoutes from "./routes/announcement.routes.js";
 import alertRoutes from "./routes/alert.routes.js";
+import assetRoutes from './routes/assetRoutes.js';
+import assetRoutes from './routes/case.js';
 
 import { errorHandler, notFound } from "./middleware/error.middleware.js";
 
@@ -32,6 +34,8 @@ import "./models/Conversation.js";
 import "./models/Message.js";
 import "./models/Notification.js";
 import "./models/AuditLog.js";
+import "./models/Asset.js";
+import "./models/Case.js";
 
 const app = express();
 
@@ -62,6 +66,7 @@ app.use("/api/v1/verification", verificationRoutes);
 app.use("/api/v1/cases", caseRoutes);
 app.use("/api/v1/announcements", announcementRoutes);
 app.use("/api/v1/alerts", alertRoutes);
+app.use('/api/assets', assetRoutes);
 
 // Error handling
 app.use(notFound);
