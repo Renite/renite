@@ -1,0 +1,1994 @@
+
+> renite-backend@1.0.0 test
+> node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand
+
+(node:11824) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "MongoNotConnectedError: Client must be connected before running operations
+        at autoConnect (E:\GProject\renite\backend\node_modules\mongoose\node_modules\mongodb\src\operations\execute_operation.ts:147:13)
+        at executeOperation (E:\GProject\renite\backend\node_modules\mongoose\node_modules\mongodb\src\operations\execute_operation.ts:76:25)
+        at FindCursor._initialize (E:\GProject\renite\backend\node_modules\mongoose\node_modules\mongodb\src\cursor\find_cursor.ts:92:44)
+        at FindCursor.cursorInit (E:\GProject\renite\backend\node_modules\mongoose\node_modules\mongodb\src\cursor\abstract_cursor.ts:916:32)
+        at FindCursor.fetchBatch (E:\GProject\renite\backend\node_modules\mongoose\node_modules\mongodb\src\cursor\abstract_cursor.ts:954:18)
+        at FindCursor.next (E:\GProject\renite\backend\node_modules\mongoose\node_modules\mongodb\src\cursor\abstract_cursor.ts:572:20)
+        at Collection.findOne (E:\GProject\renite\backend\node_modules\mongoose\node_modules\mongodb\src\collection.ts:552:33)
+        at NativeCollection.<computed> [as findOne] (E:\GProject\renite\backend\node_modules\mongoose\lib\drivers\node-mongodb-native\collection.js:195:33)
+        at model.Query._findOne (E:\GProject\renite\backend\node_modules\mongoose\lib\query.js:2773:45)
+        at maybeTracedQueryExec (E:\GProject\renite\backend\node_modules\mongoose\lib\query.js:4796:83)
+        at processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at Object.login (E:\GProject\renite\backend\services\auth.service.js:62:18)
+        at login (E:\GProject\renite\backend\controllers\auth.controller.js:55:20) {
+      errorLabelSet: Set(0) {}
+    }".
+
+    [0m [90m 60 |[39m     [36mconst[39m user [33m=[39m [36mawait[39m [33mUser[39m[33m.[39mfindById(payload[33m.[39msub)[33m;[39m
+     [90m 61 |[39m     [36mif[39m ([33m![39muser [33m||[39m user[33m.[39mrefresh_token [33m!==[39m refreshToken) {
+    [31m[1m>[22m[39m[90m 62 |[39m       [36mthrow[39m [36mnew[39m [33mAppError[39m([35m401[39m[33m,[39m [32m'INVALID_TOKEN'[39m[33m,[39m [32m'Refresh token mismatch'[39m)[33m;[39m
+     [90m    |[39m                  [31m[1m^[22m[39m
+     [90m 63 |[39m     }
+     [90m 64 |[39m     [36mreturn[39m issueTokens(user)[33m;[39m
+     [90m 65 |[39m   }[33m,[39m[0m
+
+      at autoConnect (node_modules/mongoose/node_modules/mongodb/src/operations/execute_operation.ts:147:13)
+      at executeOperation (node_modules/mongoose/node_modules/mongodb/src/operations/execute_operation.ts:76:25)
+      at FindCursor._initialize (node_modules/mongoose/node_modules/mongodb/src/cursor/find_cursor.ts:92:44)
+      at FindCursor.cursorInit (node_modules/mongoose/node_modules/mongodb/src/cursor/abstract_cursor.ts:916:32)
+      at FindCursor.fetchBatch (node_modules/mongoose/node_modules/mongodb/src/cursor/abstract_cursor.ts:954:18)
+      at FindCursor.next (node_modules/mongoose/node_modules/mongodb/src/cursor/abstract_cursor.ts:572:20)
+      at Collection.findOne (node_modules/mongoose/node_modules/mongodb/src/collection.ts:552:33)
+      at NativeCollection.<computed> [as findOne] (node_modules/mongoose/lib/drivers/node-mongodb-native/collection.js:195:33)
+      at model.Query._findOne (node_modules/mongoose/lib/query.js:2773:45)
+      at maybeTracedQueryExec (node_modules/mongoose/lib/query.js:4796:83)
+      at Object.login (services/auth.service.js:62:18)
+      at login (controllers/auth.controller.js:55:20) {
+        errorLabelSet: Set(0) {}
+      }".
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at login (controllers/auth.controller.js:79:5)
+
+
+  ●  Cannot log after tests are done. Did you forget to wait for something async in your test?
+    Attempted to log "Audit log write failed: Client must be connected before running operations".
+
+    [0m[0m
+
+      at console.error (node_modules/@jest/console/build/BufferedConsole.js:127:10)
+      at logAudit (utils/audit.js:35:13)
+
+FAIL tests/conversation.test.js (40.121 s)
+  ● Conversation API › rejects unauthenticated conversation creation
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › a recovery participant can create a conversation
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › creating the same conversation again returns the existing conversation
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › a recovery participant can retrieve the conversation
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › an outsider cannot retrieve the conversation
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › an outsider cannot create a conversation
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › police can retrieve the conversation under existing recovery-case access rules
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › admin can retrieve the conversation under existing recovery-case access rules
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › returns 404 when no conversation exists
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+  ● Conversation API › rejects an invalid recovery case ID
+
+    thrown: "Exceeded timeout of 30000 ms for a hook.
+    Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout."
+
+    [0m [90m 79 |[39m   }
+     [90m 80 |[39m
+    [31m[1m>[22m[39m[90m 81 |[39m   beforeAll([36masync[39m () [33m=>[39m {
+     [90m    |[39m   [31m[1m^[22m[39m
+     [90m 82 |[39m     jest[33m.[39msetTimeout([35m30000[39m)[33m;[39m
+     [90m 83 |[39m
+     [90m 84 |[39m     [36mif[39m ([33m![39mprocess[33m.[39menv[33m.[39m[33mTEST_MONGODB_URL[39m) {[0m
+
+      at beforeAll (tests/conversation.test.js:81:3)
+      at describe (tests/conversation.test.js:14:1)
+
+FAIL tests/report.test.js (17.858 s)
+  ● Console
+
+    console.log
+      ✅ Test DB connected: test
+
+      at Object.log (tests/report.test.js:40:13)
+
+    console.log
+      ✅ Test category: 6a86fe8cbb573331ec3b1dca
+
+      at Object.log (tests/report.test.js:64:13)
+
+    console.log
+      ✅ Test material: 6a86fe8dbb573331ec3b1dcb
+
+      at Object.log (tests/report.test.js:65:13)
+
+    console.error
+      AppError: category_id, material_id, type, title, incident_date are required
+          at Object.create (E:\GProject\renite\backend\services\report.service.js:14:13)
+          at create (E:\GProject\renite\backend\controllers\report.controller.js:6:40)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/report.controller.js:9:19)
+
+    console.error
+      AppError: type must be LOST or FOUND
+          at Object.create (E:\GProject\renite\backend\services\report.service.js:17:13)
+          at create (E:\GProject\renite\backend\controllers\report.controller.js:6:40)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/report.controller.js:9:19)
+
+    console.error
+      AppError: Category not found
+          at Object.create (E:\GProject\renite\backend\services\report.service.js:24:26)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at create (E:\GProject\renite\backend\controllers\report.controller.js:6:20) {
+        status: 404,
+        code: 'CATEGORY_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/report.controller.js:9:19)
+
+    console.error
+      AppError: Material not found
+          at Object.create (E:\GProject\renite\backend\services\report.service.js:25:26)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at create (E:\GProject\renite\backend\controllers\report.controller.js:6:20) {
+        status: 404,
+        code: 'MATERIAL_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/report.controller.js:9:19)
+
+    console.error
+      AppError: Report not found
+          at Object.getById (E:\GProject\renite\backend\services\report.service.js:57:24)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at getById (E:\GProject\renite\backend\controllers\report.controller.js:21:20) {
+        status: 404,
+        code: 'REPORT_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/report.controller.js:23:19)
+
+    console.error
+      AppError: You can only edit your own reports
+          at Object.update (E:\GProject\renite\backend\services\report.service.js:64:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at update (E:\GProject\renite\backend\controllers\report.controller.js:28:20) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/report.controller.js:31:19)
+
+    console.error
+      AppError: status must be one of: ACTIVE, MATCHED, IN_VERIFICATION, RECOVERED, CLOSED, CANCELLED
+          at Object.updateStatus (E:\GProject\renite\backend\services\report.service.js:83:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at updateStatus (E:\GProject\renite\backend\controllers\report.controller.js:36:20) {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/report.controller.js:39:19)
+
+    console.error
+      AppError: Report not found
+          at Object.getById (E:\GProject\renite\backend\services\report.service.js:57:24)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at getById (E:\GProject\renite\backend\controllers\report.controller.js:21:20) {
+        status: 404,
+        code: 'REPORT_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/report.controller.js:23:19)
+
+  ● Report Management API › Public report listing › rejects an invalid type filter
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 200
+
+    [0m [90m 294 |[39m         [33m.[39mquery({ type[33m:[39m [32m"INVALID"[39m })[33m;[39m
+     [90m 295 |[39m
+    [31m[1m>[22m[39m[90m 296 |[39m       expect(response[33m.[39mstatusCode)[33m.[39mtoBe([35m400[39m)[33m;[39m
+     [90m     |[39m                                   [31m[1m^[22m[39m
+     [90m 297 |[39m       expect(response[33m.[39mbody[33m.[39msuccess)[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m 298 |[39m       expect(response[33m.[39mbody[33m.[39merror[33m.[39mcode)[33m.[39mtoBe([32m"VALIDATION_ERROR"[39m)[33m;[39m
+     [90m 299 |[39m     })[33m;[39m[0m
+
+      at Object.toBe (tests/report.test.js:296:35)
+
+  ● Report Management API › Public report listing › rejects an invalid status filter
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 200
+
+    [0m [90m 304 |[39m         [33m.[39mquery({ status[33m:[39m [32m"INVALID"[39m })[33m;[39m
+     [90m 305 |[39m
+    [31m[1m>[22m[39m[90m 306 |[39m       expect(response[33m.[39mstatusCode)[33m.[39mtoBe([35m400[39m)[33m;[39m
+     [90m     |[39m                                   [31m[1m^[22m[39m
+     [90m 307 |[39m       expect(response[33m.[39mbody[33m.[39msuccess)[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m 308 |[39m       expect(response[33m.[39mbody[33m.[39merror[33m.[39mcode)[33m.[39mtoBe([32m"VALIDATION_ERROR"[39m)[33m;[39m
+     [90m 309 |[39m     })[33m;[39m[0m
+
+      at Object.toBe (tests/report.test.js:306:35)
+
+PASS tests/recoveryCase.test.js (40.685 s)
+  ● Console
+
+    console.error
+      AppError: You are not a party to this match
+          at Object.open (E:\GProject\renite\backend\services\recoveryCase.service.js:28:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at open (E:\GProject\renite\backend\controllers\recoveryCase.controller.js:6:26) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/recoveryCase.controller.js:9:19)
+
+    console.error
+      AppError: A recovery case already exists for this match
+          at Object.open (E:\GProject\renite\backend\services\recoveryCase.service.js:40:25)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at open (E:\GProject\renite\backend\controllers\recoveryCase.controller.js:6:26) {
+        status: 409,
+        code: 'CASE_EXISTS'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/recoveryCase.controller.js:9:19)
+
+    console.error
+      AppError: You are not a participant in this recovery case
+          at assertCanViewRecoveryCase (E:\GProject\renite\backend\services\recoveryCaseAuthorization.service.js:15:11)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at Object.getById (E:\GProject\renite\backend\services\recoveryCase.service.js:57:5)
+          at getById (E:\GProject\renite\backend\controllers\recoveryCase.controller.js:14:26) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/recoveryCase.controller.js:16:19)
+
+    console.error
+      AppError: Recovery case not found
+          at Object.getById (E:\GProject\renite\backend\services\recoveryCase.service.js:56:20)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at getById (E:\GProject\renite\backend\controllers\recoveryCase.controller.js:14:26) {
+        status: 404,
+        code: 'CASE_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/recoveryCase.controller.js:16:19)
+
+    console.error
+      AppError: You are not a participant in this recovery case
+          at assertParticipant (E:\GProject\renite\backend\services\recoveryCaseAuthorization.service.js:30:11)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at Object.updateStatus (E:\GProject\renite\backend\services\recoveryCase.service.js:79:7)
+          at updateStatus (E:\GProject\renite\backend\controllers\recoveryCase.controller.js:28:26) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+    console.error
+      AppError: status must be one of: IN_PROGRESS, HANDOFF_PENDING, COMPLETED, CANCELLED, DISPUTED
+          at Object.updateStatus (E:\GProject\renite\backend\services\recoveryCase.service.js:71:13)
+          at updateStatus (E:\GProject\renite\backend\controllers\recoveryCase.controller.js:28:52)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:600:14)
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:610:14)
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:664:3)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+    console.error
+      AppError: Only police/admin can mark a case disputed
+          at Object.updateStatus (E:\GProject\renite\backend\services\recoveryCase.service.js:76:13)
+          at updateStatus (E:\GProject\renite\backend\controllers\recoveryCase.controller.js:28:52)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:600:14)
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:610:14)
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:664:3)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+PASS tests/socket.test.js (41.382 s)
+PASS tests/verification.test.js (36.587 s)
+  ● Console
+
+    console.error
+      AppError: A pending verification already exists for this match
+          at Object.create (E:\GProject\renite\backend\services\verification.service.js:46:25)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at create (E:\GProject\renite\backend\controllers\verification.controller.js:6:26) {
+        status: 409,
+        code: 'VERIFICATION_EXISTS'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/verification.controller.js:9:19)
+
+    console.error
+      AppError: You are not a party to this match
+          at Object.create (E:\GProject\renite\backend\services\verification.service.js:39:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at create (E:\GProject\renite\backend\controllers\verification.controller.js:6:26) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/verification.controller.js:9:19)
+
+    console.error
+      AppError: match_id and method are required
+          at Object.create (E:\GProject\renite\backend\services\verification.service.js:31:13)
+          at create (E:\GProject\renite\backend\controllers\verification.controller.js:6:52)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/verification.controller.js:9:19)
+
+    console.error
+      AppError: method must be one of: MANUAL, IMAGE, SERIAL_NUMBER, OWNERSHIP_PROOF, ADMIN_REVIEW
+          at Object.create (E:\GProject\renite\backend\services\verification.service.js:34:13)
+          at create (E:\GProject\renite\backend\controllers\verification.controller.js:6:52)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/verification.controller.js:9:19)
+
+    console.error
+      AppError: Match not found
+          at loadPopulatedMatch (E:\GProject\renite\backend\services\verification.service.js:12:21)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at Object.create (E:\GProject\renite\backend\services\verification.service.js:37:19)
+          at create (E:\GProject\renite\backend\controllers\verification.controller.js:6:26) {
+        status: 404,
+        code: 'MATCH_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/verification.controller.js:9:19)
+
+    console.error
+      AppError: You are not authorized to view this verification
+          at assertCanView (E:\GProject\renite\backend\services\verification.service.js:24:11)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at Object.getById (E:\GProject\renite\backend\services\verification.service.js:57:5)
+          at getById (E:\GProject\renite\backend\controllers\verification.controller.js:14:26) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/verification.controller.js:16:19)
+
+    console.error
+      AppError: Verification not found
+          at Object.getById (E:\GProject\renite\backend\services\verification.service.js:56:19)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at getById (E:\GProject\renite\backend\controllers\verification.controller.js:14:26) {
+        status: 404,
+        code: 'VERIFICATION_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/verification.controller.js:16:19)
+
+    console.error
+      AppError: You are not authorized to view these verifications
+          at Object.listForMatch (E:\GProject\renite\backend\services\verification.service.js:65:15)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at listForMatch (E:\GProject\renite\backend\controllers\verification.controller.js:21:27) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/verification.controller.js:23:19)
+
+    console.error
+      AppError: status must be one of: VERIFIED, REJECTED
+          at Object.updateStatus (E:\GProject\renite\backend\services\verification.service.js:78:13)
+          at updateStatus (E:\GProject\renite\backend\controllers\verification.controller.js:35:52)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:44:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:600:14)
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:610:14)
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:664:3)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+    console.error
+      AppError: This verification has already been reviewed
+          at Object.updateStatus (E:\GProject\renite\backend\services\verification.service.js:83:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at updateStatus (E:\GProject\renite\backend\controllers\verification.controller.js:35:26) {
+        status: 409,
+        code: 'VERIFICATION_ALREADY_REVIEWED'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+PASS tests/message.test.js (23.763 s)
+  ● Console
+
+    console.error
+      AppError: You are not a participant in this recovery case
+          at assertCanViewRecoveryCase (E:\GProject\renite\backend\services\recoveryCaseAuthorization.service.js:15:11)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at assertCanAccessConversation (E:\GProject\renite\backend\services\message.service.js:33:3)
+          at Object.send (E:\GProject\renite\backend\services\message.service.js:46:5)
+          at send (E:\GProject\renite\backend\controllers\message.controller.js:6:21) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/message.controller.js:9:19)
+
+    console.error
+      AppError: body is required
+          at Object.send (E:\GProject\renite\backend\services\message.service.js:39:13)
+          at send (E:\GProject\renite\backend\controllers\message.controller.js:6:42)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:600:14)
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:610:14)
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:664:3)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/message.controller.js:9:19)
+
+    console.error
+      AppError: message_type must be TEXT or IMAGE
+          at Object.send (E:\GProject\renite\backend\services\message.service.js:42:13)
+          at send (E:\GProject\renite\backend\controllers\message.controller.js:6:42)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:600:14)
+          at param (E:\GProject\renite\backend\node_modules\router\index.js:610:14)
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:664:3)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/message.controller.js:9:19)
+
+    console.error
+      AppError: Conversation not found
+          at loadConversation (E:\GProject\renite\backend\services\message.service.js:19:11)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at Object.send (E:\GProject\renite\backend\services\message.service.js:45:26)
+          at send (E:\GProject\renite\backend\controllers\message.controller.js:6:21) {
+        status: 404,
+        code: 'CONVERSATION_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/message.controller.js:9:19)
+
+    console.error
+      AppError: You are not a participant in this recovery case
+          at assertCanViewRecoveryCase (E:\GProject\renite\backend\services\recoveryCaseAuthorization.service.js:15:11)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at assertCanAccessConversation (E:\GProject\renite\backend\services\message.service.js:33:3)
+          at Object.list (E:\GProject\renite\backend\services\message.service.js:58:5)
+          at list (E:\GProject\renite\backend\controllers\message.controller.js:14:20) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/message.controller.js:16:19)
+
+    console.error
+      AppError: You can only edit your own messages
+          at Object.editOwn (E:\GProject\renite\backend\services\message.service.js:79:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at editOwn (E:\GProject\renite\backend\controllers\message.controller.js:21:21) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/message.controller.js:24:19)
+
+    console.error
+      AppError: Message not found
+          at Object.editOwn (E:\GProject\renite\backend\services\message.service.js:77:25)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at editOwn (E:\GProject\renite\backend\controllers\message.controller.js:21:21) {
+        status: 404,
+        code: 'MESSAGE_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/message.controller.js:24:19)
+
+    console.error
+      AppError: You can only delete your own messages
+          at Object.softDeleteOwn (E:\GProject\renite\backend\services\message.service.js:94:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at softDeleteOwn (E:\GProject\renite\backend\controllers\message.controller.js:29:20) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+PASS tests/match.test.js (25.798 s)
+  ● Console
+
+    console.error
+      AppError: Match not found
+          at Object.getById (E:\GProject\renite\backend\services\match.service.js:84:23)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at getById (E:\GProject\renite\backend\controllers\match.controller.js:22:19) {
+        status: 404,
+        code: 'MATCH_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/match.controller.js:24:19)
+
+    console.error
+      AppError: Not authorized to act on this match
+          at Object.updateStatus (E:\GProject\renite\backend\services\match.service.js:93:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at updateStatus (E:\GProject\renite\backend\controllers\match.controller.js:29:19) {
+        status: 403,
+        code: 'FORBIDDEN'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+    console.error
+      AppError: status must be ACCEPTED or REJECTED
+          at Object.updateStatus (E:\GProject\renite\backend\services\match.service.js:96:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at updateStatus (E:\GProject\renite\backend\controllers\match.controller.js:29:19) {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+(node:11824) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+(node:11824) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+PASS tests/profile.test.js (15.339 s)
+  ● Console
+
+    console.error
+      AppError: Profile already exists
+          at Object.createProfile (E:\GProject\renite\backend\services\profile.service.js:67:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at createProfile (E:\GProject\renite\backend\controllers\profile.controller.js:19:21) {
+        status: 409,
+        code: 'PROFILE_EXISTS'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/profile.controller.js:33:5)
+
+    console.error
+      AppError: first_name cannot be empty
+          at validateProfileFields (E:\GProject\renite\backend\services\profile.service.js:25:11)
+          at Object.validateProfileFields [as updateMyProfile] (E:\GProject\renite\backend\services\profile.service.js:115:5)
+          at updateMyProfile (E:\GProject\renite\backend\controllers\profile.controller.js:39:42)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/profile.controller.js:56:5)
+
+    console.error
+      AppError: bio must be 500 characters or less
+          at validateProfileFields (E:\GProject\renite\backend\services\profile.service.js:33:11)
+          at Object.validateProfileFields [as updateMyProfile] (E:\GProject\renite\backend\services\profile.service.js:115:5)
+          at updateMyProfile (E:\GProject\renite\backend\controllers\profile.controller.js:39:42)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at next (E:\GProject\renite\backend\middleware\auth.middleware.js:14:5)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/profile.controller.js:56:5)
+
+    console.error
+      AppError: Profile not found
+          at Object.getMyProfile (E:\GProject\renite\backend\services\profile.service.js:52:13)
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at getMyProfile (E:\GProject\renite\backend\controllers\profile.controller.js:6:21) {
+        status: 404,
+        code: 'PROFILE_NOT_FOUND'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/router/index.js:688:15
+      at next (node_modules/router/index.js:276:14)
+      at next (node_modules/router/lib/route.js:132:14)
+      at next (controllers/profile.controller.js:13:5)
+
+PASS tests/search.test.js (27.473 s)
+  ● Console
+
+    console.log
+      ✅ Test DB connected: test
+
+      at Object.log (tests/search.test.js:39:13)
+
+    console.log
+      ✅ Search test fixtures created
+
+      at Object.log (tests/search.test.js:166:13)
+
+    console.error
+      AppError: type must be LOST or FOUND
+          at Object.searchReports (E:\GProject\renite\backend\services\search.service.js:12:13)
+          at searchReports (E:\GProject\renite\backend\controllers\search.controller.js:5:40)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+    console.error
+      AppError: status must be one of: ACTIVE, MATCHED, IN_VERIFICATION, RECOVERED, CLOSED, CANCELLED
+          at Object.searchReports (E:\GProject\renite\backend\services\search.service.js:15:13)
+          at searchReports (E:\GProject\renite\backend\controllers\search.controller.js:5:40)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at next (E:\GProject\renite\backend\node_modules\router\lib\route.js:157:13)
+          at Route.dispatch (E:\GProject\renite\backend\node_modules\router\lib\route.js:117:3)
+          at handle (E:\GProject\renite\backend\node_modules\router\index.js:435:11)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at E:\GProject\renite\backend\node_modules\router\index.js:295:15
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at router.handle (E:\GProject\renite\backend\node_modules\router\index.js:186:3)
+          at router (E:\GProject\renite\backend\node_modules\router\index.js:60:12)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at next (E:\GProject\renite\backend\middleware\request-id.js:7:3)
+          at Layer.handleRequest (E:\GProject\renite\backend\node_modules\router\lib\layer.js:152:17)
+          at trimPrefix (E:\GProject\renite\backend\node_modules\router\index.js:342:13)
+          at E:\GProject\renite\backend\node_modules\router\index.js:297:9
+          at processParams (E:\GProject\renite\backend\node_modules\router\index.js:582:12)
+          at next (E:\GProject\renite\backend\node_modules\router\index.js:291:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:779:7
+          at processTicksAndRejections (node:internal/process/task_queues:104:5)
+          at E:\GProject\renite\backend\node_modules\express-rate-limit\dist\index.mjs:663:5 {
+        status: 400,
+        code: 'VALIDATION_ERROR'
+      }
+
+    [0m [90m 1 |[39m [36mexport[39m [36mfunction[39m errorHandler(err[33m,[39m req[33m,[39m res[33m,[39m next) {
+    [31m[1m>[22m[39m[90m 2 |[39m   console[33m.[39merror(err)[33m;[39m
+     [90m   |[39m           [31m[1m^[22m[39m
+     [90m 3 |[39m   [36mconst[39m status [33m=[39m err[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m
+     [90m 4 |[39m   [36mconst[39m code [33m=[39m err[33m.[39mcode [33m||[39m [32m'INTERNAL_ERROR'[39m[33m;[39m
+     [90m 5 |[39m   [36mconst[39m message [33m=[39m status [33m<[39m [35m500[39m [33m?[39m err[33m.[39mmessage [33m:[39m [32m'Something went wrong'[39m[33m;[39m[0m
+
+      at errorHandler (middleware/error.middleware.js:2:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at Immediate.next (node_modules/router/index.js:291:5)
+      at Immediate._onImmediate (node_modules/router/index.js:688:15)
+
+PASS tests/health.test.js
+
+Test Suites: 2 failed, 8 passed, 10 total
+Tests:       12 failed, 133 passed, 145 total
+Snapshots:   0 total
+Time:        273.881 s
+Ran all test suites.
