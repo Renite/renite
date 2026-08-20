@@ -11,9 +11,12 @@ import Volunteers from './views/Volunteers';
 import MissingPersonDetail from './views/MissingPersonDetail';
 import MissingPersonList from './views/MissingPersonList';
 import EmergencyDesk from './views/EmergencyDesk';
+import LanguageProvider from './context/LanguageContext';
+import Rewards from './views/Rewards';
 
 export default function AppClient() {
   return (
+    <LanguageProvider>
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<ClientLayout />}>
@@ -22,7 +25,11 @@ export default function AppClient() {
         <Route path="assets" element={<AssetTracker />} />
         <Route path="map" element={<MapView />} />
         <Route path="chat" element={<Chat />} />
-        <Route path="profile" element={<Profile />} />
+        <Route path="rewards" element={<Rewards />} />
+
+        {/* FIXED: Removed the leading slash from "profile" */}
+        <Route path="profile" element={<Profile />} /> 
+        
         <Route path="emergency-report" element={<EmergencyReport />} />
         <Route path="volunteers" element={<Volunteers />} />
         <Route path="track" element={<MissingPersonDetail />} />
@@ -39,5 +46,6 @@ export default function AppClient() {
         <Route path="report" element={<EmergencyDesk />} />
       </Route>
     </Routes>
+    </LanguageProvider>
   );
 }

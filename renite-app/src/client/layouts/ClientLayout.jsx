@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import BottomNav from '../components/BottomNav';
-
+import { Award } from 'lucide-react';
 const LANGUAGES = [
   { code: 'EN', label: 'English' },
   { code: 'AM', label: 'አማርኛ' },
@@ -28,11 +28,7 @@ export default function ClientLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Dummy Notifications Data
-  const [notifications, setNotifications] = useState([
-    { id: 1, text: 'New asset logged in your sector.', time: '2m ago', unread: true },
-    { id: 2, text: 'Volunteer verification complete.', time: '1h ago', unread: true },
-    { id: 3, text: 'Emergency protocol updated.', time: '3h ago', unread: true },
-  ]);
+  const [notifications, setNotifications] = useState([]);
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
@@ -54,6 +50,7 @@ export default function ClientLayout() {
     { path: '/volunteers', label: 'Volunteers', icon: Users },
     { path: '/missing-person', label: 'Missing Persons', icon: FileText },
     { path: '/profile', label: 'Profile', icon: User },
+    { path: '/rewards', label: 'Rewards & Bounties', icon: Award },
   ];
 
   const isRtl = i18n.language === 'AR';

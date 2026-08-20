@@ -1,99 +1,129 @@
-<<<<<<< HEAD
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Edit3, Shield, CreditCard, Bell, Settings, LogOut, X } from 'lucide-react';
-=======
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../services/api';
+import { supabase } from '../../supabase';
 import { Edit3, Shield, CreditCard, Bell, Settings, LogOut, X, Loader2 } from 'lucide-react';
->>>>>>> feature/backend-setup
 
 export default function Profile() {
   const navigate = useNavigate();
 
-  // User state
-<<<<<<< HEAD
-  const [user, setUser] = useState({
-    name: 'Abebe Girma',
-    nationalId: 'FYD-**** 9042',
-    casesFiled: 4,
-    resolved: 3,
-    points: 280,
-  });
-=======
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
->>>>>>> feature/backend-setup
 
   // Modal State ('edit' | 'security' | 'payment' | 'notifications' | 'settings' | null)
   const [activeModal, setActiveModal] = useState(null);
 
   // Interactive form states
-<<<<<<< HEAD
-  const [editForm, setEditForm] = useState({ name: user.name });
-=======
   const [editForm, setEditForm] = useState({ name: '' });
->>>>>>> feature/backend-setup
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [securitySettings, setSecuritySettings] = useState({ twoFactor: true, biometric: false });
   const [paymentMethods] = useState([{ id: 1, type: 'TeleBirr / Chapa', number: '+251 9*** **42' }]);
   const [accountSettings, setAccountSettings] = useState({ darkMode: false, language: 'English' });
   const [successMessage, setSuccessMessage] = useState('');
 
-<<<<<<< HEAD
-=======
-  // Fetch logged-in user profile on mount
+  // Fetch logged-in user profile from Supabase on mount
   useEffect(() => {
+    let isMounted = true;
+
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const res = await api.get('/users/profile');
-        const userData = res.data.data || res.data;
+        setError(null);
+
+        // DEBUG: Let's see what Supabase actually returns
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log("🔍 SUPABASE SESSION DEBUG:", { session, sessionError });
+        
+        if (sessionError || !session?.user) {
+          console.warn("⚠️ Redirecting to login because session is missing or errored.");
+          if (isMounted) navigate('/login');
+          return;
+        }
+
+        const authUser = session.user;
+
+        // 2. Fetch additional profile record from your 'profiles' table
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', authUser.id)
+          .maybeSingle();
+
+        if (!isMounted) return;
+
+        const userData = {
+          id: authUser.id,
+          email: authUser.email,
+          name: profileData?.name || profileData?.full_name || authUser.user_metadata?.full_name || 'User',
+          avatarUrl: profileData?.avatar_url || authUser.user_metadata?.avatar_url,
+          nationalId: profileData?.national_id || profileData?.fayda_id || 'FYD-**** 9042',
+          casesFiled: profileData?.cases_filed || 0,
+          resolved: profileData?.resolved_cases || 0,
+          points: profileData?.points || 0,
+          ...profileData
+        };
+
         setUser(userData);
-        setEditForm({ name: userData.name || userData.fullName || '' });
+        setEditForm({ name: userData.name });
       } catch (err) {
-        console.error(err);
-        setError('Failed to load profile details.');
+        console.error('Profile fetch error:', err);
+        if (isMounted) setError('Failed to load profile details.');
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
-    fetchProfile();
-  }, []);
+    void fetchProfile();
 
->>>>>>> feature/backend-setup
-  // Sign out handler
-  const handleSignOut = () => {
-    localStorage.removeItem('authToken');
-    navigate('/login');
+    // 3. Listen for actual auth state changes (FIXED to rely only on SIGNED_OUT event)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/login');
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription?.unsubscribe();
+    };
+  }, [navigate]);
+
+  // Sign out handler using Supabase Auth
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate('/login');
+    } catch (err) {
+      console.error('Sign out error:', err);
+      navigate('/login');
+    }
   };
 
-  // Save profile changes handler
-<<<<<<< HEAD
-  const handleSaveProfile = (e) => {
-    e.preventDefault();
-    setUser({ ...user, name: editForm.name });
-    setSuccessMessage('Profile updated successfully!');
-    setActiveModal(null);
-    setTimeout(() => setSuccessMessage(''), 3000);
-=======
+  // Save profile changes handler to Supabase
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.put('/users/profile', { name: editForm.name });
-      const updatedUser = res.data.data || res.data;
-      setUser(updatedUser);
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      // Update name in Supabase database table ('profiles')
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ name: editForm.name, updated_at: new Date() })
+        .eq('id', authUser.id);
+
+      if (updateError) {
+        console.warn('Profiles table update notice:', updateError.message);
+      }
+
+      setUser((prev) => ({ ...prev, name: editForm.name }));
       setSuccessMessage('Profile updated successfully!');
       setActiveModal(null);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      console.error(err);
+      console.error('Profile update error:', err);
       alert('Failed to update profile on the server.');
     }
->>>>>>> feature/backend-setup
   };
 
   const options = [
@@ -104,10 +134,6 @@ export default function Profile() {
     { icon: Settings, label: 'Account Settings', color: 'text-slate-600', modal: 'settings' }
   ];
 
-<<<<<<< HEAD
-  return (
-    <div className="bg-slate-50 min-h-screen pb-6">
-=======
   if (loading) {
     return (
       <div className="flex flex-col h-screen bg-slate-50 items-center justify-center max-w-md mx-auto">
@@ -128,24 +154,16 @@ export default function Profile() {
     );
   }
 
-  const displayName = user.name || user.fullName || 'User';
+  const displayName = user.name || 'User';
   const displayInitials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
-  const nationalId = user.nationalId || user.faydaId || 'FYD-**** 9042';
+  const nationalId = user.nationalId || 'FYD-**** 9042';
 
   return (
-    <div className="bg-slate-50 min-h-screen pb-6 max-w-md mx-auto relative">
->>>>>>> feature/backend-setup
+    <div className="bg-slate-50 min-h-screen pb-20 max-w-md mx-auto relative">
       {/* Profile Header */}
       <div className="bg-slate-900 pt-6 pb-20 px-6 rounded-b-[40px] relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-<<<<<<< HEAD
-            <div className="w-14 h-14 rounded-full bg-slate-700 border-2 border-slate-600 text-white flex items-center justify-center font-bold text-xl">
-              {user.name.split(' ').map(n => n[0]).join('')}
-            </div>
-            <div>
-              <h2 className="text-white font-bold text-lg">{user.name}</h2>
-=======
             <div className="w-14 h-14 rounded-full bg-slate-700 border-2 border-slate-600 text-white flex items-center justify-center font-bold text-xl overflow-hidden">
               {user.avatarUrl ? (
                 <img src={user.avatarUrl} alt={displayName} className="w-full h-full object-cover" />
@@ -155,18 +173,11 @@ export default function Profile() {
             </div>
             <div>
               <h2 className="text-white font-bold text-lg">{displayName}</h2>
->>>>>>> feature/backend-setup
-              <p className="text-slate-400 text-xs flex items-center gap-1">
-                Fayda ID Verified
-              </p>
+              <p className="text-slate-400 text-xs flex items-center gap-1">Fayda ID Verified</p>
             </div>
           </div>
           <button 
-<<<<<<< HEAD
-            onClick={() => { setEditForm({ name: user.name }); setActiveModal('edit'); }}
-=======
             onClick={() => { setEditForm({ name: displayName }); setActiveModal('edit'); }}
->>>>>>> feature/backend-setup
             className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-700 transition"
           >
             <Edit3 size={16} />
@@ -189,11 +200,7 @@ export default function Profile() {
             </div>
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase">National ID</p>
-<<<<<<< HEAD
-              <p className="font-mono text-sm font-bold text-slate-800 mt-0.5">{user.nationalId}</p>
-=======
               <p className="font-mono text-sm font-bold text-slate-800 mt-0.5">{nationalId}</p>
->>>>>>> feature/backend-setup
             </div>
           </div>
           <span className="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full">Active</span>
@@ -201,7 +208,6 @@ export default function Profile() {
 
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
-<<<<<<< HEAD
             <p className="font-bold text-xl text-slate-900">{user.casesFiled}</p>
             <p className="text-[10px] text-slate-500 mt-1">Cases Filed</p>
           </div>
@@ -211,17 +217,6 @@ export default function Profile() {
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
             <p className="font-bold text-xl text-slate-900">{user.points}</p>
-=======
-            <p className="font-bold text-xl text-slate-900">{user.casesFiled ?? 0}</p>
-            <p className="text-[10px] text-slate-500 mt-1">Cases Filed</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
-            <p className="font-bold text-xl text-slate-900">{user.resolved ?? 0}</p>
-            <p className="text-[10px] text-slate-500 mt-1">Resolved</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
-            <p className="font-bold text-xl text-slate-900">{user.points ?? 0}</p>
->>>>>>> feature/backend-setup
             <p className="text-[10px] text-slate-500 mt-1">Points</p>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { api } from '../../services/api';
-import { Users, FileText, Layers, ShieldAlert, TrendingUp, AlertCircle } from 'lucide-react';
+import { supabase } from '../../supabase'; // Adjust path if needed
+import { Users, FileText, Layers, ShieldAlert, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function AdminDashboardHome() {
   const [stats, setStats] = useState({
@@ -10,15 +10,32 @@ export default function AdminDashboardHome() {
     auditLogsCount: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     async function fetchAdminStats() {
       try {
-        // Fetch overview metrics from your backend database routes
-        const data = await api.get('/admin/stats');
-        setStats(data);
+        setLoading(true);
+        setErrorMsg('');
+
+        // Fetch counts concurrently from Supabase tables
+        // Note: Ensure your table names match your Supabase schema (e.g., profiles, missing_reports, devices, audit_logs)
+        const [usersRes, missingRes, assetsRes, auditRes] = await Promise.all([
+          supabase.from('profiles').select('*', { count: 'exact', head: true }),
+          supabase.from('missing_reports').select('*', { count: 'exact', head: true }),
+          supabase.from('devices').select('*', { count: 'exact', head: true }),
+          supabase.from('audit_logs').select('*', { count: 'exact', head: true }),
+        ]);
+
+        setStats({
+          usersCount: usersRes.count ?? 0,
+          missingCount: missingRes.count ?? 0,
+          assetsCount: assetsRes.count ?? 0,
+          auditLogsCount: auditRes.count ?? 0,
+        });
       } catch (error) {
-        console.error('Failed to load admin metrics:', error);
+        console.error('Failed to load admin metrics from Supabase:', error);
+        setErrorMsg('Failed to sync metrics with Supabase database.');
       } finally {
         setLoading(false);
       }
@@ -35,8 +52,9 @@ export default function AdminDashboardHome() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-400 text-sm">
-        Syncing with MongoDB Atlas...
+      <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-sm space-y-2">
+        <Loader2 className="w-5 h-5 animate-spin text-slate-600" />
+        <span>Syncing with Supabase database...</span>
       </div>
     );
   }
@@ -44,6 +62,14 @@ export default function AdminDashboardHome() {
   return (
     <div className="space-y-4 animate-in fade-in duration-200">
       
+      {/* Error Alert */}
+      {errorMsg && (
+        <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-700 text-xs">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
       {/* Welcome Banner Card */}
       <div 
         className="p-5 rounded-2xl text-white shadow-sm flex items-center justify-between"
@@ -76,7 +102,7 @@ export default function AdminDashboardHome() {
               <div>
                 <h3 className="text-xl font-bold text-slate-900">{item.count}</h3>
                 <span className="text-[10px] text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live database sync
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Supabase live sync
                 </span>
               </div>
             </div>
@@ -94,8 +120,8 @@ export default function AdminDashboardHome() {
           <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 text-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-500 mt-1 flex-shrink-0"></span>
             <div>
-              <p className="font-semibold text-slate-800">MongoDB Atlas Cluster Active</p>
-              <p className="text-slate-500 text-[11px] mt-0.5">All Mongoose models connected successfully.</p>
+              <p className="font-semibold text-slate-800">Supabase Connection Active</p>
+              <p className="text-slate-500 text-[11px] mt-0.5">All table telemetry queries executed successfully.</p>
             </div>
           </div>
         </div>

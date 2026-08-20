@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, Monitor, Heart, Star, Activity, Users, Laptop, Smartphone, CheckCircle, X, ChevronRight } from 'lucide-react';
-=======
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../services/api';
+import { supabase } from '../../supabase';
 import { 
   AlertTriangle, 
   Monitor, 
@@ -20,13 +15,10 @@ import {
   ChevronRight, 
   Loader2 
 } from 'lucide-react';
->>>>>>> feature/backend-setup
 
 export default function Home() {
   const navigate = useNavigate();
   const [selectedItem, setSelectedItem] = useState(null);
-<<<<<<< HEAD
-=======
   const [activeAlerts, setActiveAlerts] = useState([]);
   const [recentItems, setRecentItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,18 +29,33 @@ export default function Home() {
       setLoading(true);
       setError(null);
 
-      // Fetch live data from database endpoints in parallel
-      const [alertsRes, assetsRes] = await Promise.all([
-        api.get('/missing-persons').catch(() => ({ data: { data: [] } })),
-        api.get('/assets').catch(() => ({ data: { data: [] } })),
+      // Fetch live data from Supabase tables in parallel
+      const [alertsRes, devicesRes] = await Promise.all([
+        supabase
+          .from('missing_persons')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(5),
+        supabase
+          .from('devices')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(5)
       ]);
 
-      // Handle standard response envelopes ({ success: true, data: [...] }) or direct arrays
-      const alertsList = alertsRes.data?.data || alertsRes.data || [];
-      const assetsList = assetsRes.data?.data || assetsRes.data?.assets || assetsRes.data || [];
+      // Set missing persons alerts if table exists and query succeeds
+      if (!alertsRes.error && alertsRes.data) {
+        setActiveAlerts(alertsRes.data);
+      } else {
+        setActiveAlerts([]);
+      }
 
-      setActiveAlerts(Array.isArray(alertsList) ? alertsList : []);
-      setRecentItems(Array.isArray(assetsList) ? assetsList : []);
+      // Set registered assets/devices
+      if (!devicesRes.error && devicesRes.data) {
+        setRecentItems(devicesRes.data);
+      } else {
+        setRecentItems([]);
+      }
     } catch (err) {
       console.error('Dashboard fetch error:', err);
       setError('Failed to synchronize live data from database.');
@@ -64,7 +71,6 @@ export default function Home() {
 
     return () => clearTimeout(timeoutId);
   }, [fetchDashboardData]);
->>>>>>> feature/backend-setup
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -73,40 +79,26 @@ export default function Home() {
     return 'Good Evening';
   };
 
-<<<<<<< HEAD
-  const activeAlerts = [
-    { id: '1', name: 'Yonas Bekele', age: '22y', location: 'Merkato Market, Addis Ababa', time: '3h ago', initials: 'YB' },
-    { id: '2', name: 'Meron Tadesse', age: '19y', location: 'Bole International Airport', time: '8h ago', initials: 'MT' },
-  ];
-
-  const recentItems = [
-    { id: '1', title: 'MacBook Pro 14"', location: 'Bole Road, Addis Ababa', time: '2h ago', tag: 'Electronics', type: 'Laptop', owner: 'Verified Volunteer Held' },
-    { id: '2', title: 'Samsung Galaxy S24', location: 'Hawassa Bus Terminal', time: '5h ago', tag: 'Electronics', type: 'Mobile', owner: 'Secured at Police Post 2' },
-    { id: '3', title: 'Dell XPS Charger', location: 'Dire Dawa Railway Station', time: '1d ago', tag: 'Accessories', type: 'Charger', owner: 'Registered in Hub' },
-    { id: '4', title: 'Logitech MX Keys', location: 'Mekelle City Hall, Tigray', time: '2d ago', tag: 'Electronics', type: 'Keyboard', owner: 'Community Safe Storage' },
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 max-w-md mx-auto p-4 space-y-6">
-=======
   const alertCount = activeAlerts.length;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 max-w-md mx-auto p-4 space-y-6">
       {/* Greeting Header */}
->>>>>>> feature/backend-setup
       <div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{getGreeting()}, EDOM</p>
         <h1 className="text-2xl font-bold text-slate-900 leading-tight mt-1">National Safety Hub</h1>
         <p className="text-sm text-slate-500 mt-1">Ethiopia Nationwide · Community Safety Network</p>
       </div>
 
-<<<<<<< HEAD
-=======
-      {/* Emergency Banner */}
->>>>>>> feature/backend-setup
+      {/* Emergency Banner - Fixed to navigate to the active alert details or directory */}
       <div 
-        onClick={() => navigate('/emergency-report')}
+        onClick={() => {
+          if (activeAlerts.length > 0) {
+            navigate(`/missing/${activeAlerts[0].id}`);
+          } else {
+            navigate('/missing');
+          }
+        }}
         className="bg-red-50 border border-red-100 rounded-2xl p-4 flex items-center justify-between shadow-xs cursor-pointer hover:bg-red-100/60 transition"
       >
         <div className="flex items-center gap-3">
@@ -114,21 +106,14 @@ export default function Home() {
             <AlertTriangle size={18} />
           </div>
           <div>
-<<<<<<< HEAD
-            <h3 className="text-sm font-bold text-red-900">2 Active Missing Person Alerts</h3>
-=======
             <h3 className="text-sm font-bold text-red-900">{alertCount} Active Missing Person Alert{alertCount !== 1 ? 's' : ''}</h3>
->>>>>>> feature/backend-setup
             <p className="text-xs text-red-600 mt-0.5">Ongoing investigation — nationwide...</p>
           </div>
         </div>
         <span className="text-red-600 text-xs font-bold flex items-center gap-0.5">View <ChevronRight className="w-3 h-3" /></span>
       </div>
 
-<<<<<<< HEAD
-=======
       {/* Quick Action Cards */}
->>>>>>> feature/backend-setup
       <div>
         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Quick Actions</p>
         <div className="flex gap-4">
@@ -160,10 +145,7 @@ export default function Home() {
         </div>
       </div>
 
-<<<<<<< HEAD
-=======
       {/* Navigation Shortcuts */}
->>>>>>> feature/backend-setup
       <div className="flex gap-3">
         <button 
           onClick={() => navigate('/rewards')}
@@ -174,7 +156,7 @@ export default function Home() {
         </button>
 
         <button 
-          onClick={() => navigate('/track')}
+          onClick={() => navigate('/missing')}
           className="flex-1 bg-white border border-slate-200 rounded-xl p-3 flex flex-col items-center gap-2 shadow-xs hover:bg-slate-50 transition active:scale-[0.97]"
         >
           <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center"><Activity size={16} /></div>
@@ -190,39 +172,6 @@ export default function Home() {
         </button>
       </div>
 
-<<<<<<< HEAD
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-slate-900">Active Alerts</h2>
-          <span className="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full">2 active</span>
-        </div>
-
-        <div className="space-y-3">
-          {activeAlerts.map((alert) => (
-            <div 
-              key={alert.id}
-              onClick={() => navigate(`/track?code=MP-${alert.id}`)}
-              className="bg-rose-50/50 border border-rose-200/60 rounded-2xl p-3 flex items-center justify-between shadow-xs hover:bg-rose-100/50 cursor-pointer transition"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-rose-100 text-rose-700 font-bold rounded-full flex items-center justify-center text-xs">
-                  {alert.initials}
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900">{alert.name} <span className="text-slate-400 font-normal">• {alert.age}</span></h3>
-                  <p className="text-[10px] text-slate-500">Last seen: {alert.location}</p>
-                </div>
-              </div>
-              <div className="text-right flex flex-col items-end">
-                <span className="bg-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-md">MISSING</span>
-                <p className="text-[10px] text-slate-400 mt-1">{alert.time}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-=======
       {/* Active Alerts Section */}
       <div>
         <div className="flex items-center justify-between mb-3">
@@ -240,36 +189,42 @@ export default function Home() {
               <p className="text-xs text-slate-400">No active missing person alerts recorded in the database.</p>
             </div>
           ) : (
-            activeAlerts.map((alert) => (
-              <div 
-                key={alert._id || alert.id}
-                onClick={() => navigate(`/track?code=MP-${alert._id || alert.id}`)}
-                className="bg-rose-50/50 border border-rose-200/60 rounded-2xl p-3 flex items-center justify-between shadow-xs hover:bg-rose-100/50 cursor-pointer transition"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-rose-100 text-rose-700 font-bold rounded-full flex items-center justify-center text-xs">
-                    {alert.initials || (alert.fullName ? alert.fullName.substring(0, 2).toUpperCase() : 'MP')}
+            activeAlerts.map((alert) => {
+              const fullName = alert.full_name || alert.fullName || 'Unknown';
+              const age = alert.age || 'N/A';
+              const location = alert.last_seen_location || alert.lastSeenLocation || 'Nationwide';
+              const createdDate = alert.created_at ? new Date(alert.created_at).toLocaleDateString() : 'Recent';
+
+              return (
+                <div 
+                  key={alert.id}
+                  onClick={() => navigate(`/missing/${alert.id}`)}
+                  className="bg-rose-50/50 border border-rose-200/60 rounded-2xl p-3 flex items-center justify-between shadow-xs hover:bg-rose-100/50 cursor-pointer transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-rose-100 text-rose-700 font-bold rounded-full flex items-center justify-center text-xs">
+                      {fullName.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-900">{fullName} <span className="text-slate-400 font-normal">• {age}y</span></h3>
+                      <p className="text-[10px] text-slate-500">Last seen: {location}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xs font-bold text-slate-900">{alert.fullName} <span className="text-slate-400 font-normal">• {alert.age}y</span></h3>
-                    <p className="text-[10px] text-slate-500">Last seen: {alert.lastSeenLocation}</p>
+                  <div className="text-right flex flex-col items-end">
+                    <span className="bg-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-md">MISSING</span>
+                    <p className="text-[10px] text-slate-400 mt-1">{createdDate}</p>
                   </div>
                 </div>
-                <div className="text-right flex flex-col items-end">
-                  <span className="bg-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-md">MISSING</span>
-                  <p className="text-[10px] text-slate-400 mt-1">{alert.time || 'Recent'}</p>
-                </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
 
-      {/* Recently Found Items Section */}
->>>>>>> feature/backend-setup
+      {/* Recently Registered / Found Items Section */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-slate-900">Recently Found Items</h2>
+          <h2 className="text-sm font-bold text-slate-900">Recently Registered Assets</h2>
           <button 
             onClick={() => navigate('/assets')} 
             className="text-xs text-indigo-600 font-semibold hover:underline"
@@ -279,41 +234,6 @@ export default function Home() {
         </div>
 
         <div className="space-y-3">
-<<<<<<< HEAD
-          {recentItems.map((item) => (
-            <div 
-              key={item.id}
-              onClick={() => setSelectedItem(item)}
-              className="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-xs hover:border-slate-300 cursor-pointer transition"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center">
-                  {item.type === 'Laptop' ? <Laptop className="w-5 h-5" /> : <Smartphone className="w-5 h-5" />}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-xs font-bold text-slate-900">{item.title}</h3>
-                    <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-bold flex items-center gap-0.5">
-                      <CheckCircle className="w-2.5 h-2.5" /> Safe
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-slate-500">Found at {item.location}</p>
-                  <div className="flex gap-1 mt-1">
-                    <span className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-medium">{item.tag}</span>
-                    <span className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-medium">{item.type}</span>
-                  </div>
-                </div>
-              </div>
-              <span className="text-[10px] text-slate-400">{item.time}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {selectedItem && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative animate-in zoom-in-95 duration-150">
-=======
           {loading ? (
             <div className="flex justify-center py-6">
               <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
@@ -324,21 +244,21 @@ export default function Home() {
             </div>
           ) : (
             recentItems.map((item) => {
-              const itemName = item.name || item.title;
-              const itemCategory = item.category || item.tag || 'Electronics';
-              const itemLocation = item.location;
-              const itemTime = item.time || 'Today';
-              const itemOwner = item.owner || 'Verified Hub Storage';
+              const itemName = item.device_name || item.brand + ' ' + (item.model || '') || 'Registered Asset';
+              const itemCategory = item.device_type || 'Electronics';
+              const itemLocation = item.city || item.region || 'Addis Ababa';
+              const itemTime = item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Today';
+              const itemOwner = item.recovery_token ? `Token: ${item.recovery_token.slice(0, 8)}...` : 'Verified Registry';
               
               return (
                 <div 
-                  key={item._id || item.id}
+                  key={item.id}
                   onClick={() => setSelectedItem({ ...item, title: itemName, tag: itemCategory, location: itemLocation, time: itemTime, owner: itemOwner })}
                   className="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-xs hover:border-slate-300 cursor-pointer transition"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center">
-                      {itemCategory.toLowerCase().includes('mobile') || itemCategory.toLowerCase().includes('phone') ? (
+                      {itemCategory.toLowerCase().includes('phone') || itemCategory.toLowerCase().includes('mobile') ? (
                         <Smartphone className="w-5 h-5" />
                       ) : (
                         <Laptop className="w-5 h-5" />
@@ -351,7 +271,7 @@ export default function Home() {
                           <CheckCircle className="w-2.5 h-2.5" /> Safe
                         </span>
                       </div>
-                      <p className="text-[10px] text-slate-500">Found at {itemLocation}</p>
+                      <p className="text-[10px] text-slate-500">Registered at {itemLocation}</p>
                       <div className="flex gap-1 mt-1">
                         <span className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-medium">{itemCategory}</span>
                       </div>
@@ -369,7 +289,6 @@ export default function Home() {
       {selectedItem && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative">
->>>>>>> feature/backend-setup
             <button 
               onClick={() => setSelectedItem(null)} 
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"
@@ -378,11 +297,7 @@ export default function Home() {
             </button>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center">
-<<<<<<< HEAD
-                {selectedItem.type === 'Laptop' ? <Laptop className="w-6 h-6" /> : <Smartphone className="w-6 h-6" />}
-=======
                 <Laptop className="w-6 h-6" />
->>>>>>> feature/backend-setup
               </div>
               <div>
                 <h3 className="font-bold text-slate-900 text-base">{selectedItem.title}</h3>
@@ -390,22 +305,19 @@ export default function Home() {
               </div>
             </div>
             <div className="space-y-2 text-xs text-slate-600 border-t border-b border-slate-100 py-3">
-              <p><strong>Location Found:</strong> {selectedItem.location}</p>
-              <p><strong>Time Reported:</strong> {selectedItem.time}</p>
+              <p><strong>Location:</strong> {selectedItem.location}</p>
+              <p><strong>Date Registered:</strong> {selectedItem.time}</p>
               <p><strong>Category:</strong> {selectedItem.tag}</p>
+              {selectedItem.serial_number && <p><strong>Serial No:</strong> {selectedItem.serial_number}</p>}
             </div>
             <button 
               onClick={() => {
                 setSelectedItem(null);
-<<<<<<< HEAD
-                navigate(`/track?code=AST-${selectedItem.id}`);
-=======
-                navigate(`/track?code=AST-${selectedItem._id || selectedItem.id}`);
->>>>>>> feature/backend-setup
+                navigate('/assets');
               }}
               className="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 transition"
             >
-              Claim / Track Recovery
+              View in Asset Tracker
             </button>
           </div>
         </div>
