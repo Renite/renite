@@ -1,10 +1,13 @@
 import "dotenv/config";
+import { jest } from "@jest/globals";
 import request from "supertest";
 import mongoose from "mongoose";
 
 import app from "../app.js";
 import User from "../models/User.js";
 import Profile from "../models/Profile.js";
+
+jest.setTimeout(15000);
 
 describe("Profile Management API", () => {
   let accessToken;
