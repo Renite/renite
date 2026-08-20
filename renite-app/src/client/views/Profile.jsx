@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit3, Shield, CreditCard, Bell, Settings, LogOut, X } from 'lucide-react';
+=======
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
+import { Edit3, Shield, CreditCard, Bell, Settings, LogOut, X, Loader2 } from 'lucide-react';
+>>>>>>> feature/backend-setup
 
 export default function Profile() {
   const navigate = useNavigate();
 
   // User state
+<<<<<<< HEAD
   const [user, setUser] = useState({
     name: 'Abebe Girma',
     nationalId: 'FYD-**** 9042',
@@ -13,18 +21,50 @@ export default function Profile() {
     resolved: 3,
     points: 280,
   });
+=======
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+>>>>>>> feature/backend-setup
 
   // Modal State ('edit' | 'security' | 'payment' | 'notifications' | 'settings' | null)
   const [activeModal, setActiveModal] = useState(null);
 
   // Interactive form states
+<<<<<<< HEAD
   const [editForm, setEditForm] = useState({ name: user.name });
+=======
+  const [editForm, setEditForm] = useState({ name: '' });
+>>>>>>> feature/backend-setup
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [securitySettings, setSecuritySettings] = useState({ twoFactor: true, biometric: false });
   const [paymentMethods] = useState([{ id: 1, type: 'TeleBirr / Chapa', number: '+251 9*** **42' }]);
   const [accountSettings, setAccountSettings] = useState({ darkMode: false, language: 'English' });
   const [successMessage, setSuccessMessage] = useState('');
 
+<<<<<<< HEAD
+=======
+  // Fetch logged-in user profile on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const res = await api.get('/users/profile');
+        const userData = res.data.data || res.data;
+        setUser(userData);
+        setEditForm({ name: userData.name || userData.fullName || '' });
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load profile details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+>>>>>>> feature/backend-setup
   // Sign out handler
   const handleSignOut = () => {
     localStorage.removeItem('authToken');
@@ -32,12 +72,28 @@ export default function Profile() {
   };
 
   // Save profile changes handler
+<<<<<<< HEAD
   const handleSaveProfile = (e) => {
     e.preventDefault();
     setUser({ ...user, name: editForm.name });
     setSuccessMessage('Profile updated successfully!');
     setActiveModal(null);
     setTimeout(() => setSuccessMessage(''), 3000);
+=======
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.put('/users/profile', { name: editForm.name });
+      const updatedUser = res.data.data || res.data;
+      setUser(updatedUser);
+      setSuccessMessage('Profile updated successfully!');
+      setActiveModal(null);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update profile on the server.');
+    }
+>>>>>>> feature/backend-setup
   };
 
   const options = [
@@ -48,24 +104,69 @@ export default function Profile() {
     { icon: Settings, label: 'Account Settings', color: 'text-slate-600', modal: 'settings' }
   ];
 
+<<<<<<< HEAD
   return (
     <div className="bg-slate-50 min-h-screen pb-6">
+=======
+  if (loading) {
+    return (
+      <div className="flex flex-col h-screen bg-slate-50 items-center justify-center max-w-md mx-auto">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-900" />
+        <p className="text-xs text-slate-500 mt-2">Loading your profile...</p>
+      </div>
+    );
+  }
+
+  if (error || !user) {
+    return (
+      <div className="flex flex-col h-screen bg-slate-50 items-center justify-center max-w-md mx-auto p-4 text-center">
+        <p className="text-xs text-red-500 mb-4">{error || 'Could not retrieve user data.'}</p>
+        <button onClick={handleSignOut} className="bg-slate-900 text-white text-xs px-4 py-2 rounded-xl">
+          Sign In Again
+        </button>
+      </div>
+    );
+  }
+
+  const displayName = user.name || user.fullName || 'User';
+  const displayInitials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+  const nationalId = user.nationalId || user.faydaId || 'FYD-**** 9042';
+
+  return (
+    <div className="bg-slate-50 min-h-screen pb-6 max-w-md mx-auto relative">
+>>>>>>> feature/backend-setup
       {/* Profile Header */}
       <div className="bg-slate-900 pt-6 pb-20 px-6 rounded-b-[40px] relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
+<<<<<<< HEAD
             <div className="w-14 h-14 rounded-full bg-slate-700 border-2 border-slate-600 text-white flex items-center justify-center font-bold text-xl">
               {user.name.split(' ').map(n => n[0]).join('')}
             </div>
             <div>
               <h2 className="text-white font-bold text-lg">{user.name}</h2>
+=======
+            <div className="w-14 h-14 rounded-full bg-slate-700 border-2 border-slate-600 text-white flex items-center justify-center font-bold text-xl overflow-hidden">
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+              ) : (
+                displayInitials
+              )}
+            </div>
+            <div>
+              <h2 className="text-white font-bold text-lg">{displayName}</h2>
+>>>>>>> feature/backend-setup
               <p className="text-slate-400 text-xs flex items-center gap-1">
                 Fayda ID Verified
               </p>
             </div>
           </div>
           <button 
+<<<<<<< HEAD
             onClick={() => { setEditForm({ name: user.name }); setActiveModal('edit'); }}
+=======
+            onClick={() => { setEditForm({ name: displayName }); setActiveModal('edit'); }}
+>>>>>>> feature/backend-setup
             className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-700 transition"
           >
             <Edit3 size={16} />
@@ -88,7 +189,11 @@ export default function Profile() {
             </div>
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase">National ID</p>
+<<<<<<< HEAD
               <p className="font-mono text-sm font-bold text-slate-800 mt-0.5">{user.nationalId}</p>
+=======
+              <p className="font-mono text-sm font-bold text-slate-800 mt-0.5">{nationalId}</p>
+>>>>>>> feature/backend-setup
             </div>
           </div>
           <span className="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full">Active</span>
@@ -96,6 +201,7 @@ export default function Profile() {
 
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
+<<<<<<< HEAD
             <p className="font-bold text-xl text-slate-900">{user.casesFiled}</p>
             <p className="text-[10px] text-slate-500 mt-1">Cases Filed</p>
           </div>
@@ -105,6 +211,17 @@ export default function Profile() {
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
             <p className="font-bold text-xl text-slate-900">{user.points}</p>
+=======
+            <p className="font-bold text-xl text-slate-900">{user.casesFiled ?? 0}</p>
+            <p className="text-[10px] text-slate-500 mt-1">Cases Filed</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
+            <p className="font-bold text-xl text-slate-900">{user.resolved ?? 0}</p>
+            <p className="text-[10px] text-slate-500 mt-1">Resolved</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center">
+            <p className="font-bold text-xl text-slate-900">{user.points ?? 0}</p>
+>>>>>>> feature/backend-setup
             <p className="text-[10px] text-slate-500 mt-1">Points</p>
           </div>
         </div>

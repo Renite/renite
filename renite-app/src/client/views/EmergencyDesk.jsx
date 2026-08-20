@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { AlertTriangle, User, MapPin, Phone, Camera, CheckCircle } from 'lucide-react';
+=======
+import { api } from '../../services/api';
+import { AlertTriangle, User, MapPin, Phone, Camera, CheckCircle, Loader2 } from 'lucide-react';
+>>>>>>> feature/backend-setup
 
 export default function EmergencyDesk() {
   const navigate = useNavigate();
@@ -13,10 +18,37 @@ export default function EmergencyDesk() {
     details: '',
   });
   const [submitted, setSubmitted] = useState(false);
+<<<<<<< HEAD
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
+=======
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const payload = {
+        fullName: formData.fullName,
+        age: Number(formData.age),
+        contactPhone: formData.contactPhone,
+        lastSeenLocation: formData.lastSeenLocation,
+        details: formData.details,
+        type: reportType,
+      };
+
+      // Adjust endpoint if your backend route differs (e.g., '/reports' or '/missing-persons')
+      await api.post('/missing-persons', payload);
+      setSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to dispatch alert to the server. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+>>>>>>> feature/backend-setup
   };
 
   return (
@@ -28,12 +60,20 @@ export default function EmergencyDesk() {
 
       <div className="flex bg-slate-200/60 p-1 rounded-xl gap-1 text-xs font-bold">
         <button 
+<<<<<<< HEAD
+=======
+          type="button"
+>>>>>>> feature/backend-setup
           onClick={() => setReportType('MISSING_PERSON')}
           className={`flex-1 py-2 rounded-lg transition ${reportType === 'MISSING_PERSON' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'}`}
         >
           Missing Person
         </button>
         <button 
+<<<<<<< HEAD
+=======
+          type="button"
+>>>>>>> feature/backend-setup
           onClick={() => setReportType('GENERAL_ALERT')}
           className={`flex-1 py-2 rounded-lg transition ${reportType === 'GENERAL_ALERT' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'}`}
         >
@@ -49,6 +89,10 @@ export default function EmergencyDesk() {
           <h2 className="text-base font-bold text-slate-900">Alert Dispatched Successfully</h2>
           <p className="text-xs text-slate-500">Local emergency volunteers and police district posts have been notified.</p>
           <button 
+<<<<<<< HEAD
+=======
+            type="button"
+>>>>>>> feature/backend-setup
             onClick={() => navigate('/track')}
             className="w-full bg-slate-900 text-white py-2.5 rounded-xl text-xs font-bold hover:bg-slate-800 transition"
           >
@@ -133,9 +177,17 @@ export default function EmergencyDesk() {
 
           <button 
             type="submit" 
+<<<<<<< HEAD
             className="w-full bg-rose-500 text-white py-3 rounded-xl font-bold text-xs hover:bg-rose-600 shadow-md shadow-rose-500/20 transition flex items-center justify-center gap-2"
           >
             <AlertTriangle className="w-4 h-4" /> Dispatch Emergency Alert
+=======
+            disabled={loading}
+            className="w-full bg-rose-500 text-white py-3 rounded-xl font-bold text-xs hover:bg-rose-600 shadow-md shadow-rose-500/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <AlertTriangle className="w-4 h-4" />}
+            {loading ? 'Dispatching...' : 'Dispatch Emergency Alert'}
+>>>>>>> feature/backend-setup
           </button>
         </form>
       )}

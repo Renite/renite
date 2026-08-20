@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { api } from '../../services/api'; // Adjust path if your views folder is structured differently
+=======
+import { api } from '../../services/api';
+>>>>>>> feature/backend-setup
 import { Shield, Plus, Search, X, Loader2, AlertCircle } from 'lucide-react';
 
 export default function AssetTracker() {
@@ -15,6 +19,7 @@ export default function AssetTracker() {
 
   // Fetch assets from MongoDB on component load
   useEffect(() => {
+<<<<<<< HEAD
     let isMounted = true;
 
     api.get('/assets')
@@ -25,17 +30,38 @@ export default function AssetTracker() {
       })
       .catch(() => {
         if (isMounted) {
+=======
+    let cancelled = false;
+
+    api.get('/assets')
+      .then((data) => {
+        if (!cancelled) {
+          setAssets(Array.isArray(data) ? data : data.assets || []);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!cancelled) {
+>>>>>>> feature/backend-setup
           setError('Could not connect to database server.');
         }
       })
       .finally(() => {
+<<<<<<< HEAD
         if (isMounted) {
+=======
+        if (!cancelled) {
+>>>>>>> feature/backend-setup
           setLoading(false);
         }
       });
 
     return () => {
+<<<<<<< HEAD
       isMounted = false;
+=======
+      cancelled = true;
+>>>>>>> feature/backend-setup
     };
   }, []);
 
@@ -52,21 +78,32 @@ export default function AssetTracker() {
         date: new Date().toISOString().split('T')[0],
       };
 
+<<<<<<< HEAD
       // Save to MongoDB via backend POST route
       const response = await api.post('/assets', payload);
       const createdAsset = response.asset || response;
 
       // Update local state with database record
+=======
+      const response = await api.post('/assets', payload);
+      const createdAsset = response.asset || response;
+
+>>>>>>> feature/backend-setup
       setAssets([createdAsset, ...assets]);
       setIsRegistering(false);
       setNewAsset({ name: '', category: 'Laptop', serialNumber: '', description: '' });
     } catch (err) {
+<<<<<<< HEAD
+=======
+      console.error(err);
+>>>>>>> feature/backend-setup
       alert('Failed to register asset: ' + err.message);
     }
   };
 
   const handleReportLost = async (id) => {
     try {
+<<<<<<< HEAD
       // Update status in MongoDB
       await api.put(`/assets/${id}`, { status: 'LOST' });
       
@@ -74,6 +111,13 @@ export default function AssetTracker() {
       setAssets(assets.map(a => (a._id === id || a.id === id) ? { ...a, status: 'LOST' } : a));
       setSelectedAsset(null);
     } catch {
+=======
+      await api.put(`/assets/${id}`, { status: 'LOST' });
+      setAssets(assets.map(a => (a._id === id || a.id === id) ? { ...a, status: 'LOST' } : a));
+      setSelectedAsset(null);
+    } catch (err) {
+      console.error(err);
+>>>>>>> feature/backend-setup
       alert('Failed to update asset status.');
     }
   };
@@ -127,7 +171,10 @@ export default function AssetTracker() {
         ))}
       </div>
 
+<<<<<<< HEAD
       {/* Database Asset Feed / List */}
+=======
+>>>>>>> feature/backend-setup
       <div className="space-y-3">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12 space-y-2">
@@ -172,7 +219,10 @@ export default function AssetTracker() {
         )}
       </div>
 
+<<<<<<< HEAD
       {/* Registration Modal */}
+=======
+>>>>>>> feature/backend-setup
       {isRegistering && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <form onSubmit={handleRegisterSubmit} className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative">
@@ -226,7 +276,10 @@ export default function AssetTracker() {
         </div>
       )}
 
+<<<<<<< HEAD
       {/* Asset Detail / Actions Modal */}
+=======
+>>>>>>> feature/backend-setup
       {selectedAsset && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative">
