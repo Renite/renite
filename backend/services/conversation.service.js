@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import Conversation from '../models/Conversation.js';
 import RecoveryCase from '../models/RecoveryCase.js';
-import RecoveryParticipant from '../models/RecoveryParticipant.js';
 import { AppError } from './auth.service.js';
+import { assertCanViewRecoveryCase } from './recoveryCaseAuthorization.service.js';
 
 function assertValidObjectId(id, code, message) {
   if (!mongoose.isValidObjectId(id)) {
@@ -25,23 +25,11 @@ async function loadRecoveryCase(id) {
   return recoveryCase;
 }
 
-async function assertCanAccessRecoveryCase(recoveryCaseId, userId, userRole) {
-  if (['admin', 'police'].includes(userRole)) return;
-
-  const participant = await RecoveryParticipant.findOne({
-    recovery_case_id: recoveryCaseId,
-    user_id: userId,
-  });
-
-  if (!participant) {
-    throw new AppError(403, 'NOT_AUTHORIZED', 'You are not authorized to access this conversation');
-  }
-}
-
 export const conversationService = {
   async getByRecoveryCase(recoveryCaseId, userId, userRole) {
     const recoveryCase = await loadRecoveryCase(recoveryCaseId);
-    await assertCanAccessRecoveryCase(recoveryCase._id, userId, userRole);
+
+    await assertCanViewRecoveryCase(recoveryCase, userId, userRole);
 
     const conversation = await Conversation.findOne({
       recovery_case_id: recoveryCase._id,
@@ -49,7 +37,11 @@ export const conversationService = {
     });
 
     if (!conversation) {
-      throw new AppError(404, 'CONVERSATION_NOT_FOUND', 'Conversation not found');
+      throw new AppError(
+        404,
+        "CONVERSATION_NOT_FOUND",
+        "Conversation not found",
+      );
     }
 
     return conversation;
@@ -57,7 +49,12 @@ export const conversationService = {
 
   async createForRecoveryCase(recoveryCaseId, userId, userRole) {
     const recoveryCase = await loadRecoveryCase(recoveryCaseId);
-    await assertCanAccessRecoveryCase(recoveryCase._id, userId, userRole);
+
+    await assertCanViewRecoveryCase(
+      recoveryCase,
+      userId,
+      userRole
+    );
 
     const existing = await Conversation.findOne({
       recovery_case_id: recoveryCase._id,
@@ -72,16 +69,16 @@ export const conversationService = {
         status: 'ACTIVE',
       });
     } catch (err) {
-      // Protect against concurrent creates when the unique active-conversation
-      // index is hit between the existence check and insert.
       if (err?.code === 11000) {
         const conversation = await Conversation.findOne({
           recovery_case_id: recoveryCase._id,
           deleted_at: null,
         });
+
         if (conversation) return conversation;
       }
+
       throw err;
     }
   },
-};
+}

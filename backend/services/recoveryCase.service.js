@@ -4,6 +4,10 @@ import Match from '../models/Match.js';
 import Verification from '../models/Verification.js';
 import Report from '../models/Report.js';
 import { AppError } from './auth.service.js';
+import {
+  assertCanViewRecoveryCase,
+  assertParticipant,
+} from './recoveryCaseAuthorization.service.js';
 
 async function loadPopulatedMatch(matchId) {
   const match = await Match.findOne({ _id: matchId, deleted_at: null })
@@ -15,18 +19,6 @@ async function loadPopulatedMatch(matchId) {
 
 function isReportOwner(match, userId) {
   return [match.lost_report_id.user_id.toString(), match.found_report_id.user_id.toString()].includes(userId);
-}
-
-async function assertCanView(recoveryCase, userId, userRole) {
-  if (['admin', 'police'].includes(userRole)) return;
-  const isParticipant = await RecoveryParticipant.findOne({ recovery_case_id: recoveryCase._id, user_id: userId });
-  if (!isParticipant) throw new AppError(403, 'FORBIDDEN', 'You are not a participant in this recovery case');
-}
-
-async function assertParticipant(caseId, userId) {
-  const participant = await RecoveryParticipant.findOne({ recovery_case_id: caseId, user_id: userId });
-  if (!participant) throw new AppError(403, 'FORBIDDEN', 'You are not a participant in this recovery case');
-  return participant;
 }
 
 export const recoveryCaseService = {
@@ -62,7 +54,7 @@ export const recoveryCaseService = {
       path: 'match_id', populate: [{ path: 'lost_report_id' }, { path: 'found_report_id' }]
     });
     if (!rc) throw new AppError(404, 'CASE_NOT_FOUND', 'Recovery case not found');
-    await assertCanView(rc, userId, userRole);
+    await assertCanViewRecoveryCase(rc, userId, userRole);
     const participants = await RecoveryParticipant.find({ recovery_case_id: id });
     return { ...rc.toObject(), participants };
   },
