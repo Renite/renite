@@ -1,13 +1,18 @@
 import { Router } from 'express';
+import { create, getById, listForMatch, listPending, updateStatus, getContact } from '../controllers/verification.controller.js';
 import { authenticate, can } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
-// Example: police (and admin, via wildcard) can review verifications.
-// Real verification logic comes with the Verification module later —
-// this route just proves the permission gate works end-to-end.
-router.get('/pending', authenticate, can('verification:review'), (req, res) => {
-  res.status(200).json({ success: true, data: { message: 'Verification queue placeholder' } });
-});
+router.post('/', authenticate, create);
+
+// Must come before /:id, or Express would treat "pending" as an :id value.
+router.get('/pending', authenticate, can('verification:review'), listPending);
+
+router.get('/match/:matchId/contact', authenticate, getContact);
+router.get('/match/:matchId', authenticate, listForMatch);
+router.get('/:id', authenticate, getById);
+
+router.patch('/:id/status', authenticate, can('verification:review'), updateStatus);
 
 export default router;

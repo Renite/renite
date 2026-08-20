@@ -11,7 +11,7 @@ import searchRoutes from "./routes/search.routes.js";
 import matchRoutes from "./routes/match.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import verificationRoutes from "./routes/verification.routes.js";
-import caseRoutes from "./routes/case.routes.js";
+import recoveryCaseRoutes from "./routes/recoveryCase.routes.js";
 import announcementRoutes from "./routes/announcement.routes.js";
 import alertRoutes from "./routes/alert.routes.js";
 
@@ -59,7 +59,7 @@ app.use("/api/v1/search", searchRoutes);
 app.use("/api/v1/matches", matchRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/verification", verificationRoutes);
-app.use("/api/v1/cases", caseRoutes);
+app.use("/api/v1/recovery-cases", recoveryCaseRoutes);
 app.use("/api/v1/announcements", announcementRoutes);
 app.use("/api/v1/alerts", alertRoutes);
 
