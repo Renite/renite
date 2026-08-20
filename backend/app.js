@@ -14,7 +14,7 @@ import verificationRoutes from "./routes/verification.routes.js";
 import recoveryCaseRoutes from "./routes/recoveryCase.routes.js";
 import announcementRoutes from "./routes/announcement.routes.js";
 import alertRoutes from "./routes/alert.routes.js";
-
+import conversationRoutes from "./routes/conversation.routes.js";
 import { errorHandler, notFound } from "./middleware/error.middleware.js";
 
 // Register models
@@ -62,6 +62,7 @@ app.use("/api/v1/verification", verificationRoutes);
 app.use("/api/v1/recovery-cases", recoveryCaseRoutes);
 app.use("/api/v1/announcements", announcementRoutes);
 app.use("/api/v1/alerts", alertRoutes);
+app.use("/api/v1/recovery", conversationRoutes);
 
 // Error handling
 app.use(notFound);
