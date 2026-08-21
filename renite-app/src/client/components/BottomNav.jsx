@@ -18,23 +18,35 @@ import {
   Activity, 
   FileText 
 } from 'lucide-react';
+import QRScannerModal from './QRScannerModal'; // Adjust import path if needed based on folder structure
 
 export default function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
-  console.log("TESTING: BottomNav is rendering!");
   const handleAction = (route) => {
     setIsActionMenuOpen(false);
     navigate(route);
+  };
+
+  const handleOpenScanner = () => {
+    setIsActionMenuOpen(false); // Close the bottom sheet action menu
+    setIsScannerOpen(true);    // Open the QR scanner modal
+  };
+
+  const handleScanSuccess = (data) => {
+    setIsScannerOpen(false);
+    if (data?.id) {
+      navigate(`/assets/${data.id}`);
+    }
   };
 
   return (
     <>
       {/* Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-md border-t border-slate-200 px-4 py-2 flex justify-between items-center z-30">
-        
         <button
           onClick={() => navigate('/home')}
           className={`flex flex-col items-center gap-1 py-1 w-14 transition ${
@@ -153,9 +165,9 @@ export default function BottomNav() {
               </button>
             </div>
 
-            {/* Wide QR Scanner Button */}
+            {/* Wide QR Scanner Button - FIXED TO OPEN SCANNER INSTEAD OF /track */}
             <button 
-              onClick={() => handleAction('/track')} 
+              onClick={handleOpenScanner} 
               className="w-full bg-[#1e1b4b] border-2 border-indigo-500/30 hover:border-indigo-500/60 p-4 rounded-2xl flex items-center justify-between mb-8 hover:scale-[0.98] transition group"
             >
               <div className="flex items-center gap-4">
@@ -208,6 +220,15 @@ export default function BottomNav() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* QR Scanner Modal Triggered from BottomNav */}
+      {isScannerOpen && (
+        <QRScannerModal
+          isOpen={isScannerOpen}
+          onClose={() => setIsScannerOpen(false)}
+          onScanSuccess={handleScanSuccess}
+        />
       )}
     </>
   );

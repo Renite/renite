@@ -118,7 +118,7 @@ export default function Home() {
         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Quick Actions</p>
         <div className="flex gap-4">
           <button 
-            onClick={() => navigate('/assets')} 
+            onClick={() => navigate('/report-asset')} 
             className="flex-1 bg-slate-900 text-white rounded-2xl p-5 text-left flex flex-col justify-between h-40 shadow-lg hover:bg-slate-800 transition active:scale-[0.98]"
           >
             <Monitor size={24} className="text-slate-300" />
