@@ -13,6 +13,8 @@ import MissingPersonList from './views/MissingPersonList';
 import EmergencyDesk from './views/EmergencyDesk';
 import LanguageProvider from './context/LanguageContext';
 import Rewards from './views/Rewards';
+import AssetReport from './views/AssetReport';
+import QRScannerModal from './components/QRScannerModal'; 
 
 export default function AppClient() {
   return (
@@ -26,7 +28,8 @@ export default function AppClient() {
         <Route path="map" element={<MapView />} />
         <Route path="chat" element={<Chat />} />
         <Route path="rewards" element={<Rewards />} />
-
+        <Route path="report-asset" element={<AssetReport/>} />
+        <Route path="qr-scan" element={<QRScannerModal/>} />
         {/* FIXED: Removed the leading slash from "profile" */}
         <Route path="profile" element={<Profile />} /> 
         

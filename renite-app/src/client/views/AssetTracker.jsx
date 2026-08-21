@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../supabase';
-import { Shield, Plus, Search, X, Loader2, AlertCircle } from 'lucide-react';
+import { Shield, Plus, Search, X, Loader2, AlertCircle, ArrowLeft, AlertTriangle } from 'lucide-react';
 
 export default function AssetTracker() {
   const [activeTab, setActiveTab] = useState('ALL');
@@ -120,6 +120,103 @@ export default function AssetTracker() {
     return matchesTab && matchesSearch;
   });
 
+  // ==========================================
+  // DETAIL VIEW (Matches Missing Person Format)
+  // ==========================================
+  if (selectedAsset) {
+    const isLost = selectedAsset.status === 'LOST';
+
+    return (
+      <div className="flex flex-col h-screen bg-slate-50 font-sans max-w-md mx-auto relative shadow-2xl overflow-y-auto pb-24">
+        
+        {/* Dynamic Header Card */}
+        <div className={`${isLost ? 'bg-red-500' : 'bg-slate-900'} text-white p-5 rounded-b-3xl relative shadow-md transition-colors duration-300`}>
+          <div className="flex justify-between items-center mb-4">
+            <span className="bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 backdrop-blur-xs">
+              <span className={`w-2 h-2 rounded-full ${isLost ? 'bg-white animate-pulse' : 'bg-emerald-400'}`}></span>
+              {isLost ? 'Lost Asset Alert' : 'Secured Asset'}
+            </span>
+            <button 
+              onClick={() => setSelectedAsset(null)} 
+              className="text-white/80 hover:text-white p-1 rounded-lg transition"
+              aria-label="Go Back"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full border-2 border-white/40 bg-white/10 overflow-hidden flex items-center justify-center text-white shrink-0">
+              <Shield className={`w-8 h-8 ${isLost ? 'opacity-90' : 'opacity-80'}`} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight">{selectedAsset.name}</h1>
+              <p className="text-xs text-white/90 font-medium mt-0.5 font-mono">
+                S/N: {selectedAsset.serial}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Details Body */}
+        <div className="px-4 -mt-3 relative z-10 flex flex-col gap-4">
+          
+          {/* Device Details Card */}
+          <div className="bg-white rounded-2xl p-4 shadow-xs border border-slate-200">
+            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">Device Details</h2>
+            
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <p className="text-xs text-slate-400">Current Status</p>
+                <p className={`text-sm font-bold ${isLost ? 'text-red-600' : 'text-emerald-600'}`}>
+                  {selectedAsset.status}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400">Category</p>
+                <p className="text-sm font-semibold text-slate-800 truncate">{selectedAsset.device_type || selectedAsset.category || 'N/A'}</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-2">
+              <div>
+                <p className="text-xs text-slate-400 mb-0.5">Recovery Token</p>
+                <p className="text-xs font-bold font-mono text-slate-800 bg-slate-200 inline-block px-2 py-0.5 rounded">
+                  {selectedAsset.recovery_token || 'N/A'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 mb-0.5">Asset Identification</p>
+                <p className="text-xs font-medium text-slate-800">Please present the Recovery Token to authorities to verify ownership if found.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Button */}
+          {selectedAsset.status !== 'LOST' ? (
+            <button 
+              disabled={submitting}
+              onClick={() => handleReportLost(selectedAsset.id)}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-red-500/20 transition flex items-center justify-center gap-2 text-xs disabled:opacity-70"
+            >
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <AlertTriangle className="w-4 h-4" />}
+              {submitting ? 'Updating...' : 'Report Lost / Stolen'}
+            </button>
+          ) : (
+            <div className="bg-red-50 rounded-2xl p-4 border border-red-200 shadow-xs text-center space-y-2">
+              <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+              <h3 className="text-xs font-bold text-red-700 uppercase tracking-wider">Asset Reported Lost</h3>
+              <p className="text-xs text-red-500">This device has been flagged in the database. Ensure authorities have your serial number and recovery token.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // LIST VIEW (Default UI)
+  // ==========================================
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 max-w-md mx-auto p-4 space-y-5">
       <div className="flex items-center justify-between">
@@ -276,42 +373,6 @@ export default function AssetTracker() {
               {submitting ? 'Registering...' : 'Save Registration'}
             </button>
           </form>
-        </div>
-      )}
-
-      {/* Selected Asset Modal */}
-      {selectedAsset && (
-        <div 
-          onClick={() => setSelectedAsset(null)}
-          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50"
-        >
-          <div 
-            onClick={(e) => e.stopPropagation()} 
-            className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative"
-          >
-            <button onClick={() => setSelectedAsset(null)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-              <X className="w-4 h-4" />
-            </button>
-            <h3 className="font-bold text-slate-900 text-sm">{selectedAsset.name}</h3>
-            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1 text-xs">
-              <p><strong>Status:</strong> {selectedAsset.status}</p>
-              <p><strong>Serial:</strong> <span className="font-mono">{selectedAsset.serial}</span></p>
-              <p><strong>Category:</strong> {selectedAsset.device_type || selectedAsset.category || 'N/A'}</p>
-              {selectedAsset.recovery_token && (
-                <p><strong>Recovery Token:</strong> <span className="font-mono text-[10px] bg-slate-200 px-1 rounded">{selectedAsset.recovery_token}</span></p>
-              )}
-            </div>
-            {selectedAsset.status !== 'LOST' && (
-              <button 
-                disabled={submitting}
-                onClick={() => handleReportLost(selectedAsset.id)}
-                className="w-full bg-rose-500 text-white py-2 rounded-xl font-bold text-xs hover:bg-rose-600 transition active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                {submitting ? 'Updating...' : 'Report Lost / Stolen'}
-              </button>
-            )}
-          </div>
         </div>
       )}
     </div>
