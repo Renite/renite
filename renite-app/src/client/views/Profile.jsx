@@ -30,13 +30,16 @@ export default function Profile() {
         setLoading(true);
         setError(null);
 
-        // DEBUG: Let's see what Supabase actually returns
+        // 1. Check Supabase session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         console.log("🔍 SUPABASE SESSION DEBUG:", { session, sessionError });
         
         if (sessionError || !session?.user) {
-          console.warn("⚠️ Redirecting to login because session is missing or errored.");
-          if (isMounted) navigate('/login');
+          console.warn("⚠️ Session is missing or expired.");
+          if (isMounted) {
+            setError('Your session has expired or you are not logged in.');
+            setLoading(false);
+          }
           return;
         }
 
@@ -75,7 +78,7 @@ export default function Profile() {
 
     void fetchProfile();
 
-    // 3. Listen for actual auth state changes (FIXED to rely only on SIGNED_OUT event)
+    // 3. Listen for actual auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         navigate('/login');
@@ -145,10 +148,17 @@ export default function Profile() {
 
   if (error || !user) {
     return (
-      <div className="flex flex-col h-screen bg-slate-50 items-center justify-center max-w-md mx-auto p-4 text-center">
-        <p className="text-xs text-red-500 mb-4">{error || 'Could not retrieve user data.'}</p>
-        <button onClick={handleSignOut} className="bg-slate-900 text-white text-xs px-4 py-2 rounded-xl">
-          Sign In Again
+      <div className="flex flex-col h-screen bg-slate-50 items-center justify-center max-w-md mx-auto p-6 text-center">
+        <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mb-3 mx-auto">
+          <Shield size={24} />
+        </div>
+        <p className="text-sm font-bold text-slate-800 mb-1">Authentication Required</p>
+        <p className="text-xs text-slate-500 mb-6">{error || 'Could not retrieve user data.'}</p>
+        <button 
+          onClick={() => navigate('/login')} 
+          className="w-full bg-slate-900 text-white text-xs font-bold py-3 rounded-xl shadow hover:bg-slate-800 transition"
+        >
+          Sign In to Continue
         </button>
       </div>
     );

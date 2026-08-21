@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom'; // <-- 1. Import BrowserRouter
+import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import AppClient from './client/AppClient';
+import PoliceHome from './client/views/PoliceHome';
 import './index.css';
 
-// (Optional) Your i18n initialization can stay here or in i18n.js
 i18n
   .use(initReactI18next)
   .init({
@@ -69,8 +69,14 @@ i18n
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter> {/* <-- 2. Wrap AppClient with BrowserRouter */}
-      <AppClient />
+    <BrowserRouter>
+      <Routes>
+        {/* 👮‍♂️ ISOLATED POLICE PORTAL */}
+        <Route path="/police-home/*" element={<PoliceHome />} />
+
+        {/* 👨‍👩‍👧‍👦 CITIZEN PORTAL (Handles /, /login, /home, /assets, etc.) */}
+        <Route path="/*" element={<AppClient />} />
+      </Routes>
     </BrowserRouter>
   </React.StrictMode>
 );

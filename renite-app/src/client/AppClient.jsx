@@ -14,7 +14,7 @@ import EmergencyDesk from './views/EmergencyDesk';
 import LanguageProvider from './context/LanguageContext';
 import Rewards from './views/Rewards';
 import AssetReport from './views/AssetReport';
-import QRScannerModal from './components/QRScannerModal'; 
+import QRScannerModal from './components/QRScannerModal';
 
 export default function AppClient() {
   return (
