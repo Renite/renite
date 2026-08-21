@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { api } from "../../services/api";
-import { Package, Plus, Search, Trash2, Edit2, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "../../supabase"; // Adjust path if needed
+import { Package, Plus, Search, Trash2, Edit2, AlertCircle, Loader2 } from "lucide-react";
 
 export default function AssetsInventoryAdmin() {
   const [assets, setAssets] = useState([]);
@@ -8,33 +8,61 @@ export default function AssetsInventoryAdmin() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const fetchAssets = useCallback(async () => {
-    try {
-      setLoading(true);
-      // Adjust endpoint if your backend route differs (e.g., /materials or /assets)
-      const data = await api.get("/materials").catch(() => []);
-      setAssets(Array.isArray(data) ? data : data?.materials || []);
-      setError(null);
-    } catch {
-      setError("Failed to load assets inventory.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    const task = queueMicrotask(() => {
-      void fetchAssets();
-    });
+    let isMounted = true;
+
+    const fetchAssets = async () => {
+      try {
+        setLoading(true);
+        // Fetching from Supabase 'devices' table (change to 'materials' if your table name differs)
+        const { data, error: fetchError } = await supabase
+          .from('devices')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (fetchError) throw fetchError;
+
+        if (!isMounted) return;
+        setAssets(data || []);
+        setError(null);
+      } catch (err) {
+        if (!isMounted) return;
+        console.error(err);
+        setError("Failed to load assets inventory from Supabase.");
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchAssets();
 
     return () => {
-      if (typeof task === "number") clearTimeout(task);
+      isMounted = false;
     };
-  }, [fetchAssets]);
+  }, []);
 
-  const filteredAssets = assets.filter((item) =>
-    (item.name || item.title || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this asset record?")) return;
+    try {
+      const { error: deleteError } = await supabase
+        .from('devices')
+        .delete()
+        .eq('id', id);
+
+      if (deleteError) throw deleteError;
+      setAssets(assets.filter(item => item.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete asset.");
+    }
+  };
+
+  const filteredAssets = assets.filter((item) => {
+    const nameStr = item.name || item.title || `${item.brand || ''} ${item.model || ''}` || "";
+    return nameStr.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   return (
     <div className="space-y-6 animate-in">
@@ -42,7 +70,7 @@ export default function AssetsInventoryAdmin() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Assets & Inventory</h1>
-          <p className="text-sm text-slate-500">Manage items, equipment, and material resources.</p>
+          <p className="text-sm text-slate-500">Manage items, equipment, and material resources via Supabase.</p>
         </div>
         <button 
           onClick={() => alert("Add Item modal can be integrated here.")}
@@ -67,7 +95,9 @@ export default function AssetsInventoryAdmin() {
 
       {/* Content Feed / Table */}
       {loading ? (
-        <div className="text-center py-12 text-slate-400 text-sm">Loading inventory items...</div>
+        <div className="text-center py-12 text-slate-400 text-sm flex items-center justify-center gap-2">
+          <Loader2 className="w-4 h-4 animate-spin" /> Loading inventory items...
+        </div>
       ) : error ? (
         <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl text-rose-700 text-sm flex items-center gap-2">
           <AlertCircle className="w-4 h-4" /> {error}
@@ -84,7 +114,7 @@ export default function AssetsInventoryAdmin() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase bg-slate-50/50">
-                  <th className="py-3 px-4">Item Name</th>
+                  <th className="py-3 px-4">Item Name / Brand</th>
                   <th className="py-3 px-4">Category</th>
                   <th className="py-3 px-4">Quantity / Status</th>
                   <th className="py-3 px-4 text-right">Actions</th>
@@ -92,17 +122,25 @@ export default function AssetsInventoryAdmin() {
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
                 {filteredAssets.map((item, idx) => (
-                  <tr key={item._id || idx} className="hover:bg-slate-50/50 transition">
-                    <td className="py-3.5 px-4 font-medium text-slate-900">{item.name || item.title || "Unnamed Asset"}</td>
-                    <td className="py-3.5 px-4 text-slate-600">{item.category || "General"}</td>
+                  <tr key={item.id || idx} className="hover:bg-slate-50/50 transition">
+                    <td className="py-3.5 px-4 font-medium text-slate-900">
+                      {item.name || item.title || `${item.brand || ''} ${item.model || ''}`.trim() || "Unnamed Asset"}
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-600">{item.category || item.device_type || "General"}</td>
                     <td className="py-3.5 px-4 text-slate-600">
                       <span className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-slate-100 text-slate-700">
                         {item.status || `${item.quantity ?? 1} in stock`}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right space-x-2">
-                      <button className="p-1.5 text-slate-400 hover:text-slate-700 transition"><Edit2 className="w-4 h-4" /></button>
-                      <button className="p-1.5 text-rose-400 hover:text-rose-600 transition"><Trash2 className="w-4 h-4" /></button>
+                      <button className="p-1.5 text-slate-400 hover:text-slate-700 transition" title="Edit Asset"><Edit2 className="w-4 h-4" /></button>
+                      <button 
+                        onClick={() => handleDelete(item.id)}
+                        className="p-1.5 text-rose-400 hover:text-rose-600 transition"
+                        title="Delete Asset"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}

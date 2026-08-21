@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../services/api';
+import { supabase } from '../../supabase'; // Adjust path to your supabase client file
 import { ShieldCheck, Mail, Lock, User, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function AdminAuth() {
@@ -9,7 +9,7 @@ export default function AdminAuth() {
     name: '',
     email: '',
     password: '',
-    adminSecret: '' // Optional key for extra security when creating admin accounts
+    adminSecret: '' 
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,25 +26,46 @@ export default function AdminAuth() {
     setError('');
 
     try {
-      const endpoint = isLogin ? '/auth/login' : '/auth/register';
-      const payload = isLogin 
-        ? { email: formData.email, password: formData.password }
-        : { name: formData.name, email: formData.email, password: formData.password, adminSecret: formData.adminSecret };
+      if (isLogin) {
+        // Supabase Login
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
 
-      const response = await api.post(endpoint, payload);
+        if (authError) throw authError;
 
-      // Assuming your backend returns a token or user session object on success
-      if (response.token || response.success) {
-        if (response.token) {
-          localStorage.setItem('adminToken', response.token);
+        if (data?.session) {
+          localStorage.setItem('adminToken', data.session.access_token);
+          navigate('/admin');
         }
-        // Redirect to the main admin dashboard home
-        navigate('/admin');
       } else {
-        setError(response.message || 'Authentication failed. Please try again.');
+        // Supabase Signup with Metadata
+        const { data, error: authError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              full_name: formData.name,
+              admin_secret: formData.adminSecret,
+            }
+          }
+        });
+
+        if (authError) throw authError;
+
+        // If email confirmation is disabled in Supabase, session is created immediately
+        if (data?.session) {
+          localStorage.setItem('adminToken', data.session.access_token);
+          navigate('/admin');
+        } else {
+          setError('Registration successful! Please check your email to confirm your account before signing in.');
+          setIsLogin(true);
+        }
       }
     } catch (err) {
-      setError(err.message || 'Server connection error. Ensure backend is running.');
+      console.error('Auth error:', err);
+      setError(err.message || 'Authentication failed. Please verify your credentials.');
     } finally {
       setLoading(false);
     }

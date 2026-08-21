@@ -1,43 +1,129 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Edit3, Shield, CreditCard, Bell, Settings, LogOut, X } from 'lucide-react';
+import { supabase } from '../../supabase';
+import { Edit3, Shield, CreditCard, Bell, Settings, LogOut, X, Loader2 } from 'lucide-react';
 
 export default function Profile() {
   const navigate = useNavigate();
 
-  // User state
-  const [user, setUser] = useState({
-    name: 'Abebe Girma',
-    nationalId: 'FYD-**** 9042',
-    casesFiled: 4,
-    resolved: 3,
-    points: 280,
-  });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Modal State ('edit' | 'security' | 'payment' | 'notifications' | 'settings' | null)
   const [activeModal, setActiveModal] = useState(null);
 
   // Interactive form states
-  const [editForm, setEditForm] = useState({ name: user.name });
+  const [editForm, setEditForm] = useState({ name: '' });
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [securitySettings, setSecuritySettings] = useState({ twoFactor: true, biometric: false });
   const [paymentMethods] = useState([{ id: 1, type: 'TeleBirr / Chapa', number: '+251 9*** **42' }]);
   const [accountSettings, setAccountSettings] = useState({ darkMode: false, language: 'English' });
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Sign out handler
-  const handleSignOut = () => {
-    localStorage.removeItem('authToken');
-    navigate('/login');
+  // Fetch logged-in user profile from Supabase on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // DEBUG: Let's see what Supabase actually returns
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log("🔍 SUPABASE SESSION DEBUG:", { session, sessionError });
+        
+        if (sessionError || !session?.user) {
+          console.warn("⚠️ Redirecting to login because session is missing or errored.");
+          if (isMounted) navigate('/login');
+          return;
+        }
+
+        const authUser = session.user;
+
+        // 2. Fetch additional profile record from your 'profiles' table
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', authUser.id)
+          .maybeSingle();
+
+        if (!isMounted) return;
+
+        const userData = {
+          id: authUser.id,
+          email: authUser.email,
+          name: profileData?.name || profileData?.full_name || authUser.user_metadata?.full_name || 'User',
+          avatarUrl: profileData?.avatar_url || authUser.user_metadata?.avatar_url,
+          nationalId: profileData?.national_id || profileData?.fayda_id || 'FYD-**** 9042',
+          casesFiled: profileData?.cases_filed || 0,
+          resolved: profileData?.resolved_cases || 0,
+          points: profileData?.points || 0,
+          ...profileData
+        };
+
+        setUser(userData);
+        setEditForm({ name: userData.name });
+      } catch (err) {
+        console.error('Profile fetch error:', err);
+        if (isMounted) setError('Failed to load profile details.');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    void fetchProfile();
+
+    // 3. Listen for actual auth state changes (FIXED to rely only on SIGNED_OUT event)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/login');
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription?.unsubscribe();
+    };
+  }, [navigate]);
+
+  // Sign out handler using Supabase Auth
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate('/login');
+    } catch (err) {
+      console.error('Sign out error:', err);
+      navigate('/login');
+    }
   };
 
-  // Save profile changes handler
-  const handleSaveProfile = (e) => {
+  // Save profile changes handler to Supabase
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
-    setUser({ ...user, name: editForm.name });
-    setSuccessMessage('Profile updated successfully!');
-    setActiveModal(null);
-    setTimeout(() => setSuccessMessage(''), 3000);
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      // Update name in Supabase database table ('profiles')
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ name: editForm.name, updated_at: new Date() })
+        .eq('id', authUser.id);
+
+      if (updateError) {
+        console.warn('Profiles table update notice:', updateError.message);
+      }
+
+      setUser((prev) => ({ ...prev, name: editForm.name }));
+      setSuccessMessage('Profile updated successfully!');
+      setActiveModal(null);
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Profile update error:', err);
+      alert('Failed to update profile on the server.');
+    }
   };
 
   const options = [
@@ -48,24 +134,50 @@ export default function Profile() {
     { icon: Settings, label: 'Account Settings', color: 'text-slate-600', modal: 'settings' }
   ];
 
+  if (loading) {
+    return (
+      <div className="flex flex-col h-screen bg-slate-50 items-center justify-center max-w-md mx-auto">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-900" />
+        <p className="text-xs text-slate-500 mt-2">Loading your profile...</p>
+      </div>
+    );
+  }
+
+  if (error || !user) {
+    return (
+      <div className="flex flex-col h-screen bg-slate-50 items-center justify-center max-w-md mx-auto p-4 text-center">
+        <p className="text-xs text-red-500 mb-4">{error || 'Could not retrieve user data.'}</p>
+        <button onClick={handleSignOut} className="bg-slate-900 text-white text-xs px-4 py-2 rounded-xl">
+          Sign In Again
+        </button>
+      </div>
+    );
+  }
+
+  const displayName = user.name || 'User';
+  const displayInitials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+  const nationalId = user.nationalId || 'FYD-**** 9042';
+
   return (
-    <div className="bg-slate-50 min-h-screen pb-6">
+    <div className="bg-slate-50 min-h-screen pb-20 max-w-md mx-auto relative">
       {/* Profile Header */}
       <div className="bg-slate-900 pt-6 pb-20 px-6 rounded-b-[40px] relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-slate-700 border-2 border-slate-600 text-white flex items-center justify-center font-bold text-xl">
-              {user.name.split(' ').map(n => n[0]).join('')}
+            <div className="w-14 h-14 rounded-full bg-slate-700 border-2 border-slate-600 text-white flex items-center justify-center font-bold text-xl overflow-hidden">
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+              ) : (
+                displayInitials
+              )}
             </div>
             <div>
-              <h2 className="text-white font-bold text-lg">{user.name}</h2>
-              <p className="text-slate-400 text-xs flex items-center gap-1">
-                Fayda ID Verified
-              </p>
+              <h2 className="text-white font-bold text-lg">{displayName}</h2>
+              <p className="text-slate-400 text-xs flex items-center gap-1">Fayda ID Verified</p>
             </div>
           </div>
           <button 
-            onClick={() => { setEditForm({ name: user.name }); setActiveModal('edit'); }}
+            onClick={() => { setEditForm({ name: displayName }); setActiveModal('edit'); }}
             className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-700 transition"
           >
             <Edit3 size={16} />
@@ -88,7 +200,7 @@ export default function Profile() {
             </div>
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase">National ID</p>
-              <p className="font-mono text-sm font-bold text-slate-800 mt-0.5">{user.nationalId}</p>
+              <p className="font-mono text-sm font-bold text-slate-800 mt-0.5">{nationalId}</p>
             </div>
           </div>
           <span className="bg-emerald-50 text-emerald-600 text-xs font-bold px-3 py-1 rounded-full">Active</span>
