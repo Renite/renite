@@ -3,7 +3,6 @@ import {
   ShieldCheck, 
   Lock, 
   ArrowLeft, 
-  Camera, 
   MapPin, 
   Eye,
   CheckCircle,
@@ -11,19 +10,25 @@ import {
   Info
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "../../supabase";
 
-export default function AppAuth() {
+export default function Login() {
   const navigate = useNavigate();
   
-  // State to manage which screen is currently visible
-  // 'login' | 'step1' | 'step2' | 'step3' | 'device' | 'success'
-  const [view, setView] = useState('login');
+  // State to manage screen flow
+  const [view, setView] = useState('login'); // 'login' | 'step1' | 'step2' | 'step3' | 'device' | 'success'
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [copied, setCopied] = useState(false);
 
-  // Unified state to hold all form data across steps
+  // Unified state across all registration & login steps
   const [formData, setFormData] = useState({
     faydaId: '',
     fullName: '',
     dob: '',
+    dobYear: '',
+    dobMonth: '',
+    dobDay: '',
     gender: '',
     phone: '',
     email: '',
@@ -41,7 +46,8 @@ export default function AppAuth() {
     model: '',
     serial: '',
     color: '',
-    purchaseDate: ''
+    purchaseDate: '',
+    recoveryToken: ''
   });
 
   const handleChange = (e) => {
@@ -51,6 +57,141 @@ export default function AppAuth() {
   const handleNext = (e, nextView) => {
     e.preventDefault();
     setView(nextView);
+  };
+
+  // ---------------------------------------------------------------------------
+  // SUPABASE API: Handle User Login
+  // ---------------------------------------------------------------------------
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const cleanFayda = formData.faydaId.replace(/\s+/g, '');
+
+      // Verify Fayda ID exists in Supabase profiles database
+      const { data: profile, error: profileErr } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('fayda_id', cleanFayda)
+        .maybeSingle();
+
+      if (profileErr) throw profileErr;
+
+      if (!profile) {
+        throw new Error('Fayda ID not registered in national database. Please create an account.');
+      }
+
+      // Proceed to home dashboard
+      navigate('/home');
+    } catch (err) {
+      setErrorMsg(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // SUPABASE API: Handle Account Registration (Step 3 Submit)
+  // ---------------------------------------------------------------------------
+  const handleRegisterAccount = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMsg('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const cleanFayda = formData.faydaId.replace(/\s+/g, '');
+      const userEmail = formData.email || `${cleanFayda}@renite.et`;
+
+      // 1. Create Supabase Auth User
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: userEmail,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName,
+            fayda_id: cleanFayda,
+          },
+        },
+      });
+
+      if (authError) throw authError;
+
+      // 2. Insert Profile Data into Supabase 'profiles' Table
+      const { error: profileError } = await supabase.from('profiles').upsert([
+        {
+          id: authData.user?.id,
+          fayda_id: cleanFayda,
+          full_name: formData.fullName,
+          dob: formData.dob,
+          gender: formData.gender,
+          phone: formData.phone,
+          email: formData.email,
+          region: formData.region,
+          city: formData.city,
+          kebele: formData.kebele,
+          emergency_name: formData.emergencyName,
+          emergency_phone: formData.emergencyPhone,
+          emergency_rel: formData.emergencyRel,
+        },
+      ]);
+
+      if (profileError) throw profileError;
+
+      // Advance to asset registration step
+      setView('device');
+    } catch (err) {
+      setErrorMsg(err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // SUPABASE API: Handle Device Asset Registration
+  // ---------------------------------------------------------------------------
+  const handleRegisterDevice = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const generatedToken = 'RNT-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      const { data: { user } } = await supabase.auth.getUser();
+      const cleanFayda = formData.faydaId.replace(/\s+/g, '');
+
+      // Insert Asset Record into Supabase 'devices' Table
+      const { error: deviceError } = await supabase.from('devices').insert([
+        {
+          user_id: user?.id || null,
+          fayda_id: cleanFayda,
+          device_name: formData.deviceName,
+          device_type: formData.deviceType,
+          brand: formData.brand,
+          model: formData.model,
+          serial_number: formData.serial,
+          color: formData.color,
+          purchase_date: formData.purchaseDate || null,
+          recovery_token: generatedToken,
+        },
+      ]);
+
+      if (deviceError) throw deviceError;
+
+      setFormData((prev) => ({ ...prev, recoveryToken: generatedToken }));
+      setView('success');
+    } catch (err) {
+      setErrorMsg(err.message || 'Device registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ---------------------------------------------------------------------------
@@ -67,6 +208,8 @@ export default function AppAuth() {
           <p className="text-sm text-slate-500 text-center mt-2 max-w-[250px]">National Civic Safety & Asset Recovery Platform</p>
         </div>
 
+        {errorMsg && <div className="w-full bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-xl mb-4 text-center">{errorMsg}</div>}
+
         <div className="w-full bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
@@ -78,7 +221,7 @@ export default function AppAuth() {
             </div>
           </div>
 
-          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); navigate('/home'); }}>
+          <form className="space-y-4" onSubmit={handleLogin}>
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Enter your 10-digit Fayda ID</label>
               <input 
@@ -99,8 +242,8 @@ export default function AppAuth() {
               </p>
             </div>
 
-            <button type="submit" className="w-full bg-slate-500 hover:bg-slate-600 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors mt-2 flex justify-center items-center gap-2">
-              Continue with Fayda &rsaquo;
+            <button type="submit" disabled={loading} className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors mt-2 flex justify-center items-center gap-2">
+              {loading ? 'Authenticating...' : 'Continue with Fayda ›'}
             </button>
           </form>
         </div>
@@ -157,55 +300,85 @@ export default function AppAuth() {
         <div className="p-6">
           <p className="text-xs text-slate-500 mb-6">Your identity and basic details</p>
           
-          <form onSubmit={(e) => handleNext(e, 'step2')} className="space-y-5">
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-2">Profile Photo <span className="text-red-500">*</span></label>
-              <div className="w-full border-2 border-dashed border-red-200 bg-red-50/50 rounded-2xl p-6 flex flex-col items-center justify-center text-slate-600 cursor-pointer">
-                <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-2">
-                  <Camera size={20} className="text-slate-400" />
-                </div>
-                <span className="text-sm font-bold text-slate-800">Upload your photo</span>
-                <span className="text-[10px] text-slate-500 mt-1">Clear face photo - used for identity verification</span>
-              </div>
-              <p className="text-[10px] text-red-500 mt-1">Profile photo is required</p>
-            </div>
-
+          <form onSubmit={(e) => { e.preventDefault(); setView('step2'); }} className="space-y-5">
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Full Name <span className="text-red-500">*</span></label>
-              <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="e.g. Abebe Girma" className="w-full bg-white border border-red-200 rounded-xl p-3 text-sm focus:outline-none" required />
-              <p className="text-[10px] text-red-500 mt-1">Full name is required</p>
+              <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="e.g. Abebe Girma" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Date of Birth <span className="text-red-500">*</span></label>
-                <input type="date" name="dob" value={formData.dob} onChange={handleChange} className="w-full bg-white border border-red-200 rounded-xl p-3 text-sm focus:outline-none" required />
-                <p className="text-[10px] text-red-500 mt-1">Date of birth is required</p>
-              </div>
-              <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Gender <span className="text-red-500">*</span></label>
-                <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-white border border-red-200 rounded-xl p-3 text-sm focus:outline-none" required>
-                  <option value="">Select</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Date of Birth <span className="text-red-500">*</span></label>
+              <div className="grid grid-cols-3 gap-2">
+                <select 
+                  value={formData.dobYear} 
+                  onChange={(e) => {
+                    const year = e.target.value;
+                    const month = formData.dobMonth || '01';
+                    const day = formData.dobDay || '01';
+                    setFormData({ ...formData, dobYear: year, dob: `${year}-${month}-${day}` });
+                  }}
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs focus:outline-none" 
+                  required
+                >
+                  <option value="">Year</option>
+                  {Array.from({ length: 90 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
                 </select>
-                <p className="text-[10px] text-red-500 mt-1">Gender is required</p>
+
+                <select 
+                  value={formData.dobMonth} 
+                  onChange={(e) => {
+                    const month = e.target.value;
+                    const year = formData.dobYear || new Date().getFullYear();
+                    const day = formData.dobDay || '01';
+                    setFormData({ ...formData, dobMonth: month, dob: `${year}-${month}-${day}` });
+                  }}
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs focus:outline-none" 
+                  required
+                >
+                  <option value="">Month</option>
+                  {['01','02','03','04','05','06','07','08','09','10','11','12'].map((m, idx) => (
+                    <option key={m} value={m}>{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][idx]}</option>
+                  ))}
+                </select>
+
+                <select 
+                  value={formData.dobDay} 
+                  onChange={(e) => {
+                    const day = e.target.value;
+                    const year = formData.dobYear || new Date().getFullYear();
+                    const month = formData.dobMonth || '01';
+                    setFormData({ ...formData, dobDay: day, dob: `${year}-${month}-${day}` });
+                  }}
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs focus:outline-none" 
+                  required
+                >
+                  <option value="">Day</option>
+                  {Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0')).map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
               </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Gender <span className="text-red-500">*</span></label>
+              <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required>
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
             </div>
 
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Fayda National ID <span className="text-red-500">*</span></label>
-              <div className="relative">
-                <ShieldCheck size={16} className="absolute left-3 top-3.5 text-slate-400" />
-                <input type="text" name="faydaId" value={formData.faydaId} onChange={handleChange} placeholder="e.g. 1234 5678 90" className="w-full bg-white border border-red-200 rounded-xl py-3 pl-10 pr-3 text-sm font-mono focus:outline-none" required />
-              </div>
-              <p className="text-[10px] text-red-500 mt-1">Enter a valid 10-digit Fayda ID</p>
+              <input type="text" name="faydaId" value={formData.faydaId} onChange={handleChange} placeholder="e.g. 1234 5678 90" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-mono focus:outline-none" required />
             </div>
 
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Phone Number <span className="text-red-500">*</span></label>
-              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+251 91 234 5678" className="w-full bg-white border border-red-200 rounded-xl p-3 text-sm focus:outline-none" required />
-              <p className="text-[10px] text-red-500 mt-1">Enter a valid phone number</p>
+              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+251 91 234 5678" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
             </div>
 
             <div>
@@ -216,10 +389,6 @@ export default function AppAuth() {
             <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors mt-4">
               Continue &rarr;
             </button>
-            
-            <p className="text-center text-xs text-slate-500 mt-4 pb-6">
-              Already registered? <button type="button" onClick={() => setView('login')} className="font-bold text-indigo-600">Sign in instead</button>
-            </p>
           </form>
         </div>
       </div>
@@ -253,7 +422,6 @@ export default function AppAuth() {
 
         <div className="p-6">
           <p className="text-xs text-slate-500 mb-6">Where you are and who to call</p>
-
           <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex gap-3 mb-6">
             <div className="bg-white p-2 rounded-full shadow-sm h-fit">
               <MapPin size={16} className="text-indigo-500" />
@@ -354,14 +522,15 @@ export default function AppAuth() {
             <p className="text-sm font-medium">Set a strong password to protect your Renite account.</p>
           </div>
           
-          <form onSubmit={(e) => handleNext(e, 'device')} className="space-y-6">
+          {errorMsg && <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-xl mb-4 text-center">{errorMsg}</div>}
+          
+          <form onSubmit={handleRegisterAccount} className="space-y-6">
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Password <span className="text-red-500">*</span></label>
               <div className="relative">
                 <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-lg tracking-widest focus:outline-none" required />
                 <Eye size={18} className="absolute right-4 top-3.5 text-slate-400" />
               </div>
-              {/* Strength Indicator */}
               <div className="flex gap-1 mt-2">
                 <div className="h-1 bg-amber-400 flex-1 rounded-full"></div>
                 <div className="h-1 bg-amber-400 flex-1 rounded-full"></div>
@@ -395,8 +564,8 @@ export default function AppAuth() {
               </label>
             </div>
 
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
-              Create My Account <ShieldCheck size={18} />
+            <button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
+              {loading ? 'Creating Account...' : 'Create My Account'} <ShieldCheck size={18} />
             </button>
           </form>
         </div>
@@ -424,32 +593,22 @@ export default function AppAuth() {
         </header>
 
         <div className="bg-white px-6 py-3 border-b border-slate-100 flex items-center gap-3">
-           <div className="flex items-center gap-1 text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-1 rounded-full">
-             <CheckCircle size={12} /> Profile complete
-           </div>
-           <div className="h-px bg-slate-200 flex-1"></div>
-           <div className="text-xs font-bold bg-slate-900 text-white px-3 py-1 rounded-full">
-             Asset setup
-           </div>
+          <div className="flex items-center gap-1 text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-1 rounded-full">
+            <CheckCircle size={12} /> Profile complete
+          </div>
+          <div className="h-px bg-slate-200 flex-1"></div>
+          <div className="text-xs font-bold bg-slate-900 text-white px-3 py-1 rounded-full">
+            Asset setup
+          </div>
         </div>
 
         <div className="p-6">
-          <form onSubmit={(e) => handleNext(e, 'success')} className="space-y-5">
-            
-            <div>
-              <label className="text-xs font-bold text-slate-700 block mb-2">Device Photo <span className="text-red-500">*</span></label>
-              <div className="w-full border-2 border-dashed border-slate-300 bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-slate-600 cursor-pointer">
-                <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-xl shadow-sm flex items-center justify-center mb-2">
-                  <Camera size={20} className="text-slate-400" />
-                </div>
-                <span className="text-sm font-bold text-slate-800">Take or upload device photo</span>
-                <span className="text-[10px] text-slate-500 mt-1">Clear photo helps match & recover faster</span>
-              </div>
-            </div>
+          {errorMsg && <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-xl mb-4 text-center">{errorMsg}</div>}
 
+          <form onSubmit={handleRegisterDevice} className="space-y-5">
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Device Name <span className="text-red-500">*</span></label>
-              <input type="text" name="deviceName" value={formData.deviceName} onChange={handleChange} placeholder="e.g. My MacBook Pro, Work Laptop" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
+              <input type="text" name="deviceName" value={formData.deviceName} onChange={handleChange} placeholder="e.g. My MacBook Pro" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -500,8 +659,8 @@ export default function AppAuth() {
               <p className="text-xs font-medium leading-relaxed">A unique Renite recovery token (QR + code) is generated for your device and added to the national database. Anyone who finds it can verify ownership securely.</p>
             </div>
 
-            <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
-              Register This Device <ShieldCheck size={18} />
+            <button type="submit" disabled={loading} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
+              {loading ? 'Registering Asset...' : 'Register This Device'} <ShieldCheck size={18} />
             </button>
 
             <button type="button" onClick={() => navigate('/home')} className="w-full text-slate-500 font-medium py-2 text-sm hover:text-slate-700">
@@ -517,18 +676,26 @@ export default function AppAuth() {
   // 6. SUCCESS SCREEN
   // ---------------------------------------------------------------------------
   if (view === 'success') {
+    const recoveryToken = formData.recoveryToken || 'RNT-8UFGQ502';
+
+    const handleCopy = () => {
+      navigator.clipboard.writeText(recoveryToken);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 max-w-md mx-auto">
         <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mb-6 relative shadow-inner">
           <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg">
-             <CheckCircle size={32} />
+            <CheckCircle size={32} />
           </div>
           <div className="absolute top-0 right-0 bg-emerald-500 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-white">
             <ShieldCheck size={12} />
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-slate-900 text-center mb-2">My asset Registered!</h1>
+        <h1 className="text-2xl font-bold text-slate-900 text-center mb-2">Asset Registered!</h1>
         <p className="text-sm text-slate-500 text-center mb-8">
           <strong className="text-slate-800">{formData.brand || 'Your device'}</strong> is now protected on the Renite national registry.
         </p>
@@ -538,25 +705,24 @@ export default function AppAuth() {
           <p className="text-xs text-slate-500 mb-4">Save this code — you'll need it to prove ownership.</p>
           
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
-            <span className="font-mono font-bold text-lg text-slate-800 tracking-widest">RNT-8UFGQ502</span>
-            <button className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-slate-600 shadow-sm">
-              <Copy size={14} />
+            <span className="font-mono font-bold text-lg text-slate-800 tracking-widest">{recoveryToken}</span>
+            <button type="button" onClick={handleCopy} className="w-8 h-8 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-slate-600 shadow-sm" aria-label="Copy recovery token">
+              {copied ? <CheckCircle size={14} className="text-emerald-500" /> : <Copy size={14} />}
             </button>
           </div>
         </div>
 
         <div className="w-full bg-white border border-slate-200 rounded-2xl p-4 shadow-sm mb-8">
           <div className="h-32 bg-slate-800 rounded-xl overflow-hidden relative mb-4">
-             {/* Placeholder for the user's uploaded image, resembling the screenshot */}
-             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-4">
-               <h3 className="text-white font-bold text-lg">{formData.brand || 'HP'} - {formData.model || 'Elitebook'}</h3>
-             </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-4">
+              <h3 className="text-white font-bold text-lg">{formData.brand || 'HP'} - {formData.model || 'Elitebook'}</h3>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="bg-emerald-100 text-emerald-700 font-bold text-[10px] px-2.5 py-1 rounded-full flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> PROTECTED
             </span>
-            <span className="text-xs font-mono text-slate-400">RNT-8UFGQ502</span>
+            <span className="text-xs font-mono text-slate-400">{recoveryToken}</span>
           </div>
         </div>
 

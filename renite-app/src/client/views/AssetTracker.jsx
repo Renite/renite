@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api } from '../../services/api'; // Adjust path if your views folder is structured differently
+import { supabase } from '../../supabase';
 import { Shield, Plus, Search, X, Loader2, AlertCircle } from 'lucide-react';
 
 export default function AssetTracker() {
@@ -7,81 +7,116 @@ export default function AssetTracker() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [newAsset, setNewAsset] = useState({ name: '', category: 'Laptop', serialNumber: '', description: '' });
 
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch assets from MongoDB on component load
+  // Fetch assets from Supabase 'devices' table on load
   useEffect(() => {
-    let isMounted = true;
+    let cancelled = false;
 
-    api.get('/assets')
-      .then((data) => {
-        if (isMounted) {
-          setAssets(Array.isArray(data) ? data : data.assets || []);
+    const fetchAssets = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const { data, error: fetchError } = await supabase
+          .from('devices')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (fetchError) throw fetchError;
+
+        if (!cancelled) {
+          setAssets(data || []);
         }
-      })
-      .catch(() => {
-        if (isMounted) {
+      } catch (err) {
+        console.error('Fetch assets error:', err);
+        if (!cancelled) {
           setError('Could not connect to database server.');
         }
-      })
-      .finally(() => {
-        if (isMounted) {
+      } finally {
+        if (!cancelled) {
           setLoading(false);
         }
-      });
+      }
+    };
+
+    void fetchAssets();
 
     return () => {
-      isMounted = false;
+      cancelled = true;
     };
   }, []);
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    if (!newAsset.name || !newAsset.serialNumber) return;
+    if (!newAsset.name || !newAsset.serialNumber || submitting) return;
 
     try {
+      setSubmitting(true);
+      const recoveryToken = 'REC-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+      
       const payload = {
-        name: newAsset.name,
-        category: newAsset.category,
+        device_name: newAsset.name,
+        device_type: newAsset.category,
+        brand: newAsset.category,
+        serial_number: newAsset.serialNumber,
         status: 'REGISTERED',
-        serial: newAsset.serialNumber,
-        date: new Date().toISOString().split('T')[0],
+        recovery_token: recoveryToken,
       };
 
-      // Save to MongoDB via backend POST route
-      const response = await api.post('/assets', payload);
-      const createdAsset = response.asset || response;
+      const { data, error: insertError } = await supabase
+        .from('devices')
+        .insert([payload])
+        .select();
 
-      // Update local state with database record
-      setAssets([createdAsset, ...assets]);
+      if (insertError) throw insertError;
+
+      if (data && data[0]) {
+        setAssets([data[0], ...assets]);
+      }
       setIsRegistering(false);
       setNewAsset({ name: '', category: 'Laptop', serialNumber: '', description: '' });
     } catch (err) {
-      alert('Failed to register asset: ' + err.message);
+      console.error('Register asset error:', err);
+      alert('Failed to register asset: ' + (err.message || 'Unknown error'));
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleReportLost = async (id) => {
     try {
-      // Update status in MongoDB
-      await api.put(`/assets/${id}`, { status: 'LOST' });
-      
-      // Update local state
-      setAssets(assets.map(a => (a._id === id || a.id === id) ? { ...a, status: 'LOST' } : a));
+      setSubmitting(true);
+      const { error: updateError } = await supabase
+        .from('devices')
+        .update({ status: 'LOST' })
+        .eq('id', id);
+
+      if (updateError) throw updateError;
+
+      setAssets(assets.map(a => ((a.id || a._id) === id) ? { ...a, status: 'LOST' } : a));
       setSelectedAsset(null);
-    } catch {
+    } catch (err) {
+      console.error('Report lost error:', err);
       alert('Failed to update asset status.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const filteredAssets = assets.filter(asset => {
-    const matchesTab = activeTab === 'ALL' || asset.status === activeTab;
-    const matchesSearch = (asset.name || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (asset.serial || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const name = asset.device_name || asset.name || '';
+    const serial = asset.serial_number || asset.serial || '';
+    const status = asset.status || 'REGISTERED';
+
+    const matchesTab = activeTab === 'ALL' || status === activeTab;
+    const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          serial.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesTab && matchesSearch;
   });
 
@@ -94,7 +129,7 @@ export default function AssetTracker() {
         </div>
         <button 
           onClick={() => setIsRegistering(true)}
-          className="bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm hover:bg-slate-800 transition active:scale-95"
+          className="bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs hover:bg-slate-800 transition active:scale-95"
         >
           <Plus className="w-4 h-4" /> Register
         </button>
@@ -127,7 +162,6 @@ export default function AssetTracker() {
         ))}
       </div>
 
-      {/* Database Asset Feed / List */}
       <div className="space-y-3">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12 space-y-2">
@@ -146,36 +180,50 @@ export default function AssetTracker() {
             <p className="text-[11px] text-slate-400">Register your first item to begin tracking.</p>
           </div>
         ) : (
-          filteredAssets.map((asset) => (
-            <div 
-              key={asset._id || asset.id} 
-              onClick={() => setSelectedAsset(asset)}
-              className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs hover:border-slate-300 cursor-pointer transition"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-700">
-                  <Shield className="w-5 h-5" />
+          filteredAssets.map((asset) => {
+            const assetName = asset.device_name || asset.name;
+            const assetSerial = asset.serial_number || asset.serial;
+            const assetStatus = asset.status || 'REGISTERED';
+            const assetId = asset.id || asset._id;
+
+            return (
+              <div 
+                key={assetId} 
+                onClick={() => setSelectedAsset({ ...asset, id: assetId, name: assetName, serial: assetSerial, status: assetStatus })}
+                className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs hover:border-slate-300 cursor-pointer transition"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-700">
+                    <Shield className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">{assetName}</h3>
+                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">S/N: {assetSerial}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xs font-bold text-slate-900">{asset.name}</h3>
-                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">S/N: {asset.serial}</p>
-                </div>
+                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                  assetStatus === 'REGISTERED' ? 'bg-emerald-100 text-emerald-800' :
+                  assetStatus === 'LOST' ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {assetStatus}
+                </span>
               </div>
-              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
-                asset.status === 'REGISTERED' ? 'bg-emerald-100 text-emerald-800' :
-                asset.status === 'LOST' ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800'
-              }`}>
-                {asset.status}
-              </span>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
       {/* Registration Modal */}
       {isRegistering && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <form onSubmit={handleRegisterSubmit} className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative">
+        <div 
+          onClick={() => setIsRegistering(false)}
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50"
+        >
+          <form 
+            onSubmit={handleRegisterSubmit} 
+            onClick={(e) => e.stopPropagation()} 
+            className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative"
+          >
             <div className="flex justify-between items-center border-b border-slate-100 pb-3">
               <h3 className="font-bold text-slate-900 text-sm">Register New Asset</h3>
               <button type="button" onClick={() => setIsRegistering(false)} className="text-slate-400 hover:text-slate-600">
@@ -191,7 +239,7 @@ export default function AssetTracker() {
                   value={newAsset.name} 
                   onChange={(e) => setNewAsset({ ...newAsset, name: e.target.value })}
                   placeholder="e.g. Dell XPS 15"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900"
                 />
               </div>
               <div>
@@ -202,7 +250,7 @@ export default function AssetTracker() {
                   value={newAsset.serialNumber} 
                   onChange={(e) => setNewAsset({ ...newAsset, serialNumber: e.target.value })}
                   placeholder="e.g. SN-998123"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none font-mono"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900 font-mono"
                 />
               </div>
               <div>
@@ -210,7 +258,7 @@ export default function AssetTracker() {
                 <select 
                   value={newAsset.category}
                   onChange={(e) => setNewAsset({ ...newAsset, category: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-slate-900"
                 >
                   <option value="Laptop">Laptop</option>
                   <option value="Mobile">Mobile Phone</option>
@@ -219,17 +267,28 @@ export default function AssetTracker() {
                 </select>
               </div>
             </div>
-            <button type="submit" className="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 transition active:scale-95">
-              Save Registration
+            <button 
+              type="submit" 
+              disabled={submitting}
+              className="w-full bg-slate-900 text-white py-2.5 rounded-xl font-bold text-xs hover:bg-slate-800 transition active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {submitting ? 'Registering...' : 'Save Registration'}
             </button>
           </form>
         </div>
       )}
 
-      {/* Asset Detail / Actions Modal */}
+      {/* Selected Asset Modal */}
       {selectedAsset && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative">
+        <div 
+          onClick={() => setSelectedAsset(null)}
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className="bg-white rounded-2xl p-5 max-w-xs w-full space-y-4 shadow-2xl relative"
+          >
             <button onClick={() => setSelectedAsset(null)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
               <X className="w-4 h-4" />
             </button>
@@ -237,14 +296,19 @@ export default function AssetTracker() {
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1 text-xs">
               <p><strong>Status:</strong> {selectedAsset.status}</p>
               <p><strong>Serial:</strong> <span className="font-mono">{selectedAsset.serial}</span></p>
-              <p><strong>Category:</strong> {selectedAsset.category}</p>
+              <p><strong>Category:</strong> {selectedAsset.device_type || selectedAsset.category || 'N/A'}</p>
+              {selectedAsset.recovery_token && (
+                <p><strong>Recovery Token:</strong> <span className="font-mono text-[10px] bg-slate-200 px-1 rounded">{selectedAsset.recovery_token}</span></p>
+              )}
             </div>
             {selectedAsset.status !== 'LOST' && (
               <button 
-                onClick={() => handleReportLost(selectedAsset._id || selectedAsset.id)}
-                className="w-full bg-rose-500 text-white py-2 rounded-xl font-bold text-xs hover:bg-rose-600 transition active:scale-95"
+                disabled={submitting}
+                onClick={() => handleReportLost(selectedAsset.id)}
+                className="w-full bg-rose-500 text-white py-2 rounded-xl font-bold text-xs hover:bg-rose-600 transition active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                Report Lost / Stolen
+                {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {submitting ? 'Updating...' : 'Report Lost / Stolen'}
               </button>
             )}
           </div>

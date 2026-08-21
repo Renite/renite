@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, Search, Bell, Globe, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function TopBar({ onOpenSidebar }) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [lang, setLang] = useState('EN');
+  const { i18n, t } = useTranslation();
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
+
+  // Get current active language code capitalized (EN, AM, etc.)
+  const currentLang = (i18n.language || 'EN').toUpperCase();
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -21,8 +25,8 @@ export default function TopBar({ onOpenSidebar }) {
     navigate('/notifications');
   };
 
-  const toggleLanguage = (selectedLang) => {
-    setLang(selectedLang);
+  const changeLanguage = (langCode) => {
+    i18n.changeLanguage(langCode); // Changes language globally across the whole app
     setShowLangMenu(false);
   };
 
@@ -42,7 +46,7 @@ export default function TopBar({ onOpenSidebar }) {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search items, cases..."
+          placeholder={t('search')} // Pulls translation based on active language
           className="w-full bg-slate-100 rounded-xl pl-8 pr-8 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
         />
         {searchQuery && (
@@ -63,22 +67,40 @@ export default function TopBar({ onOpenSidebar }) {
             className="text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition"
           >
             <Globe className="w-3 h-3" />
-            <span>{lang}</span>
+            <span>{currentLang}</span>
           </button>
 
           {showLangMenu && (
-            <div className="absolute right-0 mt-1 w-24 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-40">
+            <div className="absolute right-0 mt-1 w-32 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-40 max-h-52 overflow-y-auto">
               <button 
-                onClick={() => toggleLanguage('EN')}
-                className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-slate-50 ${lang === 'EN' ? 'text-slate-900 font-bold bg-slate-50' : 'text-slate-600'}`}
+                onClick={() => changeLanguage('EN')}
+                className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-slate-50 ${currentLang === 'EN' ? 'text-slate-900 font-bold bg-slate-50' : 'text-slate-600'}`}
               >
                 English
               </button>
               <button 
-                onClick={() => toggleLanguage('AM')}
-                className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-slate-50 ${lang === 'AM' ? 'text-slate-900 font-bold bg-slate-50' : 'text-slate-600'}`}
+                onClick={() => changeLanguage('AM')}
+                className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-slate-50 ${currentLang === 'AM' ? 'text-slate-900 font-bold bg-slate-50' : 'text-slate-600'}`}
               >
                 አማርኛ
+              </button>
+              <button 
+                onClick={() => changeLanguage('OM')}
+                className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-slate-50 ${currentLang === 'OM' ? 'text-slate-900 font-bold bg-slate-50' : 'text-slate-600'}`}
+              >
+                Afaan Oromoo
+              </button>
+              <button 
+                onClick={() => changeLanguage('TI')}
+                className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-slate-50 ${currentLang === 'TI' ? 'text-slate-900 font-bold bg-slate-50' : 'text-slate-600'}`}
+              >
+                ትግርኛ
+              </button>
+              <button 
+                onClick={() => changeLanguage('AR')}
+                className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-slate-50 ${currentLang === 'AR' ? 'text-slate-900 font-bold bg-slate-50' : 'text-slate-600'}`}
+              >
+                العربية
               </button>
             </div>
           )}
