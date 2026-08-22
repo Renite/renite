@@ -3,9 +3,10 @@
 
   <h1>
     <strong>RENITE</strong>
-    <br>
+        <br>
     <sub>🇪🇹 Nationwide Lost & Found, Missing Persons & Civic Safety Platform</sub>
   </h1>
+  <h2>Your Community Radar</h2>
 </div>
 
 <p align="center">
@@ -104,11 +105,11 @@ These approaches can make information difficult to verify, expose sensitive pers
 
 | 👤 Full Name     | 🆔 CTC Number | 🏫 Classroom | Role |
 | ---------------- | ------------- | ----------- | ---------------: |
-| Chera Tolosa     | CTC-716-26    |            2 | `Backend` |
-| Dagimawi Solomon | CTC-6567-26   |            2 | `AI-Services` |
-| Dibora Sisay     | CTC-1457-26   |            2 | `Frontend` |
-| Eden Alemayehu   | CTC-1941-26   |            2 | `Blockchain` |
-| Edom Anteneh     | CTC-1717-26   |            2 | `Database & Frontend` |
+| Chera Tolosa     | CTC-716-26    |            2 | `Supabase, API & Backend` |
+| Dagimawi Solomon | CTC-6567-26   |            2 | `Police/low enforcement panel` |
+| Dibora Sisay     | CTC-1457-26   |            2 | `Admin Dashboard ` |
+| Eden Alemayehu   | CTC-1941-26   |            2 | `UI/Ux & Data Infrastructure` |
+| Edom Anteneh     | CTC-1717-26   |            2 | `Project Leader & Client App` |
 
 ---
 

@@ -25,11 +25,20 @@ jobs:
         with:
           node-version: 20
           cache: npm
+<<<<<<< HEAD
           cache-dependency-path: ./renite-app/package-lock.json
+=======
+          cache-dependency-path: ./renite-admin/package-lock.json
+>>>>>>> bc5e37c38e54a029820b14e441635e4a473e7eaa
 
       - name: Install Dependencies
         run: npm ci
 
+<<<<<<< HEAD
+=======
+      
+
+>>>>>>> bc5e37c38e54a029820b14e441635e4a473e7eaa
       - name: Lint
         run: npm run lint
 
@@ -56,7 +65,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+<<<<<<< HEAD
      
+=======
+      
+>>>>>>> bc5e37c38e54a029820b14e441635e4a473e7eaa
 
       - name: Run  ESLint
         run: npm run lint
