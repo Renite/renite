@@ -7,7 +7,10 @@ import {
   Eye,
   CheckCircle,
   Copy,
-  Info
+  Info,
+  UserCheck,
+  ShieldAlert,
+  BadgeAlert
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "../../supabase";
@@ -17,6 +20,8 @@ export default function Login() {
   
   // State to manage screen flow
   const [view, setView] = useState('login'); // 'login' | 'step1' | 'step2' | 'step3' | 'device' | 'success'
+  const [loginRole, setLoginRole] = useState('citizen'); // 'citizen' | 'police'
+  const [regRole, setRegRole] = useState('citizen'); // 'citizen' | 'police'
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [copied, setCopied] = useState(false);
@@ -47,7 +52,9 @@ export default function Login() {
     serial: '',
     color: '',
     purchaseDate: '',
-    recoveryToken: ''
+    recoveryToken: '',
+    badgeNumber: '',
+    station: ''
   });
 
   const handleChange = (e) => {
@@ -60,7 +67,7 @@ export default function Login() {
   };
 
   // ---------------------------------------------------------------------------
-  // SUPABASE API: Handle User Login
+  // SUPABASE API: Handle User Login with Role Verification & Redirection
   // ---------------------------------------------------------------------------
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -83,8 +90,17 @@ export default function Login() {
         throw new Error('Fayda ID not registered in national database. Please create an account.');
       }
 
-      // Proceed to home dashboard
-      navigate('/home');
+      // Check if trying to log in as police but lacking clearance
+      if (loginRole === 'police' && profile.role !== 'police' && profile.role !== 'admin') {
+        throw new Error('Access Denied: This Fayda ID does not have Law Enforcement clearance.');
+      }
+
+      // Route based on database role
+      if (profile.role === 'police' || profile.role === 'admin') {
+        navigate('/police-home');
+      } else {
+        navigate('/home');
+      }
     } catch (err) {
       setErrorMsg(err.message || 'Login failed');
     } finally {
@@ -118,6 +134,7 @@ export default function Login() {
           data: {
             full_name: formData.fullName,
             fayda_id: cleanFayda,
+            role: regRole,
           },
         },
       });
@@ -140,13 +157,20 @@ export default function Login() {
           emergency_name: formData.emergencyName,
           emergency_phone: formData.emergencyPhone,
           emergency_rel: formData.emergencyRel,
+          role: regRole,
+          badge_number: regRole === 'police' ? formData.badgeNumber : null,
+          station: regRole === 'police' ? formData.station : null,
         },
       ]);
 
       if (profileError) throw profileError;
 
-      // Advance to asset registration step
-      setView('device');
+      // If police, skip device asset setup and go straight to success/dashboard
+      if (regRole === 'police') {
+        setView('success');
+      } else {
+        setView('device');
+      }
     } catch (err) {
       setErrorMsg(err.message || 'Registration failed');
     } finally {
@@ -200,30 +224,58 @@ export default function Login() {
   if (view === 'login') {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6 py-12 max-w-md mx-auto">
-        <div className="mb-8 flex flex-col items-center">
+        <div className="mb-6 flex flex-col items-center">
           <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-slate-900/20">
             <ShieldCheck size={32} className="text-emerald-400" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Welcome to Renite</h1>
-          <p className="text-sm text-slate-500 text-center mt-2 max-w-[250px]">National Civic Safety & Asset Recovery Platform</p>
+          <p className="text-sm text-slate-500 text-center mt-1 max-w-[250px]">National Civic Safety & Asset Recovery Platform</p>
+        </div>
+
+        {/* Role Toggle Selector */}
+        <div className="w-full bg-slate-200/70 p-1 rounded-2xl flex mb-6">
+          <button
+            type="button"
+            onClick={() => setLoginRole('citizen')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all ${
+              loginRole === 'citizen' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <UserCheck size={14} /> Citizen Portal
+          </button>
+          <button
+            type="button"
+            onClick={() => setLoginRole('police')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-all ${
+              loginRole === 'police' ? 'bg-blue-950 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            <ShieldAlert size={14} /> Police Command
+          </button>
         </div>
 
         {errorMsg && <div className="w-full bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-xl mb-4 text-center">{errorMsg}</div>}
 
         <div className="w-full bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
-              <Lock size={18} className="text-slate-600" />
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${loginRole === 'police' ? 'bg-blue-50 text-blue-950' : 'bg-slate-100 text-slate-600'}`}>
+              <Lock size={18} />
             </div>
             <div>
-              <h2 className="font-bold text-slate-900">Fayda ID Authentication</h2>
-              <p className="text-[10px] text-slate-500">National Digital Identity</p>
+              <h2 className="font-bold text-slate-900">
+                {loginRole === 'police' ? 'Officer Authentication' : 'Fayda ID Authentication'}
+              </h2>
+              <p className="text-[10px] text-slate-500">
+                {loginRole === 'police' ? 'Law Enforcement Credential Check' : 'National Digital Identity'}
+              </p>
             </div>
           </div>
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Enter your 10-digit Fayda ID</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                {loginRole === 'police' ? 'Officer Fayda ID / Badge ID' : 'Enter your 10-digit Fayda ID'}
+              </label>
               <input 
                 type="text" 
                 name="faydaId"
@@ -242,8 +294,17 @@ export default function Login() {
               </p>
             </div>
 
-            <button type="submit" disabled={loading} className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors mt-2 flex justify-center items-center gap-2">
-              {loading ? 'Authenticating...' : 'Continue with Fayda ›'}
+            {/* Navy Blue button for Police Command */}
+            <button 
+              type="submit" 
+              disabled={loading} 
+              className={`w-full font-bold py-3.5 rounded-xl shadow-md transition-colors mt-2 flex justify-center items-center gap-2 text-white ${
+                loginRole === 'police' 
+                  ? 'bg-blue-950 hover:bg-blue-900 shadow-blue-950/20' 
+                  : 'bg-slate-800 hover:bg-slate-900'
+              }`}
+            >
+              {loading ? 'Authenticating...' : loginRole === 'police' ? 'Access Police Command ›' : 'Continue with Fayda ›'}
             </button>
           </form>
         </div>
@@ -252,28 +313,41 @@ export default function Login() {
           <ShieldCheck size={12} /> YOUR DATA IS SECURED BY THE NATIONAL ENCRYPTION STANDARD.
         </p>
 
-        <div className="w-full flex items-center my-6 gap-4 px-4">
-          <div className="h-px bg-slate-200 flex-1"></div>
-          <span className="text-xs text-slate-400 font-bold">OR</span>
-          <div className="h-px bg-slate-200 flex-1"></div>
-        </div>
+        {loginRole === 'citizen' && (
+          <>
+            <div className="w-full flex items-center my-6 gap-4 px-4">
+              <div className="h-px bg-slate-200 flex-1"></div>
+              <span className="text-xs text-slate-400 font-bold">OR</span>
+              <div className="h-px bg-slate-200 flex-1"></div>
+            </div>
 
-        <button onClick={() => navigate('/home')} className="w-full bg-white border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-sm mb-4">
-          <Lock size={16} /> Continue as Guest
-        </button>
+            <button onClick={() => navigate('/home')} className="w-full bg-white border border-slate-200 text-slate-700 font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-sm mb-4">
+              <Lock size={16} /> Continue as Guest
+            </button>
 
-        <div className="text-center text-sm">
-          <span className="text-slate-500">Don't have an account? </span>
-          <button onClick={() => setView('step1')} className="font-bold text-slate-900 hover:underline">
-            Create account
-          </button>
-        </div>
+            <div className="text-center text-sm">
+              <span className="text-slate-500">Don't have an account? </span>
+              <button onClick={() => { setRegRole('citizen'); setView('step1'); }} className="font-bold text-slate-900 hover:underline">
+                Create account
+              </button>
+            </div>
+          </>
+        )}
+
+        {loginRole === 'police' && (
+          <div className="text-center text-sm mt-6">
+            <span className="text-slate-500">Need an officer account? </span>
+            <button onClick={() => { setRegRole('police'); setView('step1'); }} className="font-bold text-blue-950 hover:underline">
+              Register officer profile
+            </button>
+          </div>
+        )}
       </div>
     );
   }
 
   // ---------------------------------------------------------------------------
-  // 2. REGISTRATION - STEP 1: Personal Info
+  // 2. REGISTRATION - STEP 1: Personal & Professional Info
   // ---------------------------------------------------------------------------
   if (view === 'step1') {
     return (
@@ -283,27 +357,49 @@ export default function Login() {
             <ArrowLeft size={18} />
           </button>
           <div className="flex-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Step 1 of 3</p>
-            <h1 className="text-lg font-bold text-slate-900">Personal Info</h1>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              {regRole === 'police' ? 'Law Enforcement Registration • Step 1' : 'Step 1 of 3'}
+            </p>
+            <h1 className="text-lg font-bold text-slate-900">
+              {regRole === 'police' ? 'Officer Details' : 'Personal Info'}
+            </h1>
           </div>
-          <div className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
-            <ShieldCheck size={16} />
+          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${regRole === 'police' ? 'bg-blue-50 text-blue-950' : 'bg-indigo-50 text-indigo-600'}`}>
+            {regRole === 'police' ? <BadgeAlert size={16} /> : <ShieldCheck size={16} />}
           </div>
         </header>
 
         <div className="bg-white px-4 py-2 border-b border-slate-100 flex gap-1">
-          <div className="h-1 bg-indigo-600 flex-1 rounded-full"></div>
+          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
           <div className="h-1 bg-slate-100 flex-1 rounded-full"></div>
           <div className="h-1 bg-slate-100 flex-1 rounded-full"></div>
         </div>
 
         <div className="p-6">
-          <p className="text-xs text-slate-500 mb-6">Your identity and basic details</p>
+          <p className="text-xs text-slate-500 mb-6">
+            {regRole === 'police' ? 'Enter your official law enforcement identification details' : 'Your identity and basic details'}
+          </p>
           
           <form onSubmit={(e) => { e.preventDefault(); setView('step2'); }} className="space-y-5">
+            {regRole === 'police' && (
+              <div className="bg-blue-50/70 border border-blue-200 p-4 rounded-xl space-y-4 mb-4">
+                <p className="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldAlert size={14} /> Police Credentials Required
+                </p>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Badge Number / Officer ID <span className="text-red-500">*</span></label>
+                  <input type="text" name="badgeNumber" value={formData.badgeNumber} onChange={handleChange} placeholder="e.g. POL-88924" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-mono focus:outline-none" required />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Police Precinct / Station <span className="text-red-500">*</span></label>
+                  <input type="text" name="station" value={formData.station} onChange={handleChange} placeholder="e.g. Bole Sub-City Precinct 04" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Full Name <span className="text-red-500">*</span></label>
-              <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="e.g. Abebe Girma" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
+              <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder={regRole === 'police' ? 'e.g. Inspector Dawit Bekele' : 'e.g. Abebe Girma'} className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
             </div>
 
             <div>
@@ -382,11 +478,11 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Email Address</label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="abebe@example.com (optional)" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" />
+              <label className="text-xs font-bold text-slate-700 block mb-1">Official Email Address <span className="text-red-500">*</span></label>
+              <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder={regRole === 'police' ? 'officer@police.gov.et' : 'abebe@example.com'} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
             </div>
 
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors mt-4">
+            <button type="submit" className={`w-full font-bold py-3.5 rounded-xl shadow-md transition-colors mt-4 text-white ${regRole === 'police' ? 'bg-blue-950 hover:bg-blue-900' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
               Continue &rarr;
             </button>
           </form>
@@ -406,27 +502,29 @@ export default function Login() {
             <ArrowLeft size={18} />
           </button>
           <div className="flex-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Step 2 of 3</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              {regRole === 'police' ? 'Law Enforcement Registration • Step 2' : 'Step 2 of 3'}
+            </p>
             <h1 className="text-lg font-bold text-slate-900">Location & Contact</h1>
           </div>
-          <div className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
-            <ShieldCheck size={16} />
+          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${regRole === 'police' ? 'bg-blue-50 text-blue-950' : 'bg-indigo-50 text-indigo-600'}`}>
+            {regRole === 'police' ? <BadgeAlert size={16} /> : <ShieldCheck size={16} />}
           </div>
         </header>
 
         <div className="bg-white px-4 py-2 border-b border-slate-100 flex gap-1">
-          <div className="h-1 bg-indigo-600 flex-1 rounded-full"></div>
-          <div className="h-1 bg-indigo-600 flex-1 rounded-full"></div>
+          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
           <div className="h-1 bg-slate-100 flex-1 rounded-full"></div>
         </div>
 
         <div className="p-6">
-          <p className="text-xs text-slate-500 mb-6">Where you are and who to call</p>
-          <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex gap-3 mb-6">
+          <p className="text-xs text-slate-500 mb-6">Where you are stationed and who to call</p>
+          <div className={`${regRole === 'police' ? 'bg-blue-50/50 border-blue-100 text-blue-950' : 'bg-indigo-50/50 border-indigo-100 text-slate-700'} border rounded-xl p-4 flex gap-3 mb-6`}>
             <div className="bg-white p-2 rounded-full shadow-sm h-fit">
-              <MapPin size={16} className="text-indigo-500" />
+              <MapPin size={16} className={regRole === 'police' ? 'text-blue-950' : 'text-indigo-500'} />
             </div>
-            <p className="text-sm text-slate-700 mt-1">Your region helps us assign local response teams.</p>
+            <p className="text-sm mt-1">Your region helps us assign local response teams and jurisdiction access.</p>
           </div>
           
           <form onSubmit={(e) => handleNext(e, 'step3')} className="space-y-5">
@@ -480,7 +578,7 @@ export default function Login() {
               </div>
             </div>
 
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-colors mt-8">
+            <button type="submit" className={`w-full font-bold py-3.5 rounded-xl shadow-md transition-colors mt-8 text-white ${regRole === 'police' ? 'bg-blue-950 hover:bg-blue-900' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
               Continue &rarr;
             </button>
           </form>
@@ -500,26 +598,28 @@ export default function Login() {
             <ArrowLeft size={18} />
           </button>
           <div className="flex-1">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Step 3 of 3</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              {regRole === 'police' ? 'Law Enforcement Registration • Final Step' : 'Step 3 of 3'}
+            </p>
             <h1 className="text-lg font-bold text-slate-900">Security</h1>
           </div>
-          <div className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
-            <ShieldCheck size={16} />
+          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${regRole === 'police' ? 'bg-blue-50 text-blue-950' : 'bg-indigo-50 text-indigo-600'}`}>
+            {regRole === 'police' ? <BadgeAlert size={16} /> : <ShieldCheck size={16} />}
           </div>
         </header>
 
         <div className="bg-white px-4 py-2 border-b border-slate-100 flex gap-1">
-          <div className="h-1 bg-indigo-600 flex-1 rounded-full"></div>
-          <div className="h-1 bg-indigo-600 flex-1 rounded-full"></div>
-          <div className="h-1 bg-indigo-600 flex-1 rounded-full"></div>
+          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
         </div>
 
         <div className="p-6">
-          <p className="text-xs text-slate-500 mb-6">Password and consent</p>
+          <p className="text-xs text-slate-500 mb-6">Password and officer clearance consent</p>
 
-          <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex gap-3 mb-6 text-emerald-800">
-            <Lock size={20} className="text-emerald-500 mt-0.5" />
-            <p className="text-sm font-medium">Set a strong password to protect your Renite account.</p>
+          <div className={`${regRole === 'police' ? 'bg-blue-50 border-blue-200 text-blue-950' : 'bg-emerald-50 border-emerald-100 text-emerald-800'} border rounded-xl p-4 flex gap-3 mb-6`}>
+            <Lock size={20} className={regRole === 'police' ? 'text-blue-950 mt-0.5' : 'text-emerald-500 mt-0.5'} />
+            <p className="text-sm font-medium">Set a strong password to protect your {regRole === 'police' ? 'Law Enforcement Command' : 'Renite'} account.</p>
           </div>
           
           {errorMsg && <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-xl mb-4 text-center">{errorMsg}</div>}
@@ -550,22 +650,24 @@ export default function Login() {
 
             <div className="space-y-4 pt-4 border-t border-slate-200">
               <label className="flex items-start gap-3 cursor-pointer p-4 bg-white border border-slate-200 rounded-xl">
-                <input type="checkbox" className="mt-1 w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" required />
+                <input type="checkbox" className={`mt-1 w-4 h-4 rounded border-slate-300 ${regRole === 'police' ? 'text-blue-950 focus:ring-blue-950' : 'text-indigo-600 focus:ring-indigo-600'}`} required />
                 <p className="text-xs text-slate-600 leading-tight">
-                  I agree to the <span className="font-bold text-indigo-600">Terms of Service</span> and <span className="font-bold text-indigo-600">Privacy Policy</span> of the Renite National Civic Safety Platform. <span className="text-red-500">*</span>
+                  I agree to the <span className={`font-bold ${regRole === 'police' ? 'text-blue-950' : 'text-indigo-600'}`}>Terms of Service</span> and <span className={`font-bold ${regRole === 'police' ? 'text-blue-950' : 'text-indigo-600'}`}>Privacy Policy</span> of the Renite National Civic Safety Platform. <span className="text-red-500">*</span>
                 </p>
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer p-4 bg-white border border-slate-200 rounded-xl">
-                <input type="checkbox" className="mt-1 w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" required />
+                <input type="checkbox" className={`mt-1 w-4 h-4 rounded border-slate-300 ${regRole === 'police' ? 'text-blue-950 focus:ring-blue-950' : 'text-indigo-600 focus:ring-indigo-600'}`} required />
                 <p className="text-xs text-slate-600 leading-tight">
-                  I consent to the collection and processing of my biometric and location data for national safety purposes under Ethiopian law. <span className="text-red-500">*</span>
+                  {regRole === 'police' 
+                    ? 'I certify that I am an authorized law enforcement officer and will adhere strictly to protocols regarding citizen data and asset recovery case files under Ethiopian law.' 
+                    : 'I consent to the collection and processing of my biometric and location data for national safety purposes under Ethiopian law.'} <span className="text-red-500">*</span>
                 </p>
               </label>
             </div>
 
-            <button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
-              {loading ? 'Creating Account...' : 'Create My Account'} <ShieldCheck size={18} />
+            <button type="submit" disabled={loading} className={`w-full font-bold py-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 text-white ${regRole === 'police' ? 'bg-blue-950 hover:bg-blue-900' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
+              {loading ? 'Creating Account...' : regRole === 'police' ? 'Register Officer Account' : 'Create My Account'} <ShieldCheck size={18} />
             </button>
           </form>
         </div>
@@ -683,6 +785,27 @@ export default function Login() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     };
+
+    if (regRole === 'police') {
+      return (
+        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 max-w-md mx-auto text-white">
+          <div className="w-24 h-24 bg-blue-900/40 rounded-full flex items-center justify-center mb-6 relative border border-blue-500/30 shadow-inner">
+            <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center text-white shadow-lg">
+              <ShieldAlert size={32} />
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-bold text-center mb-2">Officer Profile Created!</h1>
+          <p className="text-sm text-slate-400 text-center mb-8">
+            Badge <strong className="text-white">{formData.badgeNumber}</strong> is registered under precinct <strong className="text-white">{formData.station}</strong> with law enforcement clearance.
+          </p>
+
+          <button onClick={() => navigate('/police-dashboard')} className="w-full bg-blue-950 hover:bg-blue-900 border border-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2">
+            Open Police Command Dashboard &rarr;
+          </button>
+        </div>
+      );
+    }
 
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 max-w-md mx-auto">
