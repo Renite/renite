@@ -8,7 +8,7 @@ describe("GET /api/health", () => {
     expect(res.status).toBe(200);
     expect(res.body.status).toBe("ok");
     expect(res.body.message).toBe(
-      "Renite API & Database Models are operational",
+      "Renite API is operational (Supabase-backed)",
     );
     expect(res.body.timestamp).toBeDefined();
   });

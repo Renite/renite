@@ -1,78 +1,74 @@
-import User from '../models/User.js';
-import { hashPassword, comparePassword } from '../utils/password.js';
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
+import { supabaseAdmin } from '../config/supabase.js';
+import { AppError, toAppError } from '../utils/errors.js';
 
-class AppError extends Error {
-  constructor(status, code, message) {
-    super(message);
-    this.status = status;
-    this.code = code;
-  }
-}
+// Roles a user is allowed to self-assign when completing their own profile.
+// 'police' and 'admin' can ONLY be granted via admin.service.createStaff --
+// this is the fix for the client-side `role: 'police'` self-registration bug.
+const SELF_SERVICE_ROLE = 'user';
 
-async function issueTokens(user) {
-  const payload = { sub: user._id.toString(), role: user.role };
-  const accessToken = signAccessToken(payload);
-  const refreshToken = signRefreshToken(payload);
-  user.refresh_token = refreshToken;
-  await user.save();
-  return { user: user.toSafeJSON(), accessToken, refreshToken };
+const PROFILE_FIELDS = [
+  'fayda_id', 'full_name', 'dob', 'gender', 'phone', 'email',
+  'region', 'city', 'kebele', 'emergency_name', 'emergency_phone', 'emergency_rel'
+];
+
+function pickProfileFields(data = {}) {
+  return Object.fromEntries(
+    PROFILE_FIELDS.filter((f) => data[f] !== undefined).map((f) => [f, data[f]])
+  );
 }
 
 export const authService = {
-  async register({ full_name, email, phone, password }) {
-    const existing = await User.findOne({ $or: [{ email }, { phone }] });
-    if (existing) throw new AppError(409, 'ALREADY_REGISTERED', 'Email or phone already in use');
-
-    const password_hash = await hashPassword(password);
-    try {
-      const user = await User.create({ full_name, email, phone, password_hash });
-      return issueTokens(user);
-    } catch (err) {
-      if (err.code === 11000) {
-        const field = Object.keys(err.keyPattern || {})[0] || 'field';
-        throw new AppError(409, 'ALREADY_REGISTERED', `This ${field} is already in use`);
-      }
-      throw err;
-    }
-  },
-
-  async login({ identifier, password }) {
-    const user = await User.findOne({ $or: [{ email: identifier }, { phone: identifier }] });
-    if (!user) throw new AppError(401, 'INVALID_CREDENTIALS', 'Invalid credentials');
-
-    const valid = await comparePassword(password, user.password_hash);
-    if (!valid) throw new AppError(401, 'INVALID_CREDENTIALS', 'Invalid credentials');
-
-    return issueTokens(user);
-  },
-
-  async refresh(refreshToken) {
-    if (!refreshToken) throw new AppError(401, 'NO_TOKEN', 'Refresh token required');
-
-    let payload;
-    try {
-      payload = verifyRefreshToken(refreshToken);
-    } catch {
-      throw new AppError(401, 'INVALID_TOKEN', 'Invalid or expired refresh token');
+  // Called right after supabase.auth.signUp() on the client. Creates (or
+  // completes) the caller's own profiles row. Always forces role='user' --
+  // there is no code path here that lets a client grant itself 'police' or
+  // 'admin'.
+  async completeProfile(authUser, data) {
+    const fields = pickProfileFields(data);
+    if (!fields.fayda_id || !fields.full_name) {
+      throw new AppError(400, 'VALIDATION_ERROR', 'fayda_id and full_name are required');
     }
 
-    const user = await User.findById(payload.sub);
-    if (!user || user.refresh_token !== refreshToken) {
-      throw new AppError(401, 'INVALID_TOKEN', 'Refresh token mismatch');
-    }
-    return issueTokens(user);
-  },
+    const { data: profile, error } = await supabaseAdmin
+      .from('profiles')
+      .upsert([{ id: authUser.id, ...fields, role: SELF_SERVICE_ROLE }], { onConflict: 'id' })
+      .select()
+      .single();
 
-  async logout(userId) {
-    await User.findByIdAndUpdate(userId, { refresh_token: null });
+    if (error) throw toAppError(error, 'Failed to save profile');
+    return profile;
   },
 
   async me(userId) {
-    const user = await User.findById(userId);
-    if (!user) throw new AppError(404, 'NOT_FOUND', 'User not found');
-    return user.toSafeJSON();
+    const { data: profile, error } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error) throw toAppError(error);
+    if (!profile) throw new AppError(404, 'PROFILE_NOT_FOUND', 'Profile not found');
+    return profile;
+  },
+
+  // Public, rate-limited. The login screen only collects a Fayda ID +
+  // password, but supabase.auth.signInWithPassword() needs an email --
+  // and profiles is no longer publicly readable (see migration 001), so
+  // the client can't look this up itself anymore. This intentionally
+  // returns only the email, nothing else about the profile.
+  async lookupEmailByFaydaId(faydaId) {
+    const cleaned = String(faydaId || '').replace(/\s+/g, '');
+    if (!cleaned) throw new AppError(400, 'VALIDATION_ERROR', 'fayda_id is required');
+
+    const { data: profile, error } = await supabaseAdmin
+      .from('profiles')
+      .select('email')
+      .eq('fayda_id', cleaned)
+      .maybeSingle();
+
+    if (error) throw toAppError(error);
+    if (!profile?.email) {
+      throw new AppError(404, 'NOT_FOUND', 'Fayda ID not registered in national database');
+    }
+    return { email: profile.email };
   }
 };
-
-export { AppError };

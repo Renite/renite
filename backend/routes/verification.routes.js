@@ -1,18 +1,15 @@
 import { Router } from 'express';
-import { create, getById, listForMatch, listPending, updateStatus, getContact } from '../controllers/verification.controller.js';
+import { create, getById, listPending, updateStatus } from '../controllers/verification.controller.js';
 import { authenticate, can } from '../middleware/auth.middleware.js';
 
 const router = Router();
 
-router.post('/', authenticate, create);
+router.use(authenticate, can('verification:review'));
 
 // Must come before /:id, or Express would treat "pending" as an :id value.
-router.get('/pending', authenticate, can('verification:review'), listPending);
-
-router.get('/match/:matchId/contact', authenticate, getContact);
-router.get('/match/:matchId', authenticate, listForMatch);
-router.get('/:id', authenticate, getById);
-
-router.patch('/:id/status', authenticate, can('verification:review'), updateStatus);
+router.get('/pending', listPending);
+router.post('/', create);
+router.get('/:id', getById);
+router.patch('/:id/status', updateStatus);
 
 export default router;

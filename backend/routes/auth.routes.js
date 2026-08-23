@@ -1,14 +1,16 @@
 import { Router } from 'express';
-import { register, login, refresh, logout, me } from '../controllers/auth.controller.js';
+import { completeProfile, me, lookupEmail } from '../controllers/auth.controller.js';
 import { authenticate } from '../middleware/auth.middleware.js';
 import { authLimiter } from '../middleware/rateLimit.middleware.js';
 
 const router = Router();
 
-router.post('/register', authLimiter, register);
-router.post('/login', authLimiter, login);
-router.post('/refresh', authLimiter, refresh);
-router.post('/logout', authenticate, logout);
+// Login/signup themselves stay client-side via supabase.auth.* --
+// this backend only handles what Supabase Auth doesn't: profile
+// completion (with role locked server-side) and the email lookup
+// login needs now that `profiles` isn't publicly readable.
+router.post('/lookup-email', authLimiter, lookupEmail);
+router.post('/complete-profile', authenticate, completeProfile);
 router.get('/me', authenticate, me);
 
 export default router;

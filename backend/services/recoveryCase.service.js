@@ -3,6 +3,7 @@ import RecoveryParticipant from '../models/RecoveryParticipant.js';
 import Match from '../models/Match.js';
 import Verification from '../models/Verification.js';
 import Report from '../models/Report.js';
+import { notificationService } from './notification.service.js';
 import { AppError } from './auth.service.js';
 import {
   assertCanViewRecoveryCase,
@@ -92,6 +93,25 @@ export const recoveryCaseService = {
         { _id: { $in: [match.lost_report_id, match.found_report_id] } },
         { status: 'RECOVERED' }
       );
+    }
+
+    if (['COMPLETED', 'DISPUTED'].includes(status)) {
+      RecoveryParticipant.find({ recovery_case_id: id })
+        .then((participants) =>
+          Promise.all(
+            participants.map((p) =>
+              notificationService.create(p.user_id, {
+                type: 'RECOVERY_CASE',
+                title: status === 'COMPLETED' ? 'Case completed' : 'Case disputed',
+                message: status === 'COMPLETED'
+                  ? 'Your recovery case has been marked as completed.'
+                  : 'Your recovery case has been flagged for review by police/admin.',
+                data: { recovery_case_id: id, status },
+              })
+            )
+          )
+        )
+        .catch((err) => console.error('Notification creation failed:', err.message));
     }
 
     return recoveryCase;

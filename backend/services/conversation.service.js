@@ -1,84 +1,22 @@
-import mongoose from 'mongoose';
-import Conversation from '../models/Conversation.js';
-import RecoveryCase from '../models/RecoveryCase.js';
-import { AppError } from './auth.service.js';
-import { assertCanViewRecoveryCase } from './recoveryCaseAuthorization.service.js';
+import { supabaseAdmin } from '../config/supabase.js';
+import { toAppError } from '../utils/errors.js';
 
-function assertValidObjectId(id, code, message) {
-  if (!mongoose.isValidObjectId(id)) {
-    throw new AppError(400, code, message);
-  }
-}
-
-async function loadRecoveryCase(id) {
-  assertValidObjectId(id, 'INVALID_RECOVERY_CASE_ID', 'Invalid recovery case ID');
-
-  const recoveryCase = await RecoveryCase.findOne({
-    _id: id,
-    deleted_at: null,
-  });
-
-  if (!recoveryCase) {
-    throw new AppError(404, 'RECOVERY_CASE_NOT_FOUND', 'Recovery case not found');
-  }
-
-  return recoveryCase;
-}
-
+// conversations/messages are flat, shared tables (no participant column
+// exists in the schema) -- this is currently shared/public chat, not
+// private DMs. RLS already allows public read/insert on both, so this
+// service mainly exists for the Socket.io layer and any server-side
+// validation/audit hook, not to gate access.
 export const conversationService = {
-  async getByRecoveryCase(recoveryCaseId, userId, userRole) {
-    const recoveryCase = await loadRecoveryCase(recoveryCaseId);
-
-    await assertCanViewRecoveryCase(recoveryCase, userId, userRole);
-
-    const conversation = await Conversation.findOne({
-      recovery_case_id: recoveryCase._id,
-      deleted_at: null,
-    });
-
-    if (!conversation) {
-      throw new AppError(
-        404,
-        "CONVERSATION_NOT_FOUND",
-        "Conversation not found",
-      );
-    }
-
-    return conversation;
+  async list() {
+    const { data, error } = await supabaseAdmin
+      .from('conversations').select('*').order('created_at', { ascending: false });
+    if (error) throw toAppError(error);
+    return data;
   },
 
-  async createForRecoveryCase(recoveryCaseId, userId, userRole) {
-    const recoveryCase = await loadRecoveryCase(recoveryCaseId);
-
-    await assertCanViewRecoveryCase(
-      recoveryCase,
-      userId,
-      userRole
-    );
-
-    const existing = await Conversation.findOne({
-      recovery_case_id: recoveryCase._id,
-      deleted_at: null,
-    });
-
-    if (existing) return existing;
-
-    try {
-      return await Conversation.create({
-        recovery_case_id: recoveryCase._id,
-        status: 'ACTIVE',
-      });
-    } catch (err) {
-      if (err?.code === 11000) {
-        const conversation = await Conversation.findOne({
-          recovery_case_id: recoveryCase._id,
-          deleted_at: null,
-        });
-
-        if (conversation) return conversation;
-      }
-
-      throw err;
-    }
-  },
-}
+  async getById(id) {
+    const { data, error } = await supabaseAdmin.from('conversations').select('*').eq('id', id).maybeSingle();
+    if (error) throw toAppError(error);
+    return data;
+  }
+};
