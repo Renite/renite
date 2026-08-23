@@ -92,12 +92,12 @@ These approaches can make information difficult to verify, expose sensitive pers
 
 | Platform     | Technology                             |
 | ------------ | -------------------------------------- |
-| 🌐 Web       | React + JavaScript                     |
-| 📱 Mobile    | React + JavaScript                       |
+| 🌐 Admin       | React + JavaScript                     |
+| 📱 Client    | React + JavaScript                       |
 | ⚙️ Backend   | REST API + Business Logic              |
 | 🗄️ Database | Secure Persistent Data Layer           |
-| 🤖 AI        | Computer Vision / Intelligent Matching |
-| 🪪 Identity  | Fayda + Renite Account System          |
+| 🤖 AI(future)        | Computer Vision / Intelligent Matching |
+| 🪪 Identity  | Fayda(future) + Renite Account System          |
 
 ---
 
