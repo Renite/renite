@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabase';
+import { api } from '../../services/api';
 import { Edit3, Shield, CreditCard, Bell, Settings, LogOut, X, Loader2 } from 'lucide-react';
 
 export default function Profile() {
@@ -45,24 +46,23 @@ export default function Profile() {
 
         const authUser = session.user;
 
-        // 2. Fetch additional profile record from your 'profiles' table
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', authUser.id)
-          .maybeSingle();
+        // 2. Fetch own profile via the backend (real schema has full_name/
+        //    fayda_id -- no avatar_url/points/cases_filed/resolved_cases
+        //    columns exist, so those stay at their fallback of 0/undefined
+        //    rather than pretending to read real data for them).
+        const { data: profileData } = await api.get('/profile/me').catch(() => ({ data: null }));
 
         if (!isMounted) return;
 
         const userData = {
           id: authUser.id,
           email: authUser.email,
-          name: profileData?.name || profileData?.full_name || authUser.user_metadata?.full_name || 'User',
-          avatarUrl: profileData?.avatar_url || authUser.user_metadata?.avatar_url,
-          nationalId: profileData?.national_id || profileData?.fayda_id || 'FYD-**** 9042',
-          casesFiled: profileData?.cases_filed || 0,
-          resolved: profileData?.resolved_cases || 0,
-          points: profileData?.points || 0,
+          name: profileData?.full_name || authUser.user_metadata?.full_name || 'User',
+          avatarUrl: authUser.user_metadata?.avatar_url,
+          nationalId: profileData?.fayda_id || 'Not set',
+          casesFiled: 0,
+          resolved: 0,
+          points: 0,
           ...profileData
         };
 
@@ -106,18 +106,7 @@ export default function Profile() {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     try {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) return;
-
-      // Update name in Supabase database table ('profiles')
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ name: editForm.name, updated_at: new Date() })
-        .eq('id', authUser.id);
-
-      if (updateError) {
-        console.warn('Profiles table update notice:', updateError.message);
-      }
+      await api.patch('/profile/me', { full_name: editForm.name });
 
       setUser((prev) => ({ ...prev, name: editForm.name }));
       setSuccessMessage('Profile updated successfully!');

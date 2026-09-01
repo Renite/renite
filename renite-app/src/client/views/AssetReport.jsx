@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabase';
+import { api } from '../../services/api';
 import { 
   AlertTriangle, 
   ChevronDown, 
@@ -68,24 +69,19 @@ export default function AssetReport() {
         photoUrl = publicUrl;
       }
 
-      // 2. Insert record into 'stolen_assets' table
-      const { error } = await supabase
-        .from('stolen_assets')
-        .insert([
-          {
-            type: 'STOLEN_ASSET',
-            asset_name: formData.assetName,
-            category: formData.category,
-            serial_number: formData.serialNumber,
-            description: formData.description,
-            asset_photo_url: photoUrl,
-            stolen_location: formData.stolenLocation,
-            stolen_date: formData.stolenDate,
-            contact_phone: formData.contactPhone,
-          },
-        ]);
+      // 2. Insert record into 'stolen_assets' via the backend
+      await api.post('/reports/stolen-assets', {
+        type: 'STOLEN_ASSET',
+        asset_name: formData.assetName,
+        category: formData.category,
+        serial_number: formData.serialNumber,
+        description: formData.description,
+        asset_photo_url: photoUrl,
+        stolen_location: formData.stolenLocation,
+        stolen_date: formData.stolenDate,
+        contact_phone: formData.contactPhone,
+      });
 
-      if (error) throw error;
       setSubmitted(true);
     } catch (err) {
       console.error('Error submitting asset report:', err);

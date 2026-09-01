@@ -19,10 +19,31 @@ import { errorHandler, notFound } from "./middleware/error.middleware.js";
 
 const app = express();
 
+// CORS_ORIGIN was documented in .env.example but never actually wired up --
+// cors() with no options just reflects any origin back, which happens to
+// work for Bearer-token requests (no cookies involved) but silently
+// ignores the env var and won't restrict anything in production. Supports
+// a comma-separated list since renite-app and renite-admin are two
+// separate origins hitting this same backend.
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 // Security & middleware
 app.use(helmet());
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin(origin, callback) {
+    // Allow no-origin requests (curl, server-to-server, mobile webviews)
+    // and anything in the allow-list.
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS: origin ${origin} is not allowed`));
+  },
+  credentials: true,
+}));
 app.use(apiLimiter);
 app.use(requestId);
 

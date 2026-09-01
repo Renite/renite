@@ -79,3 +79,17 @@ export async function deleteDevice(req, res, next) {
     res.status(200).json({ success: true, data: result });
   } catch (err) { next(err); }
 }
+
+export async function lookupDeviceByToken(req, res, next) {
+  try {
+    const device = await reportService.lookupDeviceByToken(req.query.token);
+    res.status(200).json({ success: true, data: device });
+  } catch (err) { next(err); }
+}
+
+export async function lookupCitizenByFaydaId(req, res, next) {
+  try {
+    const citizen = await reportService.lookupCitizenByFaydaId(req.query.fayda_id);
+    res.status(200).json({ success: true, data: citizen });
+  } catch (err) { next(err); }
+}

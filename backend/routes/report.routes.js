@@ -2,7 +2,8 @@ import { Router } from 'express';
 import {
   createEmergency, listEmergency, updateEmergencyStatus,
   createAsset, listAssets, updateAssetStatus,
-  registerDevice, listMyDevices, listAllDevices, deleteDevice
+  registerDevice, listMyDevices, listAllDevices, deleteDevice,
+  lookupDeviceByToken, lookupCitizenByFaydaId
 } from '../controllers/report.controller.js';
 import { authenticate, authorize } from '../middleware/auth.middleware.js';
 
@@ -22,6 +23,8 @@ router.patch('/stolen-assets/:id/status', authenticate, authorize('admin', 'poli
 // Devices: owner-scoped now that devices RLS is locked to own-user.
 router.post('/devices', authenticate, registerDevice);
 router.get('/devices/me', authenticate, listMyDevices);
+router.get('/devices/lookup', authenticate, authorize('admin', 'police'), lookupDeviceByToken);
+router.get('/citizens/lookup', authenticate, authorize('admin', 'police'), lookupCitizenByFaydaId);
 router.get('/devices', authenticate, authorize('admin'), listAllDevices);
 router.delete('/devices/:id', authenticate, authorize('admin'), deleteDevice);
 

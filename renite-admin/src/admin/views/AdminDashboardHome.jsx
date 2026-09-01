@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../supabase'; // Adjust path if needed
+import { api } from '../../services/api';
 import { Users, FileText, Layers, ShieldAlert, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function AdminDashboardHome() {
@@ -18,24 +18,11 @@ export default function AdminDashboardHome() {
         setLoading(true);
         setErrorMsg('');
 
-        // Fetch counts concurrently from Supabase tables
-        // Note: Ensure your table names match your Supabase schema (e.g., profiles, missing_reports, devices, audit_logs)
-        const [usersRes, missingRes, assetsRes, auditRes] = await Promise.all([
-          supabase.from('profiles').select('*', { count: 'exact', head: true }),
-          supabase.from('missing_reports').select('*', { count: 'exact', head: true }),
-          supabase.from('devices').select('*', { count: 'exact', head: true }),
-          supabase.from('audit_logs').select('*', { count: 'exact', head: true }),
-        ]);
-
-        setStats({
-          usersCount: usersRes.count ?? 0,
-          missingCount: missingRes.count ?? 0,
-          assetsCount: assetsRes.count ?? 0,
-          auditLogsCount: auditRes.count ?? 0,
-        });
+        const { data } = await api.get('/admin/stats');
+        setStats(data);
       } catch (error) {
-        console.error('Failed to load admin metrics from Supabase:', error);
-        setErrorMsg('Failed to sync metrics with Supabase database.');
+        console.error('Failed to load admin metrics:', error);
+        setErrorMsg(error.message || 'Failed to sync metrics with the backend.');
       } finally {
         setLoading(false);
       }
@@ -54,7 +41,7 @@ export default function AdminDashboardHome() {
     return (
       <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-sm space-y-2">
         <Loader2 className="w-5 h-5 animate-spin text-slate-600" />
-        <span>Syncing with Supabase database...</span>
+        <span>Syncing with backend...</span>
       </div>
     );
   }
@@ -102,7 +89,7 @@ export default function AdminDashboardHome() {
               <div>
                 <h3 className="text-xl font-bold text-slate-900">{item.count}</h3>
                 <span className="text-[10px] text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Supabase live sync
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Live sync
                 </span>
               </div>
             </div>
@@ -120,8 +107,8 @@ export default function AdminDashboardHome() {
           <div className="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 text-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-500 mt-1 flex-shrink-0"></span>
             <div>
-              <p className="font-semibold text-slate-800">Supabase Connection Active</p>
-              <p className="text-slate-500 text-[11px] mt-0.5">All table telemetry queries executed successfully.</p>
+              <p className="font-semibold text-slate-800">Backend Connection Active</p>
+              <p className="text-slate-500 text-[11px] mt-0.5">All dashboard queries executed successfully.</p>
             </div>
           </div>
         </div>

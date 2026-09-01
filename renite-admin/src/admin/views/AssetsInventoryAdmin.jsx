@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../../supabase"; // Adjust path if needed
+import { api } from "../../services/api";
 import { Package, Plus, Search, Trash2, Edit2, AlertCircle, Loader2 } from "lucide-react";
 
 export default function AssetsInventoryAdmin() {
@@ -14,21 +14,15 @@ export default function AssetsInventoryAdmin() {
     const fetchAssets = async () => {
       try {
         setLoading(true);
-        // Fetching from Supabase 'devices' table (change to 'materials' if your table name differs)
-        const { data, error: fetchError } = await supabase
-          .from('devices')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (fetchError) throw fetchError;
+        const { data } = await api.get('/reports/devices?limit=200');
 
         if (!isMounted) return;
-        setAssets(data || []);
+        setAssets(data.devices || []);
         setError(null);
       } catch (err) {
         if (!isMounted) return;
         console.error(err);
-        setError("Failed to load assets inventory from Supabase.");
+        setError(err.message || "Failed to load assets inventory.");
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -46,21 +40,16 @@ export default function AssetsInventoryAdmin() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this asset record?")) return;
     try {
-      const { error: deleteError } = await supabase
-        .from('devices')
-        .delete()
-        .eq('id', id);
-
-      if (deleteError) throw deleteError;
+      await api.delete(`/reports/devices/${id}`);
       setAssets(assets.filter(item => item.id !== id));
     } catch (err) {
       console.error(err);
-      alert("Failed to delete asset.");
+      alert("Failed to delete asset: " + err.message);
     }
   };
 
   const filteredAssets = assets.filter((item) => {
-    const nameStr = item.name || item.title || `${item.brand || ''} ${item.model || ''}` || "";
+    const nameStr = item.device_name || `${item.brand || ''} ${item.model || ''}` || "";
     return nameStr.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -70,7 +59,7 @@ export default function AssetsInventoryAdmin() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Assets & Inventory</h1>
-          <p className="text-sm text-slate-500">Manage items, equipment, and material resources via Supabase.</p>
+          <p className="text-sm text-slate-500">Manage citizen-registered devices and recovery tokens.</p>
         </div>
         <button 
           onClick={() => alert("Add Item modal can be integrated here.")}
@@ -124,12 +113,12 @@ export default function AssetsInventoryAdmin() {
                 {filteredAssets.map((item, idx) => (
                   <tr key={item.id || idx} className="hover:bg-slate-50/50 transition">
                     <td className="py-3.5 px-4 font-medium text-slate-900">
-                      {item.name || item.title || `${item.brand || ''} ${item.model || ''}`.trim() || "Unnamed Asset"}
+                      {item.device_name || `${item.brand || ''} ${item.model || ''}`.trim() || "Unnamed Asset"}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-600">{item.category || item.device_type || "General"}</td>
+                    <td className="py-3.5 px-4 text-slate-600">{item.device_type || "General"}</td>
                     <td className="py-3.5 px-4 text-slate-600">
-                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-slate-100 text-slate-700">
-                        {item.status || `${item.quantity ?? 1} in stock`}
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase bg-slate-100 text-slate-700 font-mono">
+                        {item.recovery_token}
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right space-x-2">

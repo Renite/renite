@@ -9,11 +9,11 @@ import {
   Copy,
   Info,
   UserCheck,
-  ShieldAlert,
-  BadgeAlert
+  ShieldAlert
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "../../supabase";
+import { api } from "../../services/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,7 +21,6 @@ export default function Login() {
   // State to manage screen flow
   const [view, setView] = useState('login'); // 'login' | 'step1' | 'step2' | 'step3' | 'device' | 'success'
   const [loginRole, setLoginRole] = useState('citizen'); // 'citizen' | 'police'
-  const [regRole, setRegRole] = useState('citizen'); // 'citizen' | 'police'
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [copied, setCopied] = useState(false);
@@ -52,9 +51,7 @@ export default function Login() {
     serial: '',
     color: '',
     purchaseDate: '',
-    recoveryToken: '',
-    badgeNumber: '',
-    station: ''
+    recoveryToken: ''
   });
 
   const handleChange = (e) => {
@@ -77,21 +74,31 @@ export default function Login() {
     try {
       const cleanFayda = formData.faydaId.replace(/\s+/g, '');
 
-      // Verify Fayda ID exists in Supabase profiles database
+      // 1. profiles is no longer publicly readable (RLS locked to owner-only),
+      //    so look up the account's email via the backend, then actually
+      //    authenticate -- the previous version stopped here and just
+      //    navigated without ever calling signInWithPassword.
+      const { data: lookup } = await api.post('/auth/lookup-email', { fayda_id: cleanFayda });
+
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: lookup.email,
+        password: formData.password,
+      });
+      if (authError) throw new Error('Invalid Fayda ID or password.');
+
+      // 2. Now that we have a real session, fetch our own profile (RLS
+      //    allows this since auth.uid() === profiles.id at this point).
       const { data: profile, error: profileErr } = await supabase
         .from('profiles')
-        .select('*')
-        .eq('fayda_id', cleanFayda)
+        .select('role')
+        .eq('id', authData.user.id)
         .maybeSingle();
-
       if (profileErr) throw profileErr;
-
-      if (!profile) {
-        throw new Error('Fayda ID not registered in national database. Please create an account.');
-      }
+      if (!profile) throw new Error('Profile not found for this account.');
 
       // Check if trying to log in as police but lacking clearance
       if (loginRole === 'police' && profile.role !== 'police' && profile.role !== 'admin') {
+        await supabase.auth.signOut();
         throw new Error('Access Denied: This Fayda ID does not have Law Enforcement clearance.');
       }
 
@@ -134,43 +141,34 @@ export default function Login() {
           data: {
             full_name: formData.fullName,
             fayda_id: cleanFayda,
-            role: regRole,
           },
         },
       });
 
       if (authError) throw authError;
 
-      // 2. Insert Profile Data into Supabase 'profiles' Table
-      const { error: profileError } = await supabase.from('profiles').upsert([
-        {
-          id: authData.user?.id,
-          fayda_id: cleanFayda,
-          full_name: formData.fullName,
-          dob: formData.dob,
-          gender: formData.gender,
-          phone: formData.phone,
-          email: formData.email,
-          region: formData.region,
-          city: formData.city,
-          kebele: formData.kebele,
-          emergency_name: formData.emergencyName,
-          emergency_phone: formData.emergencyPhone,
-          emergency_rel: formData.emergencyRel,
-          role: regRole,
-          badge_number: regRole === 'police' ? formData.badgeNumber : null,
-          station: regRole === 'police' ? formData.station : null,
-        },
-      ]);
+      // 2. Complete the profile via the backend, NOT a direct client insert.
+      //    The backend always forces role='user' here regardless of what's
+      //    sent -- self-registration can never grant 'police' or 'admin'
+      //    (that previously was possible: the old code inserted
+      //    role: regRole straight from client state). Officer accounts are
+      //    now admin-provisioned only, via POST /admin/staff.
+      await api.post('/auth/complete-profile', {
+        fayda_id: cleanFayda,
+        full_name: formData.fullName,
+        dob: formData.dob,
+        gender: formData.gender,
+        phone: formData.phone,
+        email: formData.email,
+        region: formData.region,
+        city: formData.city,
+        kebele: formData.kebele,
+        emergency_name: formData.emergencyName,
+        emergency_phone: formData.emergencyPhone,
+        emergency_rel: formData.emergencyRel,
+      });
 
-      if (profileError) throw profileError;
-
-      // If police, skip device asset setup and go straight to success/dashboard
-      if (regRole === 'police') {
-        setView('success');
-      } else {
-        setView('device');
-      }
+      setView('device');
     } catch (err) {
       setErrorMsg(err.message || 'Registration failed');
     } finally {
@@ -187,29 +185,17 @@ export default function Login() {
     setErrorMsg('');
 
     try {
-      const generatedToken = 'RNT-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-      const { data: { user } } = await supabase.auth.getUser();
-      const cleanFayda = formData.faydaId.replace(/\s+/g, '');
+      const { data: device } = await api.post('/reports/devices', {
+        device_name: formData.deviceName,
+        device_type: formData.deviceType,
+        brand: formData.brand,
+        model: formData.model,
+        serial_number: formData.serial,
+        color: formData.color,
+        purchase_date: formData.purchaseDate || null,
+      });
 
-      // Insert Asset Record into Supabase 'devices' Table
-      const { error: deviceError } = await supabase.from('devices').insert([
-        {
-          user_id: user?.id || null,
-          fayda_id: cleanFayda,
-          device_name: formData.deviceName,
-          device_type: formData.deviceType,
-          brand: formData.brand,
-          model: formData.model,
-          serial_number: formData.serial,
-          color: formData.color,
-          purchase_date: formData.purchaseDate || null,
-          recovery_token: generatedToken,
-        },
-      ]);
-
-      if (deviceError) throw deviceError;
-
-      setFormData((prev) => ({ ...prev, recoveryToken: generatedToken }));
+      setFormData((prev) => ({ ...prev, recoveryToken: device.recovery_token }));
       setView('success');
     } catch (err) {
       setErrorMsg(err.message || 'Device registration failed');
@@ -287,6 +273,19 @@ export default function Login() {
               />
             </div>
 
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-400"
+                required
+              />
+            </div>
+
             <div className="flex items-start gap-3 mt-2">
               <input type="checkbox" className="mt-1 border-slate-300 rounded text-slate-900 focus:ring-slate-900" required />
               <p className="text-[10px] text-slate-500 leading-tight">
@@ -327,7 +326,7 @@ export default function Login() {
 
             <div className="text-center text-sm">
               <span className="text-slate-500">Don't have an account? </span>
-              <button onClick={() => { setRegRole('citizen'); setView('step1'); }} className="font-bold text-slate-900 hover:underline">
+              <button onClick={() => setView('step1')} className="font-bold text-slate-900 hover:underline">
                 Create account
               </button>
             </div>
@@ -336,10 +335,9 @@ export default function Login() {
 
         {loginRole === 'police' && (
           <div className="text-center text-sm mt-6">
-            <span className="text-slate-500">Need an officer account? </span>
-            <button onClick={() => { setRegRole('police'); setView('step1'); }} className="font-bold text-blue-950 hover:underline">
-              Register officer profile
-            </button>
+            <span className="text-slate-500">
+              Officer accounts are provisioned by an administrator and cannot be self-registered.
+            </span>
           </div>
         )}
       </div>
@@ -358,48 +356,32 @@ export default function Login() {
           </button>
           <div className="flex-1">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              {regRole === 'police' ? 'Law Enforcement Registration • Step 1' : 'Step 1 of 3'}
+              {'Step 1 of 3'}
             </p>
             <h1 className="text-lg font-bold text-slate-900">
-              {regRole === 'police' ? 'Officer Details' : 'Personal Info'}
+              {'Personal Info'}
             </h1>
           </div>
-          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${regRole === 'police' ? 'bg-blue-50 text-blue-950' : 'bg-indigo-50 text-indigo-600'}`}>
-            {regRole === 'police' ? <BadgeAlert size={16} /> : <ShieldCheck size={16} />}
+          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${'bg-indigo-50 text-indigo-600'}`}>
+            {<ShieldCheck size={16} />}
           </div>
         </header>
 
         <div className="bg-white px-4 py-2 border-b border-slate-100 flex gap-1">
-          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${'bg-indigo-600'}`}></div>
           <div className="h-1 bg-slate-100 flex-1 rounded-full"></div>
           <div className="h-1 bg-slate-100 flex-1 rounded-full"></div>
         </div>
 
         <div className="p-6">
           <p className="text-xs text-slate-500 mb-6">
-            {regRole === 'police' ? 'Enter your official law enforcement identification details' : 'Your identity and basic details'}
+            {'Your identity and basic details'}
           </p>
           
           <form onSubmit={(e) => { e.preventDefault(); setView('step2'); }} className="space-y-5">
-            {regRole === 'police' && (
-              <div className="bg-blue-50/70 border border-blue-200 p-4 rounded-xl space-y-4 mb-4">
-                <p className="text-xs font-bold text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldAlert size={14} /> Police Credentials Required
-                </p>
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Badge Number / Officer ID <span className="text-red-500">*</span></label>
-                  <input type="text" name="badgeNumber" value={formData.badgeNumber} onChange={handleChange} placeholder="e.g. POL-88924" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm font-mono focus:outline-none" required />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Police Precinct / Station <span className="text-red-500">*</span></label>
-                  <input type="text" name="station" value={formData.station} onChange={handleChange} placeholder="e.g. Bole Sub-City Precinct 04" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
-                </div>
-              </div>
-            )}
-
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Full Name <span className="text-red-500">*</span></label>
-              <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder={regRole === 'police' ? 'e.g. Inspector Dawit Bekele' : 'e.g. Abebe Girma'} className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
+              <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder={'e.g. Abebe Girma'} className="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
             </div>
 
             <div>
@@ -479,10 +461,10 @@ export default function Login() {
 
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Official Email Address <span className="text-red-500">*</span></label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder={regRole === 'police' ? 'officer@police.gov.et' : 'abebe@example.com'} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
+              <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder={'abebe@example.com'} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none" required />
             </div>
 
-            <button type="submit" className={`w-full font-bold py-3.5 rounded-xl shadow-md transition-colors mt-4 text-white ${regRole === 'police' ? 'bg-blue-950 hover:bg-blue-900' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
+            <button type="submit" className={`w-full font-bold py-3.5 rounded-xl shadow-md transition-colors mt-4 text-white ${'bg-indigo-600 hover:bg-indigo-700'}`}>
               Continue &rarr;
             </button>
           </form>
@@ -503,26 +485,26 @@ export default function Login() {
           </button>
           <div className="flex-1">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              {regRole === 'police' ? 'Law Enforcement Registration • Step 2' : 'Step 2 of 3'}
+              {'Step 2 of 3'}
             </p>
             <h1 className="text-lg font-bold text-slate-900">Location & Contact</h1>
           </div>
-          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${regRole === 'police' ? 'bg-blue-50 text-blue-950' : 'bg-indigo-50 text-indigo-600'}`}>
-            {regRole === 'police' ? <BadgeAlert size={16} /> : <ShieldCheck size={16} />}
+          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${'bg-indigo-50 text-indigo-600'}`}>
+            {<ShieldCheck size={16} />}
           </div>
         </header>
 
         <div className="bg-white px-4 py-2 border-b border-slate-100 flex gap-1">
-          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
-          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${'bg-indigo-600'}`}></div>
           <div className="h-1 bg-slate-100 flex-1 rounded-full"></div>
         </div>
 
         <div className="p-6">
           <p className="text-xs text-slate-500 mb-6">Where you are stationed and who to call</p>
-          <div className={`${regRole === 'police' ? 'bg-blue-50/50 border-blue-100 text-blue-950' : 'bg-indigo-50/50 border-indigo-100 text-slate-700'} border rounded-xl p-4 flex gap-3 mb-6`}>
+          <div className={`${'bg-indigo-50/50 border-indigo-100 text-slate-700'} border rounded-xl p-4 flex gap-3 mb-6`}>
             <div className="bg-white p-2 rounded-full shadow-sm h-fit">
-              <MapPin size={16} className={regRole === 'police' ? 'text-blue-950' : 'text-indigo-500'} />
+              <MapPin size={16} className={'text-indigo-500'} />
             </div>
             <p className="text-sm mt-1">Your region helps us assign local response teams and jurisdiction access.</p>
           </div>
@@ -578,7 +560,7 @@ export default function Login() {
               </div>
             </div>
 
-            <button type="submit" className={`w-full font-bold py-3.5 rounded-xl shadow-md transition-colors mt-8 text-white ${regRole === 'police' ? 'bg-blue-950 hover:bg-blue-900' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
+            <button type="submit" className={`w-full font-bold py-3.5 rounded-xl shadow-md transition-colors mt-8 text-white ${'bg-indigo-600 hover:bg-indigo-700'}`}>
               Continue &rarr;
             </button>
           </form>
@@ -599,27 +581,27 @@ export default function Login() {
           </button>
           <div className="flex-1">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              {regRole === 'police' ? 'Law Enforcement Registration • Final Step' : 'Step 3 of 3'}
+              {'Step 3 of 3'}
             </p>
             <h1 className="text-lg font-bold text-slate-900">Security</h1>
           </div>
-          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${regRole === 'police' ? 'bg-blue-50 text-blue-950' : 'bg-indigo-50 text-indigo-600'}`}>
-            {regRole === 'police' ? <BadgeAlert size={16} /> : <ShieldCheck size={16} />}
+          <div className={`w-8 h-8 flex items-center justify-center rounded-full ${'bg-indigo-50 text-indigo-600'}`}>
+            {<ShieldCheck size={16} />}
           </div>
         </header>
 
         <div className="bg-white px-4 py-2 border-b border-slate-100 flex gap-1">
-          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
-          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
-          <div className={`h-1 flex-1 rounded-full ${regRole === 'police' ? 'bg-blue-950' : 'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${'bg-indigo-600'}`}></div>
+          <div className={`h-1 flex-1 rounded-full ${'bg-indigo-600'}`}></div>
         </div>
 
         <div className="p-6">
           <p className="text-xs text-slate-500 mb-6">Password and officer clearance consent</p>
 
-          <div className={`${regRole === 'police' ? 'bg-blue-50 border-blue-200 text-blue-950' : 'bg-emerald-50 border-emerald-100 text-emerald-800'} border rounded-xl p-4 flex gap-3 mb-6`}>
-            <Lock size={20} className={regRole === 'police' ? 'text-blue-950 mt-0.5' : 'text-emerald-500 mt-0.5'} />
-            <p className="text-sm font-medium">Set a strong password to protect your {regRole === 'police' ? 'Law Enforcement Command' : 'Renite'} account.</p>
+          <div className={`${'bg-emerald-50 border-emerald-100 text-emerald-800'} border rounded-xl p-4 flex gap-3 mb-6`}>
+            <Lock size={20} className={'text-emerald-500 mt-0.5'} />
+            <p className="text-sm font-medium">Set a strong password to protect your {'Renite'} account.</p>
           </div>
           
           {errorMsg && <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-xl mb-4 text-center">{errorMsg}</div>}
@@ -650,24 +632,22 @@ export default function Login() {
 
             <div className="space-y-4 pt-4 border-t border-slate-200">
               <label className="flex items-start gap-3 cursor-pointer p-4 bg-white border border-slate-200 rounded-xl">
-                <input type="checkbox" className={`mt-1 w-4 h-4 rounded border-slate-300 ${regRole === 'police' ? 'text-blue-950 focus:ring-blue-950' : 'text-indigo-600 focus:ring-indigo-600'}`} required />
+                <input type="checkbox" className={`mt-1 w-4 h-4 rounded border-slate-300 ${'text-indigo-600 focus:ring-indigo-600'}`} required />
                 <p className="text-xs text-slate-600 leading-tight">
-                  I agree to the <span className={`font-bold ${regRole === 'police' ? 'text-blue-950' : 'text-indigo-600'}`}>Terms of Service</span> and <span className={`font-bold ${regRole === 'police' ? 'text-blue-950' : 'text-indigo-600'}`}>Privacy Policy</span> of the Renite National Civic Safety Platform. <span className="text-red-500">*</span>
+                  I agree to the <span className={`font-bold ${'text-indigo-600'}`}>Terms of Service</span> and <span className={`font-bold ${'text-indigo-600'}`}>Privacy Policy</span> of the Renite National Civic Safety Platform. <span className="text-red-500">*</span>
                 </p>
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer p-4 bg-white border border-slate-200 rounded-xl">
-                <input type="checkbox" className={`mt-1 w-4 h-4 rounded border-slate-300 ${regRole === 'police' ? 'text-blue-950 focus:ring-blue-950' : 'text-indigo-600 focus:ring-indigo-600'}`} required />
+                <input type="checkbox" className={`mt-1 w-4 h-4 rounded border-slate-300 ${'text-indigo-600 focus:ring-indigo-600'}`} required />
                 <p className="text-xs text-slate-600 leading-tight">
-                  {regRole === 'police' 
-                    ? 'I certify that I am an authorized law enforcement officer and will adhere strictly to protocols regarding citizen data and asset recovery case files under Ethiopian law.' 
-                    : 'I consent to the collection and processing of my biometric and location data for national safety purposes under Ethiopian law.'} <span className="text-red-500">*</span>
+                  {'I consent to the collection and processing of my biometric and location data for national safety purposes under Ethiopian law.'} <span className="text-red-500">*</span>
                 </p>
               </label>
             </div>
 
-            <button type="submit" disabled={loading} className={`w-full font-bold py-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 text-white ${regRole === 'police' ? 'bg-blue-950 hover:bg-blue-900' : 'bg-indigo-600 hover:bg-indigo-700'}`}>
-              {loading ? 'Creating Account...' : regRole === 'police' ? 'Register Officer Account' : 'Create My Account'} <ShieldCheck size={18} />
+            <button type="submit" disabled={loading} className={`w-full font-bold py-4 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2 text-white ${'bg-indigo-600 hover:bg-indigo-700'}`}>
+              {loading ? 'Creating Account...' : 'Create My Account'} <ShieldCheck size={18} />
             </button>
           </form>
         </div>
@@ -785,27 +765,6 @@ export default function Login() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     };
-
-    if (regRole === 'police') {
-      return (
-        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 max-w-md mx-auto text-white">
-          <div className="w-24 h-24 bg-blue-900/40 rounded-full flex items-center justify-center mb-6 relative border border-blue-500/30 shadow-inner">
-            <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center text-white shadow-lg">
-              <ShieldAlert size={32} />
-            </div>
-          </div>
-
-          <h1 className="text-2xl font-bold text-center mb-2">Officer Profile Created!</h1>
-          <p className="text-sm text-slate-400 text-center mb-8">
-            Badge <strong className="text-white">{formData.badgeNumber}</strong> is registered under precinct <strong className="text-white">{formData.station}</strong> with law enforcement clearance.
-          </p>
-
-          <button onClick={() => navigate('/police-dashboard')} className="w-full bg-blue-950 hover:bg-blue-900 border border-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2">
-            Open Police Command Dashboard &rarr;
-          </button>
-        </div>
-      );
-    }
 
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 max-w-md mx-auto">

@@ -31,3 +31,17 @@ export async function createStaff(req, res, next) {
     res.status(201).json({ success: true, data: staff });
   } catch (err) { next(err); }
 }
+
+export async function listAuditLogs(req, res, next) {
+  try {
+    const result = await adminService.listAuditLogs(req.query);
+    res.status(200).json({ success: true, data: result });
+  } catch (err) { next(err); }
+}
+
+export async function getDashboardStats(req, res, next) {
+  try {
+    const stats = await adminService.getDashboardStats();
+    res.status(200).json({ success: true, data: stats });
+  } catch (err) { next(err); }
+}

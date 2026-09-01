@@ -9,21 +9,29 @@ import UsersManagement from './admin/views/UsersManagement';
 import VerificationsAdmin from './admin/views/VerificationsAdmin';
 import AuditLogsAdmin from './admin/views/AuditLogsAdmin';
 import AdminAuth from './admin/views/AdminAuth';
+import RequireAdmin from './admin/components/RequireAdmin';
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Admin Dashboard Routes */}
+        {/* Sign-in page lives outside both the guard and AdminLayout's
+            dashboard chrome -- it previously rendered nested inside
+            AdminLayout, and once a guard exists that would create a
+            redirect loop for anyone without a session. */}
+        <Route path="/admin/auth" element={<AdminAuth />} />
+
+        {/* Admin Dashboard Routes -- require a signed-in admin */}
         <Route path="/" element={<Navigate to="/admin" replace />} />
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboardHome />} />
-          <Route path="missing" element={<MissingPersons />} />
-          <Route path="assets" element={<AssetsInventoryAdmin />} />
-          <Route path="users" element={<UsersManagement />} />
-          <Route path="verifications" element={<VerificationsAdmin />} />
-          <Route path="audit-logs" element={<AuditLogsAdmin />} />
-          <Route path="auth" element ={<AdminAuth/>}/>
+        <Route element={<RequireAdmin />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardHome />} />
+            <Route path="missing" element={<MissingPersons />} />
+            <Route path="assets" element={<AssetsInventoryAdmin />} />
+            <Route path="users" element={<UsersManagement />} />
+            <Route path="verifications" element={<VerificationsAdmin />} />
+            <Route path="audit-logs" element={<AuditLogsAdmin />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

@@ -100,5 +100,41 @@ export const adminService = {
     }
 
     return profile;
+  },
+
+  async listAuditLogs({ page = 1, limit = 50 } = {}) {
+    const from = (page - 1) * limit;
+    const to = from + Number(limit) - 1;
+    const { data, error, count } = await supabaseAdmin
+      .from('audit_logs')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
+    if (error) throw toAppError(error);
+    return { logs: data, total: count, page: Number(page), limit: Number(limit) };
+  },
+
+  // Dashboard summary counts. Needs service-role because profiles/devices
+  // are now owner-only RLS and audit_logs has no client policy at all --
+  // a direct client-side count query (as the old dashboard did) would
+  // silently return wrong/zero numbers instead of failing loudly.
+  async getDashboardStats() {
+    const [users, missing, devices, auditLogs] = await Promise.all([
+      supabaseAdmin.from('profiles').select('*', { count: 'exact', head: true }),
+      supabaseAdmin.from('emergency_reports').select('*', { count: 'exact', head: true }).eq('type', 'MISSING_PERSON'),
+      supabaseAdmin.from('devices').select('*', { count: 'exact', head: true }),
+      supabaseAdmin.from('audit_logs').select('*', { count: 'exact', head: true }),
+    ]);
+    if (users.error) throw toAppError(users.error);
+    if (missing.error) throw toAppError(missing.error);
+    if (devices.error) throw toAppError(devices.error);
+    if (auditLogs.error) throw toAppError(auditLogs.error);
+
+    return {
+      usersCount: users.count ?? 0,
+      missingCount: missing.count ?? 0,
+      assetsCount: devices.count ?? 0,
+      auditLogsCount: auditLogs.count ?? 0,
+    };
   }
 };

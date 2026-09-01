@@ -140,5 +140,28 @@ export const reportService = {
     const { error } = await supabaseAdmin.from('devices').delete().eq('id', id);
     if (error) throw toAppError(error);
     return { deleted: true };
+  },
+
+  // ---- officer lookups (PoliceHome search) ----
+  async lookupDeviceByToken(token) {
+    const { data, error } = await supabaseAdmin
+      .from('devices')
+      .select('*, profiles(full_name, phone, region, city)')
+      .eq('recovery_token', String(token || '').trim().toUpperCase())
+      .maybeSingle();
+    if (error) throw toAppError(error);
+    if (!data) throw new AppError(404, 'NOT_FOUND', 'No device found matching this recovery token.');
+    return data;
+  },
+
+  async lookupCitizenByFaydaId(faydaId) {
+    const { data, error } = await supabaseAdmin
+      .from('profiles')
+      .select('*, devices(*)')
+      .eq('fayda_id', String(faydaId || '').replace(/\s+/g, ''))
+      .maybeSingle();
+    if (error) throw toAppError(error);
+    if (!data) throw new AppError(404, 'NOT_FOUND', 'No citizen found matching this Fayda ID.');
+    return data;
   }
 };

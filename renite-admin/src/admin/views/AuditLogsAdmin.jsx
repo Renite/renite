@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../supabase'; // Adjust path if needed
+import { api } from '../../services/api';
 import { Clock, User, Terminal, Loader2, AlertCircle } from 'lucide-react';
 
 export default function AuditLogsAdmin() {
@@ -11,17 +11,12 @@ export default function AuditLogsAdmin() {
     async function fetchAuditLogs() {
       try {
         setLoading(true);
-        const { data, error: fetchError } = await supabase
-          .from('audit_logs')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (fetchError) throw fetchError;
-        setLogs(data || []);
+        const { data } = await api.get('/admin/audit-logs?limit=100');
+        setLogs(data.logs || []);
         setError(null);
       } catch (err) {
-        console.error('Failed to load audit logs from Supabase:', err);
-        setError('Failed to load system audit logs.');
+        console.error('Failed to load audit logs:', err);
+        setError(err.message || 'Failed to load system audit logs.');
       } finally {
         setLoading(false);
       }

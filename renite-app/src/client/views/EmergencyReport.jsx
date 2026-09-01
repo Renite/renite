@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabase';
+import { api } from '../../services/api';
 import { 
   AlertTriangle, 
   ChevronDown, 
@@ -64,23 +65,20 @@ const handleSubmit = async (e) => {
         photoUrl = publicUrl;
       }
 
-      // 2. Insert into 'missing_persons' table (matching your database schema)
-      const { error } = await supabase
-        .from('missing_persons')
-        .insert([
-          {
-            type: 'MISSING_PERSON',
-            full_name: formData.fullName,
-            age: Number(formData.age) || 0,
-            relation: formData.relation,
-            details: formData.details,
-            biometric_photo_url: photoUrl,
-            last_seen_location: formData.lastSeenLocation,
-            contact_phone: formData.contactPhone,
-          },
-        ]);
+      // 2. Insert into the real 'emergency_reports' table, via the backend
+      //    (was previously inserting into 'missing_persons', which doesn't
+      //    exist in the schema -- this report would have silently failed).
+      await api.post('/reports/emergency-reports', {
+        type: 'MISSING_PERSON',
+        full_name: formData.fullName,
+        age: Number(formData.age) || 0,
+        relation: formData.relation,
+        details: formData.details,
+        biometric_photo_url: photoUrl,
+        last_seen_location: formData.lastSeenLocation,
+        contact_phone: formData.contactPhone,
+      });
 
-      if (error) throw error;
       setSubmitted(true);
     } catch (err) {
       console.error('Error submitting missing person report:', err);

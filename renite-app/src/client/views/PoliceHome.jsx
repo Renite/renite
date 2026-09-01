@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabase';
+import { api } from '../../services/api';
 
 export default function PoliceHome() {
   const navigate = useNavigate();
@@ -61,34 +62,31 @@ export default function PoliceHome() {
   const fetchCases = async () => {
   setLoadingCases(true);
   try {
-    // Fetch both tables in parallel
+    // Fetch both real tables in parallel via the backend
     const [assetsResponse, personsResponse] = await Promise.all([
-      supabase.from('stolen_assets').select('*').order('created_at', { ascending: false }),
-      supabase.from('missing_person').select('*').order('created_at', { ascending: false })
+      api.get('/reports/stolen-assets?limit=100'),
+      api.get('/reports/emergency-reports?limit=100')
     ]);
 
-    if (assetsResponse.error) throw assetsResponse.error;
-    if (personsResponse.error) throw personsResponse.error;
-
     // Normalize stolen assets data
-    const assetsData = (assetsResponse.data || []).map((item) => ({
+    const assetsData = (assetsResponse.data.assets || []).map((item) => ({
       ...item,
       type: 'asset',
-      id: item.id || item.asset_id,
-      title: item.asset_name || item.item_name || 'Stolen Asset',
+      id: item.id,
+      title: item.asset_name || 'Stolen Asset',
       description: item.description || item.details,
-      assetToken: item.asset_token || item.token || item.serial_number,
+      assetToken: item.serial_number,
       createdAt: item.created_at
     }));
 
-    // Normalize missing persons data
-    const personsData = (personsResponse.data || []).map((item) => ({
+    // Normalize emergency reports data
+    const personsData = (personsResponse.data.reports || []).map((item) => ({
       ...item,
       type: 'person',
-      id: item.id || item.person_id,
-      title: item.full_name || item.name || 'Missing Person',
-      description: item.description || item.details || `Last seen: ${item.last_seen_location || 'Unknown'}`,
-      faydaNumber: item.fayda_id || item.fayda_number,
+      id: item.id,
+      title: item.full_name || 'Missing Person',
+      description: item.details || `Last seen: ${item.last_seen_location || 'Unknown'}`,
+      faydaNumber: item.fayda_id,
       createdAt: item.created_at
     }));
 
@@ -99,7 +97,7 @@ export default function PoliceHome() {
 
     setCases(combinedCases);
   } catch (err) {
-    console.error('Error fetching cases from Supabase:', err.message);
+    console.error('Error fetching cases:', err.message);
   } finally {
     setLoadingCases(false);
   }
@@ -131,14 +129,15 @@ export default function PoliceHome() {
     loadInitialData();
   }, []);
 
-  const handleUpdateStatus = async (caseId, newStatus) => {
-    try {
-      const { error } = await supabase
-        .from('cases')
-        .update({ status: newStatus })
-        .eq('id', caseId);
+  const STATUS_UI_TO_BACKEND = { 'Open': 'OPEN', 'Under Review': 'IN_PROGRESS', 'Closed': 'CLOSED' };
 
-      if (error) throw error;
+  const handleUpdateStatus = async (caseItem, newStatusUi) => {
+    try {
+      const status = STATUS_UI_TO_BACKEND[newStatusUi] || newStatusUi;
+      const endpoint = caseItem.type === 'asset'
+        ? `/reports/stolen-assets/${caseItem.id}/status`
+        : `/reports/emergency-reports/${caseItem.id}/status`;
+      await api.patch(endpoint, { status });
       fetchCases();
     } catch (err) {
       alert('Failed to update status: ' + err.message);
@@ -153,24 +152,10 @@ export default function PoliceHome() {
 
     try {
       if (searchType === 'token') {
-        const { data, error } = await supabase
-          .from('devices')
-          .select('*, profiles(full_name, phone, region, city)')
-          .eq('recovery_token', searchQuery.trim().toUpperCase())
-          .maybeSingle();
-
-        if (error) throw error;
-        if (!data) throw new Error('No device found matching this recovery token.');
+        const { data } = await api.get(`/reports/devices/lookup?token=${encodeURIComponent(searchQuery.trim())}`);
         setSearchResult({ type: 'device', data });
       } else {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*, devices(*)')
-          .eq('fayda_id', searchQuery.trim().replace(/\s+/g, ''))
-          .maybeSingle();
-
-        if (error) throw error;
-        if (!data) throw new Error('No citizen found matching this Fayda ID.');
+        const { data } = await api.get(`/reports/citizens/lookup?fayda_id=${encodeURIComponent(searchQuery.trim())}`);
         setSearchResult({ type: 'citizen', data });
       }
     } catch (err) {
@@ -215,7 +200,7 @@ export default function PoliceHome() {
     navigate('/login');
   };
 
-  const openCasesCount = cases.filter(c => c.status === 'Open').length;
+  const openCasesCount = cases.filter(c => c.status === 'OPEN').length;
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col">
@@ -409,8 +394,8 @@ export default function PoliceHome() {
                         <div className="space-y-2 flex-1">
                           <div className="flex items-center gap-2">
                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                              c.status === 'Open' ? 'bg-amber-100 text-amber-800' :
-                              c.status === 'Under Review' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'
+                              c.status === 'OPEN' ? 'bg-amber-100 text-amber-800' :
+                              c.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'
                             }`}>
                               {c.status}
                             </span>
@@ -436,20 +421,20 @@ export default function PoliceHome() {
                         <div className="flex md:flex-col justify-end gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
                           <span className="text-[10px] font-bold text-slate-400 uppercase hidden md:block">Update Status:</span>
                           <button 
-                            onClick={() => handleUpdateStatus(c.id, 'Open')} 
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${c.status === 'Open' ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            onClick={() => handleUpdateStatus(c, 'Open')} 
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${c.status === 'OPEN' ? 'bg-amber-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                           >
                             Open
                           </button>
                           <button 
-                            onClick={() => handleUpdateStatus(c.id, 'Under Review')} 
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${c.status === 'Under Review' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            onClick={() => handleUpdateStatus(c, 'Under Review')} 
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${c.status === 'IN_PROGRESS' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                           >
                             Under Review
                           </button>
                           <button 
-                            onClick={() => handleUpdateStatus(c.id, 'Closed')} 
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${c.status === 'Closed' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                            onClick={() => handleUpdateStatus(c, 'Closed')} 
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${c.status === 'CLOSED' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
                           >
                             Resolve / Close
                           </button>
